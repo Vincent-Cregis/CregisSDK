@@ -12,32 +12,58 @@ mvn test
 These tests connect to the **REAL** Cregis API. You should use a Sandbox/Test project for these.
 
 ### Prerequisites
-You must set the following environment variables (defined in your `.env` file):
+1.  Copy `.env.example` to `.env` and fill in your credentials.
+2.  Set environment variables for the tests you want to run.
 
 **For WaaS Tests:**
-- `WAAS_PID`
-- `WAAS_API_KEY`
-- `WAAS_ENDPOINT` (Optional)
+| Variable | Required | Description |
+| --- | --- | --- |
+| `WAAS_PID` | Yes | Your WaaS Project ID |
+| `WAAS_API_KEY` | Yes | Your WaaS API Key |
+| `WAAS_ENDPOINT` | No | Defaults to `https://waas.cregis.com` |
+| `WAAS_WALLET_ID` | No | Required for Payout test |
+| `WITHDRAW_ADDRESS` | No | Required for Withdrawal test |
 
-**For Payment Tests:**
-- `PAYMENT_PID`
-- `PAYMENT_API_KEY`
-- `PAYMENT_ENDPOINT` (Optional)
+**For Payment Engine Tests:**
+| Variable | Required | Description |
+| --- | --- | --- |
+| `PAYMENT_PID` | Yes | Your Payment Engine Project ID |
+| `PAYMENT_API_KEY` | Yes | Your Payment Engine API Key |
+| `PAYMENT_ENDPOINT` | No | Defaults to `https://payment.cregis.com` |
 
-### Run specific Integration Test
+### Run All Integration Tests
 ```bash
-# Set Env Vars via .env file or export
-export WAAS_PID="your_pid"
-export WAAS_API_KEY="your_key"
+mvn test -Dgroups=integration
+```
 
-# Run Maven
-mvn -Dtest=CregisWaasIntegrationTest test
+### Run WaaS Integration Tests
+```bash
+# Run all WaaS tests
+mvn test -Dgroups=integration -Dtest=CregisWaasIntegrationTest
+
+# Run a specific WaaS test method
+mvn test -Dgroups=integration -Dtest=CregisWaasIntegrationTest#testProjectCoinQuery
+```
+
+### Run Payment Engine Integration Tests
+```bash
+# Run all Payment Engine tests
+mvn test -Dgroups=integration -Dtest=CregisPaymentIntegrationTest
+
+# Run a specific Payment Engine test method
+mvn test -Dgroups=integration -Dtest=CregisPaymentIntegrationTest#testCreateOrder
 ```
 
 ## 3. Manual Verification (Signatures)
-If you want to debug signature issues, run the `SignerVerifier` main class:
+If you want to debug signature issues, you can add logging to `CregisSigner.java`:
 
-```bash
-mvn compile exec:java -Dexec.mainClass="com.cregis.sdk.demo.SignerTest"
+```java
+// Inside CregisSigner.sign() method
+String toSign = sb.toString();
+System.out.println("DEBUG: Signer input: [" + toSign + "]");
+String sign = md5(toSign).toLowerCase();
+System.out.println("DEBUG: Signer output: [" + sign + "]");
+return sign;
 ```
-*(Note: You may need to create a Main class entry point if not already present)*
+
+Then run your tests to see the exact string being signed and its MD5 hash.
