@@ -1,0 +1,28 @@
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Java
+**/target/
+**/*.class
+
+# JavaScript / TypeScript
+**/node_modules/
+**/dist/
+
+# Python
+**/__pycache__/
+**/.pytest_cache/
+**/.venv/
+**/*.pyc
+
+# Go
+**/bin/
+
+# PHP
+**/vendor/
+
+# SDK generation working files
+.codegen-work/
+.tmp/
