@@ -147,7 +147,13 @@ System.out.println("Deposit Confirmed: " + deposit.getTxid());
 
 ## Testing
 
-This project includes Integration Tests that run against the live API.
+The default test command runs local unit tests only:
+
+```bash
+mvn test
+```
+
+Sandbox integration tests are opt-in because they can create orders, addresses, payouts, or withdrawals.
 
 1. Configure your environment variables (or `.env` file):
    ```bash
@@ -156,10 +162,12 @@ This project includes Integration Tests that run against the live API.
    PAYMENT_PID=...
    PAYMENT_API_KEY=...
    ```
-2. Run tests:
+2. Run Sandbox integration tests explicitly:
    ```bash
-   mvn test
+   mvn verify -Pintegration-tests
    ```
+
+See [TESTING.md](TESTING.md) for individual integration-test commands and safety notes.
 
 ## Documentation
 

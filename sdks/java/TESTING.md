@@ -1,19 +1,23 @@
 # Testing Guide
 
-## 1. Unit Tests
-These tests run in isolation and do not require API credentials. They verify the internal logic of the SDK (e.g., Signature generation, JSON parsing).
+## Unit tests
 
-**Run Command:**
+Unit tests run locally without API credentials. They verify SDK behavior such as signature generation and HTTP request handling.
+
 ```bash
 mvn test
 ```
 
-## 2. Integration Tests
-These tests connect to the **REAL** Cregis API. You should use a Sandbox/Test project for these.
+The default Maven build explicitly excludes classes named `*IntegrationTest`. CI also uses this safe default.
+
+## Sandbox integration tests
+
+Integration tests connect to Cregis APIs and can create orders, addresses, payouts, or withdrawals. Use Sandbox credentials and run them only when these external changes are intended.
 
 ### Prerequisites
-1.  Copy `.env.example` to `.env` and fill in your credentials.
-2.  Set environment variables for the tests you want to run.
+
+1. Copy `.env.example` to `.env` and fill in Sandbox credentials.
+2. Set the environment variables required by the tests you intend to run.
 
 **For WaaS Tests:**
 | Variable | Required | Description |
@@ -31,30 +35,32 @@ These tests connect to the **REAL** Cregis API. You should use a Sandbox/Test pr
 | `PAYMENT_API_KEY` | Yes | Your Payment Engine API Key |
 | `PAYMENT_ENDPOINT` | No | Defaults to `https://payment.cregis.com` |
 
-### Run All Integration Tests
+### Run all integration tests
+
 ```bash
-mvn test -Dgroups=integration
+mvn verify -Pintegration-tests
 ```
 
-### Run WaaS Integration Tests
-```bash
-# Run all WaaS tests
-mvn test -Dgroups=integration -Dtest=CregisWaasIntegrationTest
+This command first runs unit tests, then runs `*IntegrationTest` classes with Maven Failsafe.
 
-# Run a specific WaaS test method
-mvn test -Dgroups=integration -Dtest=CregisWaasIntegrationTest#testProjectCoinQuery
+### Run WaaS integration tests
+
+```bash
+mvn verify -Pintegration-tests -Dit.test=CregisWaasIntegrationTest
+
+mvn verify -Pintegration-tests -Dit.test=CregisWaasIntegrationTest#testProjectCoinQuery
 ```
 
-### Run Payment Engine Integration Tests
-```bash
-# Run all Payment Engine tests
-mvn test -Dgroups=integration -Dtest=CregisPaymentIntegrationTest
+### Run Payment Engine integration tests
 
-# Run a specific Payment Engine test method
-mvn test -Dgroups=integration -Dtest=CregisPaymentIntegrationTest#testCreateOrder
+```bash
+mvn verify -Pintegration-tests -Dit.test=CregisPaymentIntegrationTest
+
+mvn verify -Pintegration-tests -Dit.test=CregisPaymentIntegrationTest#testCreateOrder
 ```
 
-## 3. Manual Verification (Signatures)
+## Manual signature verification
+
 If you want to debug signature issues, you can add logging to `CregisSigner.java`:
 
 ```java

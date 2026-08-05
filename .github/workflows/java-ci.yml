@@ -1,0 +1,40 @@
+name: Java SDK CI
+
+on:
+  pull_request:
+    paths:
+      - "sdks/java/**"
+      - ".github/workflows/java-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "sdks/java/**"
+      - ".github/workflows/java-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and unit test on Java 11
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: sdks/java
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+          cache: maven
+
+      - name: Build and run unit tests
+        run: mvn --batch-mode --no-transfer-progress clean verify
