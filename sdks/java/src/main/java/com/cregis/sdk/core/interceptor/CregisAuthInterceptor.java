@@ -3,6 +3,7 @@ package com.cregis.sdk.core.interceptor;
 import com.cregis.sdk.core.exception.CregisClientException;
 import com.cregis.sdk.core.signer.CregisSigner;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import okhttp3.*;
 import okio.Buffer;
 import org.jetbrains.annotations.NotNull;
@@ -18,11 +19,14 @@ import java.util.UUID;
  */
 public class CregisAuthInterceptor implements Interceptor {
 
-    private final String pid;
+    private final long pid;
     private final String apiKey;
     private final ObjectMapper objectMapper;
 
-    public CregisAuthInterceptor(String pid, String apiKey, ObjectMapper objectMapper) {
+    public CregisAuthInterceptor(long pid, String apiKey, ObjectMapper objectMapper) {
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("API Key is required");
+        }
         this.pid = pid;
         this.apiKey = apiKey;
         this.objectMapper = objectMapper;
@@ -48,7 +52,7 @@ public class CregisAuthInterceptor implements Interceptor {
         }
 
         // 2. Add System Params
-        params.put("pid", pid); // Use String to stay consistent with signer's value.toString()
+        params.put("pid", pid);
         params.put("nonce", generateNonce());
         params.put("timestamp", System.currentTimeMillis());
 
@@ -74,7 +78,8 @@ public class CregisAuthInterceptor implements Interceptor {
             return new HashMap<>();
         }
         // Assuming Map<String, Object> is safe for topmost JSON object
-        return objectMapper.readValue(buffer.inputStream(), Map.class);
+        return objectMapper.readValue(buffer.inputStream(), new TypeReference<Map<String, Object>>() {
+        });
     }
 
     private String generateNonce() {

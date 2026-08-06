@@ -10,10 +10,10 @@ public class TradeRecordQueryResponse {
     @JsonProperty("total")
     private Long total;
 
-    @JsonProperty("pageNum")
+    @JsonProperty("page_num")
     private Integer pageNum;
 
-    @JsonProperty("pageSize")
+    @JsonProperty("page_size")
     private Integer pageSize;
 
     @JsonProperty("rows")

@@ -61,74 +61,15 @@ public class QueryOrderResponse {
     @JsonProperty("payment_info")
     private List<PaymentInfo> paymentInfo;
 
-    // Skipping complex nested objects like order_details or refund_data for brevity
-    // unless requested.
-    // They can be mapped as generic Map or specific classes if detailed access is
-    // needed.
+    @JsonProperty("refund_data")
+    private RefundData refundData;
 
-    @Data
-    public static class PaymentDetail {
-        @JsonProperty("payment_address")
-        private String paymentAddress;
+    @JsonProperty("order_details")
+    private QueryOrderDetails orderDetails;
 
-        @JsonProperty("from_address")
-        private String fromAddress;
+    @JsonProperty("sub_merchant")
+    private QuerySubMerchant subMerchant;
 
-        @JsonProperty("receive_amount")
-        private String receiveAmount;
-
-        @JsonProperty("receive_currency")
-        private String receiveCurrency;
-
-        @JsonProperty("pay_amount")
-        private String payAmount;
-
-        @JsonProperty("pay_currency")
-        private String payCurrency;
-
-        @JsonProperty("exchange_rate")
-        private String exchangeRate;
-
-        @JsonProperty("tx_id")
-        private String txId;
-
-        @JsonProperty("blockchain")
-        private String blockchain;
-
-        @JsonProperty("token_name")
-        private String tokenName;
-    }
-
-    @Data
-    public static class PaymentInfo {
-        @JsonProperty("payment_address")
-        private String paymentAddress;
-
-        @JsonProperty("token_symbol")
-        private String tokenSymbol;
-
-        @JsonProperty("blockchain")
-        private String blockchain;
-
-        @JsonProperty("token_name")
-        private String tokenName;
-
-        @JsonProperty("logo_url")
-        private String logoUrl;
-
-        @JsonProperty("token_decimals")
-        private Integer tokenDecimals;
-
-        @JsonProperty("receive_amount")
-        private String receiveAmount;
-
-        @JsonProperty("receive_currency")
-        private String receiveCurrency;
-
-        @JsonProperty("exchange_rate")
-        private String exchangeRate;
-
-        @JsonProperty("asset_logo")
-        private String assetLogo;
-    }
+    @JsonProperty("settlement_details")
+    private SettlementDetails settlementDetails;
 }

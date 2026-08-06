@@ -12,7 +12,7 @@ The default Maven build explicitly excludes classes named `*IntegrationTest`. CI
 
 ## Sandbox integration tests
 
-Integration tests connect to Cregis APIs and can create orders, addresses, payouts, or withdrawals. Use Sandbox credentials and run them only when these external changes are intended.
+Integration tests connect to Cregis APIs. Use only Sandbox credentials and the project-specific Sandbox Base URL. State-changing tests require an additional explicit opt-in flag.
 
 ### Prerequisites
 
@@ -24,16 +24,24 @@ Integration tests connect to Cregis APIs and can create orders, addresses, payou
 | --- | --- | --- |
 | `WAAS_PID` | Yes | Your WaaS Project ID |
 | `WAAS_API_KEY` | Yes | Your WaaS API Key |
-| `WAAS_ENDPOINT` | No | Defaults to `https://waas.cregis.com` |
+| `WAAS_ENDPOINT` | Yes | Project-specific WaaS Sandbox Base URL |
 | `WAAS_WALLET_ID` | No | Required for Payout test |
-| `WITHDRAW_ADDRESS` | No | Required for Withdrawal test |
+| `WAAS_PAYOUT_TO_ADDRESS` | No | Required destination for Payout test |
+| `WITHDRAW_ADDRESS` | No | Required source sub-address for Withdrawal test |
+| `WITHDRAW_TO_ADDRESS` | No | Required destination for Withdrawal test |
 
 **For Payment Engine Tests:**
 | Variable | Required | Description |
 | --- | --- | --- |
 | `PAYMENT_PID` | Yes | Your Payment Engine Project ID |
 | `PAYMENT_API_KEY` | Yes | Your Payment Engine API Key |
-| `PAYMENT_ENDPOINT` | No | Defaults to `https://payment.cregis.com` |
+| `PAYMENT_ENDPOINT` | Yes | Project-specific Payment Sandbox Base URL |
+
+For tests that create orders, addresses, payouts, or withdrawals:
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `CREGIS_ALLOW_MUTATING_TESTS` | Yes | Must be exactly `true` to enable state-changing tests |
 
 ### Run all integration tests
 
@@ -41,7 +49,7 @@ Integration tests connect to Cregis APIs and can create orders, addresses, payou
 mvn verify -Pintegration-tests
 ```
 
-This command first runs unit tests, then runs `*IntegrationTest` classes with Maven Failsafe.
+This command first runs unit tests, then runs `*IntegrationTest` classes with Maven Failsafe. Without `CREGIS_ALLOW_MUTATING_TESTS=true`, only read-only WaaS integration tests run.
 
 ### Run WaaS integration tests
 
@@ -59,17 +67,4 @@ mvn verify -Pintegration-tests -Dit.test=CregisPaymentIntegrationTest
 mvn verify -Pintegration-tests -Dit.test=CregisPaymentIntegrationTest#testCreateOrder
 ```
 
-## Manual signature verification
-
-If you want to debug signature issues, you can add logging to `CregisSigner.java`:
-
-```java
-// Inside CregisSigner.sign() method
-String toSign = sb.toString();
-System.out.println("DEBUG: Signer input: [" + toSign + "]");
-String sign = md5(toSign).toLowerCase();
-System.out.println("DEBUG: Signer output: [" + sign + "]");
-return sign;
-```
-
-Then run your tests to see the exact string being signed and its MD5 hash.
+Signature behavior is covered by deterministic local test vectors. Do not log API keys, Access Secrets, canonical signing strings, full request bodies, or callback payloads in shared environments.

@@ -15,4 +15,4 @@ The OpenAPI specifications are not copied into this repository. Generation jobs 
 
 ## Current status
 
-The existing Java SDK is being migrated first. Automated generation will be introduced after the migrated SDK has a stable build and test baseline.
+The Java SDK is being aligned with the canonical Payment Engine, WaaS, and Team API OpenAPI contracts first. Automated generation will be introduced after this Java contract and test baseline is stable.

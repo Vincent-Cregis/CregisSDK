@@ -46,5 +46,5 @@ public class QueryWithdrawalResponse {
     private String blockHeight;
 
     @JsonProperty("block_time")
-    private Long blockTime;
+    private String blockTime;
 }

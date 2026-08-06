@@ -32,11 +32,15 @@ public class CregisPaymentIntegrationTest {
 
         String pid = dotenv.get("PAYMENT_PID", System.getenv("PAYMENT_PID"));
         String apiKey = dotenv.get("PAYMENT_API_KEY", System.getenv("PAYMENT_API_KEY"));
-        String endpoint = dotenv.get("PAYMENT_ENDPOINT", "https://payment.cregis.com");
+        String endpoint = dotenv.get("PAYMENT_ENDPOINT", System.getenv("PAYMENT_ENDPOINT"));
+        boolean mutatingTestsEnabled = Boolean.parseBoolean(
+                dotenv.get("CREGIS_ALLOW_MUTATING_TESTS", System.getenv("CREGIS_ALLOW_MUTATING_TESTS")));
 
         // If credentials are missing, skip the tests dynamically
-        org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null,
-                "Skipping: Payment Credentials not found");
+        org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null && endpoint != null,
+                "Skipping: Payment Sandbox credentials or project Base URL not found");
+        org.junit.jupiter.api.Assumptions.assumeTrue(mutatingTestsEnabled,
+                "Skipping state-changing Payment tests: CREGIS_ALLOW_MUTATING_TESTS is not true");
 
         client = CregisPaymentClient.builder()
                 .endpoint(endpoint)

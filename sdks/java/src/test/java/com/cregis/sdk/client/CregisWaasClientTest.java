@@ -1,69 +1,57 @@
 package com.cregis.sdk.client;
 
-import com.cregis.sdk.domain.common.ApiResponse;
-import com.cregis.sdk.domain.waas.GenerateAddressRequest;
-import com.cregis.sdk.domain.waas.GenerateAddressResponse;
-import com.cregis.sdk.domain.waas.PayoutRequest;
-import com.cregis.sdk.domain.waas.PayoutResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
-import okio.Buffer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
-import java.io.IOException;
-
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CregisWaasClientTest {
 
-    private CregisWaasClient waasClient;
-    private Call mockCall;
-    private OkHttpClient mockOkHttpClient;
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    @BeforeEach
-    void setUp() {
-        mockOkHttpClient = Mockito.mock(OkHttpClient.class);
-        mockCall = Mockito.mock(Call.class);
-        when(mockOkHttpClient.newCall(any())).thenReturn(mockCall);
-
-        // We can't easily inject the mockHttpClient into the builder without
-        // protected/package-private access or a constructor.
-        // For this test, we might need to rely on integration tests or modify the
-        // client slightly to be testable.
-        // Ideally, CregisBaseClient would allow passing a pre-configured OkHttpClient.
-        // Given the current structure, let's assume we can sub-class or use reflection,
-        // OR we can't test it easily without refactoring CregisBaseClient.
-
-        // Let's refactor CregisBaseClient slightly to accept a client for testing?
-        // Or assume this is a "placeholder" for now.
-    }
-
-    // Since we cannot easily inject the mock client without changing code,
-    // I will write this test but note that it requires the client to be injectable.
-    // For now, I will create a simple placeholder test that verifies the Builder
-    // validation.
-
     @Test
-    void testBuilderValidation() {
-        try {
-            CregisWaasClient.builder().build();
-        } catch (IllegalArgumentException e) {
-            assertEquals("PID and API Key are required", e.getMessage());
-        }
+    void builderRequiresCredentials() {
+        IllegalArgumentException error = assertThrows(
+                IllegalArgumentException.class,
+                () -> CregisWaasClient.builder()
+                        .endpoint("https://example.com")
+                        .build());
+        assertEquals("PID and API Key are required", error.getMessage());
     }
 
     @Test
-    void testBuilderSuccess() {
-        CregisWaasClient client = CregisWaasClient.builder()
-                .credentials("123", "key")
-                .build();
-        // Assert no exception
+    void builderRequiresBaseUrl() {
+        IllegalArgumentException error = assertThrows(
+                IllegalArgumentException.class,
+                () -> CregisWaasClient.builder()
+                        .credentials(123L, "key")
+                        .build());
+        assertEquals("Base URL is required", error.getMessage());
+    }
+
+    @Test
+    void builderRejectsNonNumericPidString() {
+        IllegalArgumentException error = assertThrows(
+                IllegalArgumentException.class,
+                () -> CregisWaasClient.builder().credentials("not-a-number", "key"));
+        assertEquals("PID must be an int64 value", error.getMessage());
+    }
+
+    @Test
+    void builderAcceptsOpenApiInt64Pid() {
+        assertDoesNotThrow(() -> CregisWaasClient.builder()
+                .endpoint("https://example.com")
+                .credentials(1382528827416576L, "key")
+                .build());
+    }
+
+    @Test
+    void builderRejectsNonTlsRemoteBaseUrl() {
+        IllegalArgumentException error = assertThrows(
+                IllegalArgumentException.class,
+                () -> CregisWaasClient.builder()
+                        .endpoint("http://example.com")
+                        .credentials(123L, "key")
+                        .build());
+        assertEquals("Base URL must use HTTPS", error.getMessage());
     }
 }

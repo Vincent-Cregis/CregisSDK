@@ -11,8 +11,7 @@ public enum OrderStatus {
     EXPIRED("expired"),
     PAID_OVER("paid_over"),
     PAID_PARTIAL("paid_partial"),
-    PAID_REMAIN("paid_remain"),
-    REFUNDED("refunded");
+    CANCELED("canceled");
 
     private final String value;
 

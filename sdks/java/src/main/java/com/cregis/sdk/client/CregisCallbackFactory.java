@@ -1,24 +1,18 @@
 package com.cregis.sdk.client;
 
-import com.cregis.sdk.core.exception.CregisClientException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
- * Factory and dispatcher for Cregis Callbacks.
- * Helps determine the type of callback and routes it to the correct handler
- * method.
+ * Creates callback handlers for the two project-authenticated API families.
+ * Callback URLs identify the payload type, so callers select the matching
+ * handler method for the endpoint that received the request.
  */
 public class CregisCallbackFactory {
 
     private final CregisPaymentCallbackHandler paymentHandler;
     private final CregisWaasCallbackHandler waasHandler;
-    private final ObjectMapper objectMapper;
 
     public CregisCallbackFactory(String paymentApiKey, String waasApiKey) {
         this.paymentHandler = new CregisPaymentCallbackHandler(paymentApiKey);
         this.waasHandler = new CregisWaasCallbackHandler(waasApiKey);
-        this.objectMapper = new ObjectMapper();
     }
 
     /**
@@ -28,18 +22,10 @@ public class CregisCallbackFactory {
         PAYMENT_ORDER,
         WAAS_DEPOSIT,
         WAAS_PAYOUT,
+        WAAS_PAYOUT_EXTERNAL_VERIFICATION,
         WAAS_WITHDRAWAL,
         UNKNOWN
     }
-
-    // Note: Since Cregis callbacks don't always have a distinct "type" field in the
-    // root,
-    // we might need to rely on the user knowing which endpoint was hit,
-    // OR inspect unique fields if possible.
-    // However, usually, different callbacks go to different URLs configured by the
-    // user.
-    // precise dispatching might differ based on implementation.
-    // This factory provides access to underlying handlers.
 
     public CregisPaymentCallbackHandler getPaymentHandler() {
         return paymentHandler;

@@ -1,0 +1,142 @@
+package com.cregis.sdk.client;
+
+import com.cregis.sdk.core.signer.CregisSigner;
+import com.cregis.sdk.domain.enums.PaymentEventType;
+import com.cregis.sdk.domain.payment.PaymentCallbackNotification;
+import com.cregis.sdk.domain.waas.AddressDepositCallbackNotification;
+import com.cregis.sdk.domain.waas.PayoutCallbackNotification;
+import com.cregis.sdk.domain.waas.PayoutExternalVerificationCallbackNotification;
+import com.cregis.sdk.domain.waas.WithdrawalCallbackNotification;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class CallbackContractTest {
+
+    private static final String API_KEY = "callback-api-key";
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    void parsesPaymentRefundFieldsUsingOpenApiTypes() throws Exception {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("cregis_id", "po-1");
+        data.put("order_id", "merchant-1");
+        data.put("type", 1);
+        data.put("refund_id", "rf-1");
+        data.put("refund_status", 1);
+        data.put("refund_created_time", 1719994183015L);
+        data.put("refund_transact_time", 1719994383015L);
+        data.put("future_field", "ignored-for-forward-compatibility");
+
+        Map<String, Object> envelope = paymentEnvelope("refunded", data);
+        PaymentCallbackNotification notification = new CregisPaymentCallbackHandler(API_KEY)
+                .verifyAndParse(sign(envelope));
+
+        assertEquals("rf-1", notification.getData().getRefundId());
+        assertEquals(PaymentEventType.REFUNDED, notification.getEventType());
+        assertEquals(1, notification.getData().getRefundStatus());
+        assertEquals(1719994383015L, notification.getData().getRefundTransactTime());
+    }
+
+    @Test
+    void parsesPaymentPaidRemainTimestampUsingOpenApiWireName() throws Exception {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("cregis_id", "po-1");
+        data.put("additional_payment_transact_time", 1719994483015L);
+
+        Map<String, Object> envelope = paymentEnvelope("paid_remain", data);
+        PaymentCallbackNotification notification = new CregisPaymentCallbackHandler(API_KEY)
+                .verifyAndParse(sign(envelope));
+
+        assertEquals(1719994483015L, notification.getData().getAdditionalPaymentTransactTime());
+        assertEquals("success", CregisPaymentCallbackHandler.CALLBACK_SUCCESS);
+    }
+
+    @Test
+    void verifiesAndParsesWaasPayoutExternalVerificationCallback() throws Exception {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("pid", 1382528827416576L);
+        payload.put("cid", 1382813146816512L);
+        payload.put("third_party_id", "third-party-1");
+        payload.put("chain_id", "195");
+        payload.put("token_id", "195");
+        payload.put("from_address", "from");
+        payload.put("to_address", "to");
+        payload.put("amount", "10.5");
+        payload.put("nonce", "hwlkk6");
+        payload.put("timestamp", 1688004243314L);
+
+        PayoutExternalVerificationCallbackNotification notification = new CregisWaasCallbackHandler(API_KEY)
+                .handlePayoutExternalVerificationCallback(sign(payload));
+
+        assertEquals("third-party-1", notification.getThirdPartyId());
+        assertEquals("ok", CregisWaasCallbackHandler.EXTERNAL_VERIFICATION_APPROVE);
+        assertEquals("deny", CregisWaasCallbackHandler.EXTERNAL_VERIFICATION_DENY);
+    }
+
+    @Test
+    void verifiesAllOtherWaasWebhookShapes() throws Exception {
+        CregisWaasCallbackHandler handler = new CregisWaasCallbackHandler(API_KEY);
+
+        Map<String, Object> depositPayload = waasCallbackBase();
+        depositPayload.put("address", "deposit-address");
+        depositPayload.put("status", "1");
+        depositPayload.put("block_time", "1734328473070");
+        AddressDepositCallbackNotification deposit = handler.handleDepositCallback(sign(depositPayload));
+        assertEquals("deposit-address", deposit.getAddress());
+
+        Map<String, Object> payoutPayload = waasCallbackBase();
+        payoutPayload.put("address", "payout-address");
+        payoutPayload.put("third_party_id", "payout-1");
+        payoutPayload.put("status", 6);
+        payoutPayload.put("block_time", 1734328473070L);
+        PayoutCallbackNotification payout = handler.handlePayoutCallback(sign(payoutPayload));
+        assertEquals(6, payout.getStatus());
+
+        Map<String, Object> withdrawalPayload = waasCallbackBase();
+        withdrawalPayload.put("from_address", "from");
+        withdrawalPayload.put("to_address", "to");
+        withdrawalPayload.put("third_party_id", "withdrawal-1");
+        withdrawalPayload.put("status", 6);
+        withdrawalPayload.put("block_time", 1734328473070L);
+        WithdrawalCallbackNotification withdrawal = handler.handleWithdrawalCallback(sign(withdrawalPayload));
+        assertEquals("to", withdrawal.getToAddress());
+        assertEquals("success", CregisWaasCallbackHandler.CALLBACK_SUCCESS);
+    }
+
+    private Map<String, Object> paymentEnvelope(String eventType, Map<String, Object> data) {
+        Map<String, Object> envelope = new LinkedHashMap<>();
+        envelope.put("event_name", "order");
+        envelope.put("event_type", eventType);
+        envelope.put("pid", 1382528827416576L);
+        envelope.put("nonce", "m8jisx");
+        envelope.put("timestamp", 1687848653294L);
+        envelope.put("data", data);
+        return envelope;
+    }
+
+    private Map<String, Object> waasCallbackBase() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("pid", 1382528827416576L);
+        payload.put("cid", 1382813146816512L);
+        payload.put("chain_id", "195");
+        payload.put("token_id", "195");
+        payload.put("currency", "195@195");
+        payload.put("amount", "10.5");
+        payload.put("txid", "tx-1");
+        payload.put("block_height", "45123456");
+        payload.put("nonce", "hwlkk6");
+        payload.put("timestamp", 1688004243314L);
+        return payload;
+    }
+
+    private String sign(Map<String, Object> payload) throws Exception {
+        Map<String, Object> signed = new LinkedHashMap<>(payload);
+        signed.put("sign", CregisSigner.sign(payload, API_KEY));
+        return objectMapper.writeValueAsString(signed);
+    }
+}

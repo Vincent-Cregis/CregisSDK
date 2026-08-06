@@ -1,10 +1,11 @@
 package com.cregis.sdk.domain.payment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.NonNull;
 import java.util.List;
 
 @Data
@@ -14,15 +15,19 @@ public class CreateOrderRequest {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
 
+    @NonNull
     @JsonProperty("order_id")
     private String orderId;
 
+    @NonNull
     @JsonProperty("order_amount")
     private String orderAmount;
 
+    @NonNull
     @JsonProperty("order_currency")
     private String orderCurrency;
 
+    @NonNull
     @JsonProperty("payer_id")
     private String payerId;
 
@@ -41,9 +46,11 @@ public class CreateOrderRequest {
     @JsonProperty("callback_url")
     private String callbackUrl;
 
+    @NonNull
     @JsonProperty("success_url")
     private String successUrl;
 
+    @NonNull
     @JsonProperty("cancel_url")
     private String cancelUrl;
 
@@ -65,19 +72,7 @@ public class CreateOrderRequest {
     @JsonProperty("accept_over_payment")
     private String acceptOverPayment;
 
-    // JSON Strings for complex objects
-    // Note: These fields are still defined as String to maintain compatibility or custom serialization logic if needed,
-    // but helper methods or external logic should handle object-to-JSON conversion.
-    // However, to improve usability, consider accepting objects and serializing them in the client.
-    
-    // For now, we will keep them as String but add helper methods in a future refactor or leave as is if the user prefers raw JSON string control.
-    // Wait, the better approach for SDK users is to pass objects.
-    // But since the API expects these as JSON strings *within* the JSON payload (i.e. escaped JSON), 
-    // we need to be careful. The documentation says: "JSONString". 
-    // This usually means the field value is a string that contains JSON, e.g. "{\"items\":...}".
-    // Jackson serialization of an object would produce a nested JSON object, not a string containing JSON.
-    // So we need to keep these as String, but maybe provide a setter that takes an object and serializes it?
-    
+    // OpenAPI defines these values as strings containing JSON, not nested objects.
     @JsonProperty("tokens")
     private String tokens; // JSON array string e.g. "[\"USDT-TRC20\"]"
 
@@ -91,26 +86,31 @@ public class CreateOrderRequest {
      * Set tokens from a list of strings.
      * @param tokensList List of token strings, e.g. ["USDT-TRC20", "USDT-ERC20"]
      */
-    @SneakyThrows
     public void setTokensList(List<String> tokensList) {
-        this.tokens = MAPPER.writeValueAsString(tokensList);
+        this.tokens = serializeJsonString(tokensList);
     }
 
     /**
      * Set order details from an OrderDetails object.
      * @param details OrderDetails object
      */
-    @SneakyThrows
     public void setOrderDetailsObject(OrderDetails details) {
-        this.orderDetails = MAPPER.writeValueAsString(details);
+        this.orderDetails = serializeJsonString(details);
     }
 
     /**
      * Set sub-merchant details from a SubMerchant object.
      * @param subMerchantObj SubMerchant object
      */
-    @SneakyThrows
     public void setSubMerchantObject(SubMerchant subMerchantObj) {
-        this.subMerchant = MAPPER.writeValueAsString(subMerchantObj);
+        this.subMerchant = serializeJsonString(subMerchantObj);
+    }
+
+    private static String serializeJsonString(Object value) {
+        try {
+            return MAPPER.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Failed to serialize JSON string field", e);
+        }
     }
 }

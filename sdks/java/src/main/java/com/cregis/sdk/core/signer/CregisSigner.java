@@ -1,8 +1,13 @@
 package com.cregis.sdk.core.signer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,6 +15,9 @@ import java.util.TreeMap;
  * Utility for generating Cregis API signatures.
  */
 public class CregisSigner {
+
+    private static final ObjectMapper NESTED_VALUE_MAPPER = new ObjectMapper()
+            .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
     /**
      * Calculates the sign for the given parameters and API Key.
@@ -19,6 +27,12 @@ public class CregisSigner {
      * @return The calculated MD5 signature.
      */
     public static String sign(Map<String, Object> params, String apiKey) {
+        if (params == null) {
+            throw new IllegalArgumentException("Signature parameters are required");
+        }
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new IllegalArgumentException("API Key is required");
+        }
         // 1. Sort parameters by key (ASCII dictionary order)
         TreeMap<String, Object> sortedParams = new TreeMap<>(params);
 
@@ -42,7 +56,7 @@ public class CregisSigner {
                 continue;
             }
 
-            String stringValue = value.toString();
+            String stringValue = stringifyValue(value);
             if (stringValue.isEmpty()) {
                 continue;
             }
@@ -52,6 +66,18 @@ public class CregisSigner {
 
         // 3. MD5 Hash -> Lowercase
         return md5(sb.toString()).toLowerCase();
+    }
+
+    private static String stringifyValue(Object value) {
+        if (value instanceof Map || value instanceof Collection || value.getClass().isArray()) {
+            try {
+                String json = NESTED_VALUE_MAPPER.writeValueAsString(value);
+                return CregisTeamSigner.canonicalizeBody(json);
+            } catch (JsonProcessingException e) {
+                throw new IllegalArgumentException("Failed to serialize nested signature value", e);
+            }
+        }
+        return value.toString();
     }
 
     private static String md5(String input) {

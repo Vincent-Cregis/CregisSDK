@@ -3,6 +3,7 @@ package com.cregis.sdk.domain.payment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -10,10 +11,10 @@ import java.util.List;
 public class OrderDetails {
 
     @JsonProperty("shopping_cost")
-    private Double shoppingCost;
+    private BigDecimal shoppingCost;
 
     @JsonProperty("tax_cost")
-    private Double taxCost;
+    private BigDecimal taxCost;
 
     @JsonProperty("items")
     private List<Item> items;
@@ -28,7 +29,7 @@ public class OrderDetails {
         private String itemName;
 
         @JsonProperty("item_price")
-        private Double itemPrice;
+        private BigDecimal itemPrice;
 
         @JsonProperty("price_currency")
         private String priceCurrency;

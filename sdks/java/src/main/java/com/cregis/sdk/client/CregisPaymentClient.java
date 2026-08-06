@@ -14,7 +14,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class CregisPaymentClient extends CregisBaseClient {
 
     private CregisPaymentClient(Builder builder) {
-        super(builder.endpoint, builder.pid, builder.apiKey, builder.debug);
+        super(
+                builder.endpoint,
+                builder.debug,
+                objectMapper -> new com.cregis.sdk.core.interceptor.CregisAuthInterceptor(
+                        builder.pid,
+                        builder.apiKey,
+                        objectMapper));
     }
 
     /**
@@ -48,8 +54,8 @@ public class CregisPaymentClient extends CregisBaseClient {
     }
 
     public static class Builder {
-        private String endpoint = "https://payment.cregis.com";
-        private String pid;
+        private String endpoint;
+        private Long pid;
         private String apiKey;
         private boolean debug = false;
 
@@ -58,10 +64,21 @@ public class CregisPaymentClient extends CregisBaseClient {
             return this;
         }
 
-        public Builder credentials(String pid, String apiKey) {
+        public Builder credentials(long pid, String apiKey) {
             this.pid = pid;
             this.apiKey = apiKey;
             return this;
+        }
+
+        public Builder credentials(String pid, String apiKey) {
+            if (pid == null) {
+                throw new IllegalArgumentException("PID is required");
+            }
+            try {
+                return credentials(Long.parseLong(pid), apiKey);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("PID must be an int64 value", e);
+            }
         }
 
         public Builder debug(boolean debug) {
@@ -70,7 +87,7 @@ public class CregisPaymentClient extends CregisBaseClient {
         }
 
         public CregisPaymentClient build() {
-            if (pid == null || apiKey == null) {
+            if (pid == null || apiKey == null || apiKey.trim().isEmpty()) {
                 throw new IllegalArgumentException("PID and API Key are required");
             }
             return new CregisPaymentClient(this);

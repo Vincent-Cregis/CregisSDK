@@ -1,10 +1,10 @@
 # Cregis SDK for Java
 
-Welcome to the official Java SDK for [Cregis](https://cregis.com). This SDK provides a comprehensive interface to interact with the Cregis Payment Engine and WaaS (Wallet as a Service) APIs.
+Welcome to the official Java SDK for [Cregis](https://cregis.com). This SDK provides clients for the Cregis Payment Engine, WaaS (Wallet as a Service), and Team APIs.
 
 ## Features
 
-- **Split Client Architecture**: Dedicated clients for Payment (`CregisPaymentClient`) and WaaS (`CregisWaasClient`).
+- **Split Client Architecture**: Dedicated clients for Payment (`CregisPaymentClient`), WaaS (`CregisWaasClient`), and Team API (`CregisTeamClient`).
 - **Auto-Signing**: Automatically generates MD5 signatures using `pid`, `api_key`, `nonce`, and `timestamp`.
 - **WaaS Module**: 
   - Manage Deposit Addresses (Generate, Batch, Update, Validate)
@@ -16,9 +16,14 @@ Welcome to the official Java SDK for [Cregis](https://cregis.com). This SDK prov
   - Supports advanced order details (Items, Tax, Shipping)
   - Sub-merchant support
   - Webhook Notification Handling (Payment, Refund, Replenishment)
+- **Team API**:
+  - Query wallets, addresses, balances, history, and processing transactions
+  - RFC 8785 request-body canonicalization and HMAC-SHA256 header signing
 - **Robust Error Handling**: Typed exceptions separating Client vs Server errors.
 
 ## Installation
+
+The package is currently a pre-release snapshot. Until it is published to a Maven repository, run `mvn install` in `sdks/java` and then add:
 
 Add the following to your `pom.xml`:
 
@@ -41,7 +46,7 @@ import com.cregis.sdk.domain.waas.*;
 // Initialize Client
 CregisWaasClient client = CregisWaasClient.builder()
     .credentials("YOUR_PID", "YOUR_API_KEY")
-    .endpoint("https://waas.cregis.com") // Optional
+    .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
     .build();
 
 // Create Request
@@ -67,22 +72,24 @@ The SDK provides helper methods to easily handle complex objects like Order Deta
 ```java
 import com.cregis.sdk.client.CregisPaymentClient;
 import com.cregis.sdk.domain.payment.*;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 // Initialize Client
 CregisPaymentClient client = CregisPaymentClient.builder()
     .credentials("YOUR_PID", "YOUR_API_KEY")
+    .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
     .build();
 
 // Build Order Details
 OrderDetails details = OrderDetails.builder()
-    .shoppingCost(5.00)
-    .taxCost(2.50)
+    .shoppingCost(new BigDecimal("5.00"))
+    .taxCost(new BigDecimal("2.50"))
     .items(Arrays.asList(
         OrderDetails.Item.builder()
             .itemId("ITEM-001")
             .itemName("Premium Subscription")
-            .itemPrice(99.00)
+            .itemPrice(new BigDecimal("99.00"))
             .itemQuantity(1L)
             .priceCurrency("USD")
             .build()
@@ -94,7 +101,10 @@ CreateOrderRequest request = CreateOrderRequest.builder()
     .orderId("ORDER-" + System.currentTimeMillis())
     .orderAmount("106.50") // Total = Item + Tax + Shipping
     .orderCurrency("USD")
+    .payerId("customer-001")
     .payerEmail("user@example.com")
+    .successUrl("https://merchant.example/payment/success")
+    .cancelUrl("https://merchant.example/payment/cancel")
     .build();
 
 // Set Complex Objects (Automatically Serialized)
@@ -106,7 +116,26 @@ CreateOrderResponse response = client.createOrder(request);
 System.out.println("Checkout URL: " + response.getCheckoutUrl());
 ```
 
-### 3. Handling Callbacks (Webhooks)
+### 3. Team API Example (List Wallets)
+
+```java
+import com.cregis.sdk.client.CregisTeamClient;
+import com.cregis.sdk.domain.team.*;
+
+CregisTeamClient teamClient = CregisTeamClient.builder()
+    .endpoint("YOUR_TEAM_SPECIFIC_BASE_URL")
+    .credentials("YOUR_ACCESS_KEY", "YOUR_ACCESS_SECRET")
+    .build();
+
+TeamPagedResponse<TeamWallet> wallets = teamClient.listTeamWallets(
+    ListTeamWalletsRequest.builder()
+        .pageNum(1)
+        .pageSize(10)
+        .build()
+);
+```
+
+### 4. Handling Callbacks (Webhooks)
 
 The SDK includes handlers to verify signatures and parse callback JSON payloads.
 
@@ -133,16 +162,21 @@ try {
 }
 ```
 
-**WaaS Callbacks (Deposit, Payout, Withdrawal):**
+**WaaS Callbacks (Deposit, Payout, External Verification, Withdrawal):**
 
 ```java
 import com.cregis.sdk.client.CregisWaasCallbackHandler;
+import com.cregis.sdk.domain.waas.*;
 
 CregisWaasCallbackHandler handler = new CregisWaasCallbackHandler("YOUR_API_KEY");
 
 // Example for Deposit
 AddressDepositCallbackNotification deposit = handler.handleDepositCallback(rawJson);
 System.out.println("Deposit Confirmed: " + deposit.getTxid());
+
+PayoutExternalVerificationCallbackNotification verification =
+    handler.handlePayoutExternalVerificationCallback(rawJson);
+// Return exactly "ok" to approve or "deny" to reject.
 ```
 
 ## Testing
@@ -153,14 +187,16 @@ The default test command runs local unit tests only:
 mvn test
 ```
 
-Sandbox integration tests are opt-in because they can create orders, addresses, payouts, or withdrawals.
+Sandbox integration tests are opt-in. Read-only tests can run with Sandbox credentials. Tests that create orders, addresses, payouts, or withdrawals remain skipped unless `CREGIS_ALLOW_MUTATING_TESTS=true` is explicitly set.
 
 1. Configure your environment variables (or `.env` file):
    ```bash
    WAAS_PID=...
    WAAS_API_KEY=...
+   WAAS_ENDPOINT=... # project-specific Sandbox Base URL
    PAYMENT_PID=...
    PAYMENT_API_KEY=...
+   PAYMENT_ENDPOINT=... # project-specific Sandbox Base URL
    ```
 2. Run Sandbox integration tests explicitly:
    ```bash
@@ -173,6 +209,6 @@ See [TESTING.md](TESTING.md) for individual integration-test commands and safety
 
 For full API references, please visit the [Cregis Developer Documentation](https://developer-cn.cregis.com).
 
-## License
+## Release status
 
-MIT License
+This package is still `1.0.0-SNAPSHOT`. Distribution coordinates and the repository license must be finalized before the public beta release.

@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CregisWaasIntegrationTest {
 
     private static CregisWaasClient client;
+    private static boolean mutatingTestsEnabled;
 
     @BeforeAll
     static void setup() {
@@ -35,11 +36,13 @@ public class CregisWaasIntegrationTest {
 
         String pid = dotenv.get("WAAS_PID", System.getenv("WAAS_PID"));
         String apiKey = dotenv.get("WAAS_API_KEY", System.getenv("WAAS_API_KEY"));
-        String endpoint = dotenv.get("WAAS_ENDPOINT", "https://waas.cregis.com");
+        String endpoint = dotenv.get("WAAS_ENDPOINT", System.getenv("WAAS_ENDPOINT"));
+        mutatingTestsEnabled = Boolean.parseBoolean(
+                dotenv.get("CREGIS_ALLOW_MUTATING_TESTS", System.getenv("CREGIS_ALLOW_MUTATING_TESTS")));
 
         // If credentials are missing, skip the tests dynamically
-        org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null,
-                "Skipping: WAAS Credentials not found");
+        org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null && endpoint != null,
+                "Skipping: WAAS Sandbox credentials or project Base URL not found");
 
         client = CregisWaasClient.builder()
                 .endpoint(endpoint)
@@ -59,6 +62,7 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(2)
     void testGenerateAddress() {
+        requireMutatingTestsEnabled();
         String chainId = getChainId();
         System.out.println("Using Chain ID: " + chainId);
 
@@ -84,12 +88,13 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(3)
     void testBatchGenerateAddress() {
+        requireMutatingTestsEnabled();
         String chainId = getChainId();
         System.out.println("Batch Generating for Chain ID: " + chainId);
 
         BatchGenerateAddressRequest request = BatchGenerateAddressRequest.builder()
                 .chainId(chainId)
-                .number(2)
+                .number("2")
                 .alias("batch-test-" + System.currentTimeMillis())
                 .build();
 
@@ -111,6 +116,7 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(4)
     void testAddressUtils() {
+        requireMutatingTestsEnabled();
         String chainId = getChainId();
         // 1. Generate one to reuse
         String address = null;
@@ -161,6 +167,7 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(6)
     void testPayout() {
+        requireMutatingTestsEnabled();
         io.github.cdimascio.dotenv.Dotenv dotenv;
         try {
             dotenv = io.github.cdimascio.dotenv.Dotenv.load();
@@ -168,8 +175,9 @@ public class CregisWaasIntegrationTest {
             dotenv = io.github.cdimascio.dotenv.Dotenv.configure().ignoreIfMissing().load();
         }
         String walletIdStr = dotenv.get("WAAS_WALLET_ID", System.getenv("WAAS_WALLET_ID"));
-        if (walletIdStr == null) {
-            System.out.println("Skipping testPayout: WAAS_WALLET_ID not set");
+        String payoutToAddress = dotenv.get("WAAS_PAYOUT_TO_ADDRESS", System.getenv("WAAS_PAYOUT_TO_ADDRESS"));
+        if (walletIdStr == null || payoutToAddress == null) {
+            System.out.println("Skipping testPayout: WAAS_WALLET_ID or WAAS_PAYOUT_TO_ADDRESS not set");
             return;
         }
 
@@ -181,11 +189,11 @@ public class CregisWaasIntegrationTest {
                 .walletId(walletId)
                 .currency("USDT-TRC20#Shasta") // Corrected from chainId
                 .amount("0.001")
-                .toAddress("TRKkJZGq58MdY9Mqf58rse35ZB4zaTHR4j")
+                .toAddress(payoutToAddress)
                 .thirdPartyId("payout-" + System.currentTimeMillis())
                 .build();
 
-        PayoutResponse response = client.payout(request);
+        PayoutResponse response = client.payoutV2(request);
         System.out.println("Payout CID: " + response.getCid());
         assertNotNull(response.getCid());
 
@@ -199,6 +207,7 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(7)
     void testWithdrawal() {
+        requireMutatingTestsEnabled();
         io.github.cdimascio.dotenv.Dotenv dotenv;
         try {
             dotenv = io.github.cdimascio.dotenv.Dotenv.load();
@@ -206,8 +215,9 @@ public class CregisWaasIntegrationTest {
             dotenv = io.github.cdimascio.dotenv.Dotenv.configure().ignoreIfMissing().load();
         }
         String withdrawAddress = dotenv.get("WITHDRAW_ADDRESS", System.getenv("WITHDRAW_ADDRESS"));
-        if (withdrawAddress == null) {
-            System.out.println("Skipping testWithdrawal: WITHDRAW_ADDRESS not set");
+        String withdrawToAddress = dotenv.get("WITHDRAW_TO_ADDRESS", System.getenv("WITHDRAW_TO_ADDRESS"));
+        if (withdrawAddress == null || withdrawToAddress == null) {
+            System.out.println("Skipping testWithdrawal: WITHDRAW_ADDRESS or WITHDRAW_TO_ADDRESS not set");
             return;
         }
 
@@ -215,17 +225,7 @@ public class CregisWaasIntegrationTest {
                 .currency("USDT-TRC20#Shasta")
                 .amount("0.001")
                 .fromAddress(withdrawAddress)
-                // Sending to self or another address - reusing withdrawAddress for simplicity
-                // or a hardcoded one?
-                // API docs: to_address. Let's use the same address as destination for
-                // safety/loopback if allowed,
-                // or keep the hardcoded one if it's external.
-                // User only said "Withdrawal use .env's WITHDRAW_ADDRESS". checking typical
-                // withdrawal flow:
-                // withdrawal is FROM project sub-wallet TO external.
-                // So fromAddress should be the project wallet (WITHDRAW_ADDRESS).
-                // toAddress can be anything valid.
-                .toAddress("TRKkJZGq58MdY9Mqf58rse35ZB4zaTHR4j")
+                .toAddress(withdrawToAddress)
                 .thirdPartyId("withdraw-" + System.currentTimeMillis())
                 .build();
 
@@ -242,5 +242,11 @@ public class CregisWaasIntegrationTest {
         String chainId = System.getenv("WAAS_CHAIN_ID");
         // 198 for TRON#Shasta
         return chainId != null ? chainId : "198";
+    }
+
+    private void requireMutatingTestsEnabled() {
+        org.junit.jupiter.api.Assumptions.assumeTrue(
+                mutatingTestsEnabled,
+                "Skipping state-changing test: CREGIS_ALLOW_MUTATING_TESTS is not true");
     }
 }

@@ -4,6 +4,8 @@ import com.cregis.sdk.core.client.CregisBaseClient;
 import com.cregis.sdk.domain.common.ApiResponse;
 import com.cregis.sdk.domain.waas.AddressBalanceRequest;
 import com.cregis.sdk.domain.waas.AddressBalanceResponse;
+import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
+import com.cregis.sdk.domain.waas.AddressBalanceV2Response;
 import com.cregis.sdk.domain.waas.AddressUpdateRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectResponse;
@@ -15,6 +17,7 @@ import com.cregis.sdk.domain.waas.GenerateAddressRequest;
 import com.cregis.sdk.domain.waas.GenerateAddressResponse;
 import com.cregis.sdk.domain.waas.PayoutRequest;
 import com.cregis.sdk.domain.waas.PayoutResponse;
+import com.cregis.sdk.domain.waas.PayoutV1Request;
 import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
 import com.cregis.sdk.domain.waas.ProjectCoinQueryResponse;
 import com.cregis.sdk.domain.waas.QueryPayoutRequest;
@@ -35,7 +38,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class CregisWaasClient extends CregisBaseClient {
 
     private CregisWaasClient(Builder builder) {
-        super(builder.endpoint, builder.pid, builder.apiKey, builder.debug);
+        super(
+                builder.endpoint,
+                builder.debug,
+                objectMapper -> new com.cregis.sdk.core.interceptor.CregisAuthInterceptor(
+                        builder.pid,
+                        builder.apiKey,
+                        objectMapper));
     }
 
     /**
@@ -96,11 +105,26 @@ public class CregisWaasClient extends CregisBaseClient {
      * @param request The payout details.
      * @return The payout response containing cid.
      */
-    public PayoutResponse payout(PayoutRequest request) {
+    public PayoutResponse payoutV1(PayoutV1Request request) {
+        return execute(
+                post("/api/v1/payout", request).build(),
+                new TypeReference<ApiResponse<PayoutResponse>>() {
+                });
+    }
+
+    public PayoutResponse payoutV2(PayoutRequest request) {
         return execute(
                 post("/api/v2/payout", request).build(),
                 new TypeReference<ApiResponse<PayoutResponse>>() {
                 });
+    }
+
+    /**
+     * @deprecated Use {@link #payoutV2(PayoutRequest)} to make the API version explicit.
+     */
+    @Deprecated
+    public PayoutResponse payout(PayoutRequest request) {
+        return payoutV2(request);
     }
 
     /**
@@ -207,13 +231,20 @@ public class CregisWaasClient extends CregisBaseClient {
                 });
     }
 
+    public AddressBalanceV2Response queryAddressBalanceV2(AddressBalanceV2Request request) {
+        return execute(
+                post("/api/v2/sub_address_balance", request).build(),
+                new TypeReference<ApiResponse<AddressBalanceV2Response>>() {
+                });
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
-        private String endpoint = "https://waas.cregis.com";
-        private String pid;
+        private String endpoint;
+        private Long pid;
         private String apiKey;
         private boolean debug = false;
 
@@ -222,10 +253,21 @@ public class CregisWaasClient extends CregisBaseClient {
             return this;
         }
 
-        public Builder credentials(String pid, String apiKey) {
+        public Builder credentials(long pid, String apiKey) {
             this.pid = pid;
             this.apiKey = apiKey;
             return this;
+        }
+
+        public Builder credentials(String pid, String apiKey) {
+            if (pid == null) {
+                throw new IllegalArgumentException("PID is required");
+            }
+            try {
+                return credentials(Long.parseLong(pid), apiKey);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("PID must be an int64 value", e);
+            }
         }
 
         public Builder debug(boolean debug) {
@@ -234,7 +276,7 @@ public class CregisWaasClient extends CregisBaseClient {
         }
 
         public CregisWaasClient build() {
-            if (pid == null || apiKey == null) {
+            if (pid == null || apiKey == null || apiKey.trim().isEmpty()) {
                 throw new IllegalArgumentException("PID and API Key are required");
             }
             return new CregisWaasClient(this);

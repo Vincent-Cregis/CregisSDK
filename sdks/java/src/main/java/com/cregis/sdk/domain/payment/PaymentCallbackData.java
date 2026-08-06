@@ -71,10 +71,10 @@ public class PaymentCallbackData {
     private String refundRequested;
 
     @JsonProperty("type")
-    private String type;
+    private Integer type;
 
     @JsonProperty("refund_id")
-    private Long refundId;
+    private String refundId;
 
     @JsonProperty("refund_address")
     private String refundAddress;
@@ -86,7 +86,7 @@ public class PaymentCallbackData {
     private String refundAmount;
 
     @JsonProperty("refund_status")
-    private String refundStatus;
+    private Integer refundStatus;
 
     @JsonProperty("refund_tx_id")
     private String refundTxId;
@@ -98,10 +98,10 @@ public class PaymentCallbackData {
     private String actualRefundAmount;
 
     @JsonProperty("refund_created_time")
-    private String refundCreatedTime;
+    private Long refundCreatedTime;
 
     @JsonProperty("refund_transact_time")
-    private String refundTransactTime;
+    private Long refundTransactTime;
 
     // Additional Payment (Replenishment) Fields
     @JsonProperty("additional_pay_currency")
@@ -116,6 +116,6 @@ public class PaymentCallbackData {
     @JsonProperty("additional_payment_tx_id")
     private String additionalPaymentTxId;
 
-    @JsonProperty("additional_payment_time")
-    private Long additionalPaymentTime;
+    @JsonProperty("additional_payment_transact_time")
+    private Long additionalPaymentTransactTime;
 }

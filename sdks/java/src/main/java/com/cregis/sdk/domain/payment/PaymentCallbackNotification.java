@@ -1,6 +1,7 @@
 package com.cregis.sdk.domain.payment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cregis.sdk.domain.enums.PaymentEventType;
 import lombok.Data;
 
 @Data
@@ -10,7 +11,7 @@ public class PaymentCallbackNotification {
     private String eventName;
 
     @JsonProperty("event_type")
-    private String eventType;
+    private PaymentEventType eventType;
 
     @JsonProperty("pid")
     private Long pid;
