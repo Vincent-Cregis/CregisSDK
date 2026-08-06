@@ -12,7 +12,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Integration Test for Cregis Payment Engine.
+ * State-changing Sandbox tests for Cregis Payment Engine.
  */
 @Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -22,19 +22,10 @@ public class CregisPaymentIntegrationTest {
 
     @BeforeAll
     static void setup() {
-        // Load from .env
-        io.github.cdimascio.dotenv.Dotenv dotenv;
-        try {
-            dotenv = io.github.cdimascio.dotenv.Dotenv.load();
-        } catch (Exception e) {
-            dotenv = io.github.cdimascio.dotenv.Dotenv.configure().ignoreIfMissing().load();
-        }
-
-        String pid = dotenv.get("PAYMENT_PID", System.getenv("PAYMENT_PID"));
-        String apiKey = dotenv.get("PAYMENT_API_KEY", System.getenv("PAYMENT_API_KEY"));
-        String endpoint = dotenv.get("PAYMENT_ENDPOINT", System.getenv("PAYMENT_ENDPOINT"));
-        boolean mutatingTestsEnabled = Boolean.parseBoolean(
-                dotenv.get("CREGIS_ALLOW_MUTATING_TESTS", System.getenv("CREGIS_ALLOW_MUTATING_TESTS")));
+        String pid = IntegrationTestEnvironment.get("PAYMENT_PID");
+        String apiKey = IntegrationTestEnvironment.get("PAYMENT_API_KEY");
+        String endpoint = IntegrationTestEnvironment.get("PAYMENT_ENDPOINT");
+        boolean mutatingTestsEnabled = IntegrationTestEnvironment.isTrue("CREGIS_ALLOW_MUTATING_TESTS");
 
         // If credentials are missing, skip the tests dynamically
         org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null && endpoint != null,
