@@ -1,208 +1,365 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisWaasClient;
-import com.cregis.sdk.domain.waas.*;
+import com.cregis.sdk.domain.waas.AddressBalanceRequest;
+import com.cregis.sdk.domain.waas.AddressBalanceResponse;
+import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
+import com.cregis.sdk.domain.waas.AddressBalanceV2Response;
+import com.cregis.sdk.domain.waas.AddressUpdateRequest;
+import com.cregis.sdk.domain.waas.BalanceCollectRequest;
+import com.cregis.sdk.domain.waas.BalanceCollectResponse;
+import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
+import com.cregis.sdk.domain.waas.BatchGenerateAddressResponse;
+import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
+import com.cregis.sdk.domain.waas.CheckAddressLegalityResponse;
+import com.cregis.sdk.domain.waas.GenerateAddressRequest;
+import com.cregis.sdk.domain.waas.GenerateAddressResponse;
+import com.cregis.sdk.domain.waas.PayoutRequest;
+import com.cregis.sdk.domain.waas.PayoutResponse;
+import com.cregis.sdk.domain.waas.PayoutV1Request;
+import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
+import com.cregis.sdk.domain.waas.ProjectCoinQueryResponse;
+import com.cregis.sdk.domain.waas.QueryPayoutRequest;
+import com.cregis.sdk.domain.waas.QueryPayoutResponse;
+import com.cregis.sdk.domain.waas.QueryWithdrawalRequest;
+import com.cregis.sdk.domain.waas.QueryWithdrawalResponse;
+import com.cregis.sdk.domain.waas.TradeRecordQueryRequest;
+import com.cregis.sdk.domain.waas.TradeRecordQueryResponse;
+import com.cregis.sdk.domain.waas.ValidateAddressRequest;
+import com.cregis.sdk.domain.waas.ValidateAddressResponse;
+import com.cregis.sdk.domain.waas.WithdrawalRequest;
+import com.cregis.sdk.domain.waas.WithdrawalResponse;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * State-changing Sandbox tests for the Cregis WaaS API.
+ * State-changing Sandbox coverage for every WaaS OpenAPI operation.
  */
 @Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CregisWaasIntegrationTest {
 
     private static CregisWaasClient client;
-    private static boolean mutatingTestsEnabled;
+    private static String chainId;
+    private static String currency;
+    private static String generatedAddress;
+    private static String payoutDestination;
+    private static String withdrawalDestination;
+    private static String sourceAddress;
+    private static String testAmount;
+    private static Long payoutCid;
+    private static Long withdrawalCid;
+    private static String payoutWalletAddress;
 
     @BeforeAll
-    static void setup() {
-        String pid = IntegrationTestEnvironment.get("WAAS_PID");
-        String apiKey = IntegrationTestEnvironment.get("WAAS_API_KEY");
-        String endpoint = IntegrationTestEnvironment.get("WAAS_ENDPOINT");
-        mutatingTestsEnabled = IntegrationTestEnvironment.isTrue("CREGIS_ALLOW_MUTATING_TESTS");
+    static void setUp() {
+        assumeTrue(
+                IntegrationTestEnvironment.allPresent("WAAS_PID", "WAAS_API_KEY", "WAAS_ENDPOINT"),
+                "Skipping: WaaS Sandbox credentials or project Base URL not found");
+        assumeTrue(
+                IntegrationTestEnvironment.isTrue("CREGIS_ALLOW_MUTATING_TESTS"),
+                "Skipping state-changing WaaS tests: CREGIS_ALLOW_MUTATING_TESTS is not true");
 
-        // If credentials are missing, skip the tests dynamically
-        org.junit.jupiter.api.Assumptions.assumeTrue(pid != null && apiKey != null && endpoint != null,
-                "Skipping: WAAS Sandbox credentials or project Base URL not found");
-
+        sourceAddress = IntegrationTestEnvironment.get("WITHDRAW_ADDRESS");
+        testAmount = valueOrDefault(IntegrationTestEnvironment.get("WAAS_TEST_AMOUNT"), "0.001");
         client = CregisWaasClient.builder()
-                .endpoint(endpoint)
-                .credentials(pid, apiKey)
-                .debug(true)
+                .endpoint(IntegrationTestEnvironment.get("WAAS_ENDPOINT"))
+                .credentials(
+                        IntegrationTestEnvironment.get("WAAS_PID"),
+                        IntegrationTestEnvironment.get("WAAS_API_KEY"))
                 .build();
     }
 
     @Test
     @Order(1)
-    void testGenerateAddress() {
-        requireMutatingTestsEnabled();
-        String chainId = getChainId();
-        System.out.println("Using Chain ID: " + chainId);
+    void queriesProjectCoinsAndSelectsSandboxCurrency() {
+        ProjectCoinQueryResponse response = client.queryProjectCoins(ProjectCoinQueryRequest.builder().build());
 
-        // Warning: This creates a real address in your project!
-        GenerateAddressRequest request = GenerateAddressRequest.builder()
-                .chainId(chainId)
-                .alias("it-test-" + System.currentTimeMillis())
-                .build();
+        assertNotNull(response);
+        assertNotNull(response.getAddressCoins());
+        assertNotNull(response.getPayoutCoins());
+        assertFalse(response.getAddressCoins().isEmpty(), "Project needs at least one address coin");
+        assertFalse(response.getPayoutCoins().isEmpty(), "Project needs at least one payout coin");
 
-        try {
-            GenerateAddressResponse response = client.generateAddress(request);
-            System.out.println("Generated Address: " + response.getAddress());
-            assertNotNull(response.getAddress(), "Should return a valid address");
-        } catch (com.cregis.sdk.core.exception.CregisServerException e) {
-            if ("E0033".equals(e.getCode())) {
-                System.out.println("Skipping testGenerateAddress: Quota exceeded (E0033)");
-            } else {
-                throw e;
-            }
-        }
+        String preferredChainId = valueOrDefault(IntegrationTestEnvironment.get("WAAS_CHAIN_ID"), "198");
+        ProjectCoinQueryResponse.CoinInfo payoutCoin = selectPayoutCoin(
+                response.getPayoutCoins(), response.getAddressCoins(), preferredChainId);
+        assertNotNull(payoutCoin, "Project needs a chain that supports both address creation and payout");
+        assertNotNull(payoutCoin.getChainId());
+        assertNotNull(payoutCoin.getTokenId());
+
+        chainId = payoutCoin.getChainId();
+        currency = payoutCoin.getChainId() + "@" + payoutCoin.getTokenId();
     }
 
     @Test
     @Order(2)
-    void testBatchGenerateAddress() {
-        requireMutatingTestsEnabled();
-        String chainId = getChainId();
-        System.out.println("Batch Generating for Chain ID: " + chainId);
-
-        BatchGenerateAddressRequest request = BatchGenerateAddressRequest.builder()
+    void createsAddress() {
+        requireCoinSelection();
+        GenerateAddressResponse response = client.generateAddress(GenerateAddressRequest.builder()
                 .chainId(chainId)
-                .number("2")
-                .alias("batch-test-" + System.currentTimeMillis())
-                .build();
+                .alias(shortAlias("sdk"))
+                .build());
 
-        try {
-            java.util.List<BatchGenerateAddressResponse.GeneratedAddress> addresses = client
-                    .batchGenerateAddress(request);
-            System.out.println("Batch Generated: " + addresses);
-            assertNotNull(addresses, "Should return list");
-            assertEquals(2, addresses.size(), "Should return 2 addresses");
-        } catch (com.cregis.sdk.core.exception.CregisServerException e) {
-            if ("E0033".equals(e.getCode())) {
-                System.out.println("Skipping testBatchGenerateAddress: Quota exceeded (E0033)");
-            } else {
-                throw e;
-            }
-        }
+        assertNotNull(response);
+        assertNotNull(response.getAddress());
+        generatedAddress = response.getAddress();
+        payoutDestination = valueOrDefault(
+                IntegrationTestEnvironment.get("WAAS_PAYOUT_TO_ADDRESS"), generatedAddress);
+        withdrawalDestination = valueOrDefault(
+                IntegrationTestEnvironment.get("WITHDRAW_TO_ADDRESS"), generatedAddress);
     }
 
     @Test
     @Order(3)
-    void testAddressUtils() {
-        requireMutatingTestsEnabled();
-        String chainId = getChainId();
-        // 1. Generate one to reuse
-        String address = null;
-        try {
-            GenerateAddressResponse genRes = client.generateAddress(GenerateAddressRequest.builder()
-                    .chainId(chainId)
-                    .alias("util-test")
-                    .build());
-            address = genRes.getAddress();
-            assertNotNull(address);
-        } catch (com.cregis.sdk.core.exception.CregisServerException e) {
-            if ("E0033".equals(e.getCode())) {
-                System.out.println("Skipping testAddressUtils: Quota exceeded (E0033)");
-                return;
-            }
-            throw e;
-        }
+    void createsBatchAddresses() {
+        requireCoinSelection();
+        List<BatchGenerateAddressResponse.GeneratedAddress> addresses = client.batchGenerateAddress(
+                BatchGenerateAddressRequest.builder()
+                        .chainId(chainId)
+                        .number("2")
+                        .alias(shortAlias("batch"))
+                        .build());
 
-        // 2. Validate (Inner check)
-        ValidateAddressResponse valRes = client.validateAddress(ValidateAddressRequest.builder()
-                .address(address)
-                .chainId(chainId)
-                .build());
-        System.out.println("Validation Result: " + valRes);
-        // assertNotNull(valRes);
-
-        // 3. Check Legality (Format check)
-        CheckAddressLegalityResponse legRes = client.checkAddressLegality(CheckAddressLegalityRequest.builder()
-                .address(address)
-                .chainId(chainId)
-                .build());
-        System.out.println("Legality Result: " + legRes.getResult());
-        // assertTrue(legRes.getIsLegal());
+        assertNotNull(addresses);
+        assertFalse(addresses.isEmpty());
+        assertNotNull(addresses.get(0).getAddress());
     }
 
     @Test
     @Order(4)
-    void testPayout() {
-        requireMutatingTestsEnabled();
-        String walletIdStr = IntegrationTestEnvironment.get("WAAS_WALLET_ID");
-        String payoutToAddress = IntegrationTestEnvironment.get("WAAS_PAYOUT_TO_ADDRESS");
-        if (walletIdStr == null || payoutToAddress == null) {
-            System.out.println("Skipping testPayout: WAAS_WALLET_ID or WAAS_PAYOUT_TO_ADDRESS not set");
-            return;
-        }
-
-        Long walletId = Long.parseLong(walletIdStr);
-
-        System.out.println("Testing Payout for Wallet: " + walletId);
-
-        PayoutRequest request = PayoutRequest.builder()
-                .walletId(walletId)
-                .currency("USDT-TRC20#Shasta") // Corrected from chainId
-                .amount("0.001")
-                .toAddress(payoutToAddress)
-                .thirdPartyId("payout-" + System.currentTimeMillis())
-                .build();
-
-        PayoutResponse response = client.payoutV2(request);
-        System.out.println("Payout CID: " + response.getCid());
-        assertNotNull(response.getCid());
-
-        // Query Payout
-        QueryPayoutResponse queryRes = client
-                .queryPayout(QueryPayoutRequest.builder().cid(response.getCid()).build());
-        System.out.println("Payout Status: " + queryRes.getStatus());
-        assertNotNull(queryRes);
+    void updatesAddress() {
+        requireGeneratedAddress();
+        client.updateAddress(AddressUpdateRequest.builder()
+                .address(generatedAddress)
+                .alias(shortAlias("updated"))
+                .build());
     }
 
     @Test
     @Order(5)
-    void testWithdrawal() {
-        requireMutatingTestsEnabled();
-        String withdrawAddress = IntegrationTestEnvironment.get("WITHDRAW_ADDRESS");
-        String withdrawToAddress = IntegrationTestEnvironment.get("WITHDRAW_TO_ADDRESS");
-        if (withdrawAddress == null || withdrawToAddress == null) {
-            System.out.println("Skipping testWithdrawal: WITHDRAW_ADDRESS or WITHDRAW_TO_ADDRESS not set");
-            return;
+    void validatesInternalAddress() {
+        requireGeneratedAddress();
+        ValidateAddressResponse response = client.validateAddress(ValidateAddressRequest.builder()
+                .chainId(chainId)
+                .address(generatedAddress)
+                .build());
+
+        assertNotNull(response);
+        assertTrue(Boolean.TRUE.equals(response.getResult()), "Generated address should belong to the project");
+    }
+
+    @Test
+    @Order(6)
+    void validatesAddressLegality() {
+        requireGeneratedAddress();
+        CheckAddressLegalityResponse response = client.checkAddressLegality(CheckAddressLegalityRequest.builder()
+                .chainId(chainId)
+                .address(generatedAddress)
+                .build());
+
+        assertNotNull(response);
+        assertTrue(Boolean.TRUE.equals(response.getResult()), "Generated address should be legal for its chain");
+    }
+
+    @Test
+    @Order(7)
+    void queriesAddressBalanceV1() {
+        requireGeneratedAddress();
+        AddressBalanceResponse response = client.queryAddressBalance(AddressBalanceRequest.builder()
+                .currency(currency)
+                .address(valueOrDefault(sourceAddress, generatedAddress))
+                .pageNum(1)
+                .pageSize(10)
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getRows());
+    }
+
+    @Test
+    @Order(8)
+    void queriesAddressBalanceV2() {
+        requireGeneratedAddress();
+        AddressBalanceV2Response response = client.queryAddressBalanceV2(AddressBalanceV2Request.builder()
+                .address(valueOrDefault(sourceAddress, generatedAddress))
+                .currency(currency)
+                .pageNum(1)
+                .pageSize(10)
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getRows());
+    }
+
+    @Test
+    @Order(9)
+    void queriesTradeRecords() {
+        TradeRecordQueryResponse response = client.queryTradeRecords(TradeRecordQueryRequest.builder()
+                .pageNum(1)
+                .pageSize(10)
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getRows());
+    }
+
+    @Test
+    @Order(10)
+    void submitsPayoutV1() {
+        requireGeneratedAddress();
+        PayoutResponse response = client.payoutV1(PayoutV1Request.builder()
+                .currency(currency)
+                .address(payoutDestination)
+                .amount(testAmount)
+                .thirdPartyId(uniqueBusinessId("sdk-p1"))
+                .remark("Java SDK Sandbox test")
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getCid());
+        payoutCid = response.getCid();
+    }
+
+    @Test
+    @Order(11)
+    void queriesPayout() {
+        assumeTrue(payoutCid != null, "Payout query requires a successful payout submission");
+        QueryPayoutResponse response = client.queryPayout(QueryPayoutRequest.builder().cid(payoutCid).build());
+
+        assertNotNull(response);
+        payoutWalletAddress = response.getFromAddress();
+    }
+
+    @Test
+    @Order(12)
+    void submitsPayoutV2() {
+        requireGeneratedAddress();
+        String walletId = IntegrationTestEnvironment.get("WAAS_WALLET_ID");
+        PayoutRequest.PayoutRequestBuilder request = PayoutRequest.builder()
+                .currency(currency)
+                .toAddress(payoutDestination)
+                .amount(testAmount)
+                .thirdPartyId(uniqueBusinessId("sdk-p2"))
+                .remark("Java SDK Sandbox test");
+        if (walletId != null) {
+            request.walletId(Long.parseLong(walletId));
         }
 
-        WithdrawalRequest request = WithdrawalRequest.builder()
-                .currency("USDT-TRC20#Shasta")
-                .amount("0.001")
-                .fromAddress(withdrawAddress)
-                .toAddress(withdrawToAddress)
-                .thirdPartyId("withdraw-" + System.currentTimeMillis())
-                .build();
-
-        WithdrawalResponse response = client.withdrawal(request);
-        System.out.println("Withdrawal CID: " + response.getCid());
-
-        QueryWithdrawalResponse queryRes = client
-                .queryWithdrawal(QueryWithdrawalRequest.builder().cid(response.getCid()).build());
-        System.out.println("Withdrawal Status: " + queryRes.getStatus());
+        PayoutResponse response = client.payoutV2(request.build());
+        assertNotNull(response);
+        assertNotNull(response.getCid());
     }
 
-    // Helper to get cached or default Chain ID
-    private String getChainId() {
-        String chainId = IntegrationTestEnvironment.get("WAAS_CHAIN_ID");
-        // 198 for TRON#Shasta
-        return chainId != null ? chainId : "198";
+    @Test
+    @Order(13)
+    void submitsSubAddressWithdrawal() {
+        requireGeneratedAddress();
+        assumeTrue(sourceAddress != null, "Withdrawal requires WITHDRAW_ADDRESS");
+        WithdrawalResponse response = client.withdrawal(WithdrawalRequest.builder()
+                .currency(currency)
+                .fromAddress(sourceAddress)
+                .toAddress(withdrawalDestination)
+                .amount(testAmount)
+                .thirdPartyId(uniqueBusinessId("sdk-wd"))
+                .remark("Java SDK Sandbox test")
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getCid());
+        withdrawalCid = response.getCid();
     }
 
-    private void requireMutatingTestsEnabled() {
-        org.junit.jupiter.api.Assumptions.assumeTrue(
-                mutatingTestsEnabled,
-                "Skipping state-changing test: CREGIS_ALLOW_MUTATING_TESTS is not true");
+    @Test
+    @Order(14)
+    void queriesSubAddressWithdrawal() {
+        assumeTrue(withdrawalCid != null, "Withdrawal query requires a successful withdrawal submission");
+        QueryWithdrawalResponse response = client.queryWithdrawal(
+                QueryWithdrawalRequest.builder().cid(withdrawalCid).build());
+
+        assertNotNull(response);
+    }
+
+    @Test
+    @Order(15)
+    void submitsBalanceCollection() {
+        assumeTrue(sourceAddress != null, "Collection requires WITHDRAW_ADDRESS");
+        String collectionDestination = valueOrDefault(
+                IntegrationTestEnvironment.get("WAAS_COLLECTION_TO_ADDRESS"), payoutWalletAddress);
+        assumeTrue(
+                collectionDestination != null,
+                "Collection requires WAAS_COLLECTION_TO_ADDRESS or a payout response with from_address");
+
+        BalanceCollectResponse response = client.balanceCollect(BalanceCollectRequest.builder()
+                .currency(currency)
+                .fromAddress(sourceAddress)
+                .toAddress(collectionDestination)
+                .amount(testAmount)
+                .build());
+
+        assertNotNull(response);
+        assertNotNull(response.getCid());
+    }
+
+    private static ProjectCoinQueryResponse.CoinInfo selectPayoutCoin(
+            List<ProjectCoinQueryResponse.CoinInfo> payoutCoins,
+            List<ProjectCoinQueryResponse.CoinInfo> addressCoins,
+            String preferredChainId) {
+        ProjectCoinQueryResponse.CoinInfo fallback = null;
+        for (ProjectCoinQueryResponse.CoinInfo payoutCoin : payoutCoins) {
+            if (!hasAddressChain(addressCoins, payoutCoin.getChainId())) {
+                continue;
+            }
+            if (preferredChainId.equals(payoutCoin.getChainId())) {
+                return payoutCoin;
+            }
+            if (fallback == null) {
+                fallback = payoutCoin;
+            }
+        }
+        return fallback;
+    }
+
+    private static boolean hasAddressChain(
+            List<ProjectCoinQueryResponse.CoinInfo> addressCoins,
+            String candidateChainId) {
+        for (ProjectCoinQueryResponse.CoinInfo addressCoin : addressCoins) {
+            if (candidateChainId != null && candidateChainId.equals(addressCoin.getChainId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void requireCoinSelection() {
+        assumeTrue(chainId != null && currency != null, "Test requires a supported Sandbox currency");
+    }
+
+    private static void requireGeneratedAddress() {
+        requireCoinSelection();
+        assumeTrue(generatedAddress != null, "Test requires a successfully generated Sandbox address");
+    }
+
+    private static String valueOrDefault(String value, String defaultValue) {
+        return value == null || value.trim().isEmpty() ? defaultValue : value;
+    }
+
+    private static String shortAlias(String prefix) {
+        return prefix + "-" + Long.toString(System.currentTimeMillis()).substring(5);
+    }
+
+    private static String uniqueBusinessId(String prefix) {
+        return prefix + "-" + System.currentTimeMillis();
     }
 }

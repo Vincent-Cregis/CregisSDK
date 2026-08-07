@@ -26,10 +26,12 @@ Integration tests connect to Cregis APIs. Use only Sandbox credentials and the p
 | `WAAS_API_KEY` | Yes | Your WaaS API Key |
 | `WAAS_ENDPOINT` | Yes | Project-specific WaaS Sandbox Base URL |
 | `WAAS_CHAIN_ID` | No | Chain ID used by state-changing address tests; defaults to Shasta `198` |
-| `WAAS_WALLET_ID` | No | Required for Payout test |
-| `WAAS_PAYOUT_TO_ADDRESS` | No | Required destination for Payout test |
-| `WITHDRAW_ADDRESS` | No | Required source sub-address for Withdrawal test |
-| `WITHDRAW_TO_ADDRESS` | No | Required destination for Withdrawal test |
+| `WAAS_TEST_AMOUNT` | No | Amount used by funds-moving tests; defaults to `0.001` |
+| `WAAS_WALLET_ID` | No | Optional wallet override for Payout V2 |
+| `WAAS_PAYOUT_TO_ADDRESS` | No | Optional payout destination; defaults to an address created by the test |
+| `WAAS_COLLECTION_TO_ADDRESS` | No | Optional collection destination; otherwise derived from the payout query |
+| `WITHDRAW_ADDRESS` | For funds-moving tests | Existing project sub-address used as withdrawal and collection source |
+| `WITHDRAW_TO_ADDRESS` | No | Optional withdrawal destination; defaults to an address created by the test |
 
 **For Payment Engine Tests:**
 | Variable | Required | Description |
@@ -47,7 +49,7 @@ Integration tests connect to Cregis APIs. Use only Sandbox credentials and the p
 | `TEAM_ACCESS_SECRET` | Yes | Your Team API Access Secret |
 | `TEAM_ENDPOINT` | Yes | Team Sandbox Base URL |
 
-For tests that create orders, addresses, payouts, or withdrawals:
+For tests that create orders, addresses, payouts, withdrawals, or collections:
 
 | Variable | Required | Description |
 | --- | --- | --- |
@@ -68,6 +70,17 @@ mvn verify -Pintegration-tests
 ```
 
 Without `CREGIS_ALLOW_MUTATING_TESTS=true`, state-changing tests are skipped.
+
+The full callable OpenAPI coverage is:
+
+| API | Sandbox operations |
+| --- | ---: |
+| Payment Engine | 2 |
+| WaaS | 15 |
+| Team API | 6 |
+| Total | 23 |
+
+Webhook definitions are inbound notifications rather than callable operations. They are covered by local callback contract tests.
 
 ### Run WaaS integration tests
 
@@ -96,5 +109,15 @@ mvn verify -Pintegration-tests -Dit.test=CregisPaymentIntegrationTest
 
 mvn verify -Pintegration-tests -Dit.test=CregisWaasIntegrationTest
 ```
+
+The WaaS state-changing suite first queries supported coins and creates an internal Sandbox address. It then reuses that address for the dependent operations and never prints addresses, order IDs, transaction IDs, or credentials.
+
+### Run all callable OpenAPI operations
+
+```bash
+CREGIS_ALLOW_MUTATING_TESTS=true mvn verify -Pintegration-tests
+```
+
+Run this only with `.dev` Sandbox Base URLs. The command creates Sandbox data and submits funds-moving Sandbox operations.
 
 Signature behavior is covered by deterministic local test vectors. Do not log API keys, Access Secrets, canonical signing strings, full request bodies, or callback payloads in shared environments.

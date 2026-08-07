@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CregisPaymentIntegrationTest {
 
     private static CregisPaymentClient client;
+    private static String createdCregisId;
 
     @BeforeAll
     static void setup() {
@@ -36,7 +37,6 @@ public class CregisPaymentIntegrationTest {
         client = CregisPaymentClient.builder()
                 .endpoint(endpoint)
                 .credentials(pid, apiKey)
-                .debug(true)
                 .build();
     }
 
@@ -62,43 +62,25 @@ public class CregisPaymentIntegrationTest {
 
         CreateOrderResponse response = client.createOrder(request);
 
-        System.out.println("Created Order Cregis ID: " + response.getCregisId());
-        System.out.println("Checkout URL: " + response.getCheckoutUrl());
-
         assertNotNull(response.getCregisId(), "Cregis ID should not be null");
         assertNotNull(response.getCheckoutUrl(), "Checkout URL should not be null");
+        createdCregisId = response.getCregisId();
     }
 
     @Test
     @Order(2)
     void testQueryOrder() {
-        // First create an order to query
-        String orderId = "test-query-" + System.currentTimeMillis();
-        CreateOrderRequest createRequest = CreateOrderRequest.builder()
-                .orderId(orderId)
-                .orderAmount("1.0")
-                .orderCurrency("USDT")
-                .payerId("test-payer-002")
-                .payerName("Test Payer")
-                .callbackUrl("https://webhook.site/test")
-                .successUrl("https://example.com/success")
-                .cancelUrl("https://example.com/cancel")
-                .validTime(60)
-                .build();
+        org.junit.jupiter.api.Assumptions.assumeTrue(
+                createdCregisId != null,
+                "Order query requires a successfully created Sandbox order");
 
-        CreateOrderResponse createResponse = client.createOrder(createRequest);
-        String cregisId = createResponse.getCregisId();
-
-        // Query the order
         QueryOrderRequest queryRequest = QueryOrderRequest.builder()
-                .cregisId(cregisId)
+                .cregisId(createdCregisId)
                 .build();
 
         QueryOrderResponse queryResponse = client.queryOrder(queryRequest);
 
-        System.out.println("Queried Order Status: " + queryResponse.getStatus());
-
         assertNotNull(queryResponse, "Query response should not be null");
-        assertEquals(cregisId, queryResponse.getCregisId(), "Cregis ID should match");
+        assertEquals(createdCregisId, queryResponse.getCregisId(), "Cregis ID should match");
     }
 }
