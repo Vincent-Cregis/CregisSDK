@@ -121,6 +121,8 @@ public class CregisWaasClient extends CregisBaseClient {
 
     /**
      * @deprecated Use {@link #payoutV2(PayoutRequest)} to make the API version explicit.
+     * @param request The payout details.
+     * @return The payout response containing cid.
      */
     @Deprecated
     public PayoutResponse payout(PayoutRequest request) {
