@@ -6,10 +6,10 @@
 | --- | ---: | ---: | ---: | --- |
 | Payment Engine | 2 | 2 | 0 | Passed |
 | WaaS | 15 | 15 | 0 | Passed |
-| Team API | 6 | 0 | 6 | Blocked by Team Access Key |
-| Total | 23 | 17 | 6 | Partial |
+| Team API | 6 | 6 | 0 | Passed |
+| Total | 23 | 23 | 0 | Passed |
 
-The Team Base URL is reachable and maps to the expected API. The first Team operation returns `O0015: API Key does not exist or status is anomalous`. The other five Team operations depend on the wallet returned by that first operation and were therefore skipped.
+The Team API credentials initially returned `O0015: API Key does not exist or status is anomalous`. After the credential became active, the same read-only suite was retried and all six operations passed.
 
 ## Local verification
 
@@ -17,7 +17,7 @@ The Team Base URL is reachable and maps to the expected API. The first Team oper
 - Unit and contract tests: 20 passed, 0 failed
 - Payment Engine live tests: 2 passed, 0 failed
 - WaaS live tests: 15 passed, 0 failed
-- Team API live tests: 1 authentication error, 5 dependency skips
+- Team API live tests: 6 passed, 0 failed
 - Callback contracts: covered locally; callbacks are inbound and cannot be actively invoked against Sandbox
 
 ## Sandbox changes created by the test
@@ -54,7 +54,7 @@ CREGIS_ALLOW_MUTATING_TESTS=true mvn verify \
   -Dit.test=CregisWaasIntegrationTest
 ```
 
-Team API checks after replacing the inactive credentials:
+Team API checks:
 
 ```bash
 mvn verify \
