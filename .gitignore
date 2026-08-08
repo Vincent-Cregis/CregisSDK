@@ -7,6 +7,8 @@
 # Java
 **/target/
 **/*.class
+**/.gradle/
+**/build/
 
 # JavaScript / TypeScript
 **/node_modules/

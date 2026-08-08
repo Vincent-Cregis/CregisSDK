@@ -15,4 +15,8 @@ The OpenAPI specifications are not copied into this repository. Generation jobs 
 
 ## Current status
 
-The Java SDK is being aligned with the canonical Payment Engine, WaaS, and Team API OpenAPI contracts first. Automated generation will be introduced after this Java contract and test baseline is stable.
+The Java SDK is preparing its `1.0.0-rc.1` release candidate. Its 23 API operations are aligned with the canonical Payment Engine, WaaS, and Team API contracts, with local contract tests and Sandbox coverage in place. Automated generation will be introduced after this Java release baseline is stable.
+
+## License
+
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).

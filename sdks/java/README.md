@@ -23,7 +23,7 @@ Welcome to the official Java SDK for [Cregis](https://cregis.com). This SDK prov
 
 ## Installation
 
-The package is currently a pre-release snapshot. Until it is published to a Maven repository, run `mvn install` in `sdks/java` and then add:
+The current release candidate uses the following Maven coordinates:
 
 Add the following to your `pom.xml`:
 
@@ -31,9 +31,17 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>com.cregis</groupId>
     <artifactId>cregis-sdk-java</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc.1</version>
 </dependency>
 ```
+
+Gradle:
+
+```kotlin
+implementation("com.cregis:cregis-sdk-java:1.0.0-rc.1")
+```
+
+Before the release candidate is available from Maven Central, run `mvn install` in `sdks/java` to install it into Maven Local.
 
 ## Quick Start
 
@@ -211,4 +219,4 @@ For full API references, please visit the [Cregis Developer Documentation](https
 
 ## Release status
 
-This package is still `1.0.0-SNAPSHOT`. Distribution coordinates and the repository license must be finalized before the public beta release.
+Version `1.0.0-rc.1` is the first public release candidate. It targets Java 11 and is tested on Java 11, 17, and 21. The project is licensed under Apache-2.0.

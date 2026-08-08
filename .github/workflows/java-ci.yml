@@ -18,23 +18,72 @@ permissions:
 
 jobs:
   test:
-    name: Build and unit test on Java 11
+    name: Build and unit test on Java ${{ matrix.java }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ["11", "17", "21"]
     defaults:
       run:
         working-directory: sdks/java
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Java 11
-        uses: actions/setup-java@v4
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "11"
+          java-version: ${{ matrix.java }}
           cache: maven
 
       - name: Build and run unit tests
         run: mvn --batch-mode --no-transfer-progress clean verify
+
+  consumer-smoke-tests:
+    name: Maven and Gradle consumer smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Read SDK version
+        id: sdk-version
+        shell: bash
+        run: |
+          sdk_version="$(mvn --quiet -f sdks/java/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)"
+          echo "value=${sdk_version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Install SDK into Maven Local
+        run: mvn --batch-mode --no-transfer-progress -f sdks/java/pom.xml -DskipTests install
+
+      - name: Build and run Maven consumer
+        run: >-
+          mvn --batch-mode --no-transfer-progress
+          -f sdks/java/smoke-tests/maven-consumer/pom.xml
+          -Dcregis.sdk.version=${{ steps.sdk-version.outputs.value }}
+          verify
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Build and run Gradle consumer
+        run: >-
+          gradle --no-daemon
+          -p sdks/java/smoke-tests/gradle-consumer
+          -PcregisSdkVersion=${{ steps.sdk-version.outputs.value }}
+          clean build run
