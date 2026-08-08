@@ -5,12 +5,20 @@ on:
     paths:
       - "sdks/java/**"
       - ".github/workflows/java-ci.yml"
+      - ".github/workflows/java-release.yml"
+      - "scripts/verify-java-version.sh"
+      - "CHANGELOG.md"
+      - "README.md"
   push:
     branches:
       - main
     paths:
       - "sdks/java/**"
       - ".github/workflows/java-ci.yml"
+      - ".github/workflows/java-release.yml"
+      - "scripts/verify-java-version.sh"
+      - "CHANGELOG.md"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
@@ -65,6 +73,9 @@ jobs:
         run: |
           sdk_version="$(mvn --quiet -f sdks/java/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)"
           echo "value=${sdk_version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify version references
+        run: ./scripts/verify-java-version.sh
 
       - name: Install SDK into Maven Local
         run: mvn --batch-mode --no-transfer-progress -f sdks/java/pom.xml -DskipTests install
