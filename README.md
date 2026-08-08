@@ -20,3 +20,7 @@ The Java SDK is preparing its `1.0.0-rc.1` release candidate. Its 23 API operati
 ## License
 
 This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+
+## Releasing
+
+Java SDK maintainers should follow the [Java release runbook](docs/releasing/java.md).
