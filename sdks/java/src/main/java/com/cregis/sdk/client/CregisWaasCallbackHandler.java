@@ -1,20 +1,14 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.exception.CregisClientException;
-import com.cregis.sdk.core.signer.CregisSigner;
+import com.cregis.sdk.core.webhook.CregisProjectCallbackVerifier;
 import com.cregis.sdk.domain.waas.AddressDepositCallbackNotification;
 import com.cregis.sdk.domain.waas.PayoutCallbackNotification;
 import com.cregis.sdk.domain.waas.PayoutExternalVerificationCallbackNotification;
 import com.cregis.sdk.domain.waas.WithdrawalCallbackNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Utility for handling Cregis WaaS Callbacks/Webhooks.
@@ -42,33 +36,7 @@ public class CregisWaasCallbackHandler {
      * Internal method to verify signature.
      */
     private void verifySignature(String rawJsonBody) {
-        try {
-            Map<String, Object> paramMap = objectMapper.readValue(
-                    rawJsonBody,
-                    new TypeReference<Map<String, Object>>() {
-                    });
-
-            if (!paramMap.containsKey("sign")) {
-                throw new CregisClientException("Missing signature in callback");
-            }
-
-            Object incomingSignValue = paramMap.get("sign");
-            if (!(incomingSignValue instanceof String)) {
-                throw new CregisClientException("Callback signature must be a string");
-            }
-            String incomingSign = (String) incomingSignValue;
-            paramMap.remove("sign");
-
-            String calculatedSign = CregisSigner.sign(paramMap, apiKey);
-
-            if (!MessageDigest.isEqual(
-                    calculatedSign.getBytes(StandardCharsets.US_ASCII),
-                    incomingSign.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.US_ASCII))) {
-                throw new CregisClientException("Callback signature verification failed");
-            }
-        } catch (JsonProcessingException e) {
-            throw new CregisClientException("Failed to parse callback JSON for signature verification", e);
-        }
+        CregisProjectCallbackVerifier.verify(rawJsonBody, apiKey, objectMapper);
     }
 
     /**

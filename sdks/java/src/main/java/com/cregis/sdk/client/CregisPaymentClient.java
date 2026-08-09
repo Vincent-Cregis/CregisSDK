@@ -1,6 +1,7 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.client.CregisBaseClient;
+import com.cregis.sdk.core.client.CregisHttpConfig;
 import com.cregis.sdk.domain.common.ApiResponse;
 import com.cregis.sdk.domain.payment.CreateOrderRequest;
 import com.cregis.sdk.domain.payment.CreateOrderResponse;
@@ -17,6 +18,7 @@ public class CregisPaymentClient extends CregisBaseClient {
         super(
                 builder.endpoint,
                 builder.debug,
+                builder.httpConfig,
                 objectMapper -> new com.cregis.sdk.core.interceptor.CregisAuthInterceptor(
                         builder.pid,
                         builder.apiKey,
@@ -58,6 +60,7 @@ public class CregisPaymentClient extends CregisBaseClient {
         private Long pid;
         private String apiKey;
         private boolean debug = false;
+        private CregisHttpConfig httpConfig = CregisHttpConfig.defaults();
 
         public Builder endpoint(String endpoint) {
             this.endpoint = endpoint;
@@ -83,6 +86,14 @@ public class CregisPaymentClient extends CregisBaseClient {
 
         public Builder debug(boolean debug) {
             this.debug = debug;
+            return this;
+        }
+
+        public Builder httpConfig(CregisHttpConfig httpConfig) {
+            if (httpConfig == null) {
+                throw new IllegalArgumentException("HTTP config is required");
+            }
+            this.httpConfig = httpConfig;
             return this;
         }
 

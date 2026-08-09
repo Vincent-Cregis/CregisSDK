@@ -80,7 +80,7 @@ The full callable OpenAPI coverage is:
 | Team API | 6 |
 | Total | 23 |
 
-Webhook definitions are inbound notifications rather than callable operations. They are covered by local callback contract tests.
+Webhook definitions are inbound notifications rather than callable operations. They are covered by local callback contract tests. The repository includes a stable synthetic nested Payment fixture; a sanitized callback captured from the backend, or an independent backend signature vector, is still required before GA to prove nested-value encoding against the real sender.
 
 ### Run WaaS integration tests
 
@@ -121,3 +121,16 @@ CREGIS_ALLOW_MUTATING_TESTS=true mvn verify -Pintegration-tests
 Run this only with `.dev` Sandbox Base URLs. The command creates Sandbox data and submits funds-moving Sandbox operations.
 
 Signature behavior is covered by deterministic local test vectors. Do not log API keys, Access Secrets, canonical signing strings, full request bodies, or callback payloads in shared environments.
+
+## OpenAPI operation drift
+
+From the repository root, compare the Java clients with the canonical specs in
+the local documentation repository:
+
+```bash
+./codegen/scripts/check-java-openapi.py \
+  --spec-dir ../cregis-developer-docs/api-sources/specs
+```
+
+This check does not use Sandbox credentials and does not copy the specs into the
+SDK repository.

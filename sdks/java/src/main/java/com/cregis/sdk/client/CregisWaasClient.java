@@ -1,6 +1,7 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.client.CregisBaseClient;
+import com.cregis.sdk.core.client.CregisHttpConfig;
 import com.cregis.sdk.domain.common.ApiResponse;
 import com.cregis.sdk.domain.waas.AddressBalanceRequest;
 import com.cregis.sdk.domain.waas.AddressBalanceResponse;
@@ -10,11 +11,11 @@ import com.cregis.sdk.domain.waas.AddressUpdateRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectResponse;
 import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
-import com.cregis.sdk.domain.waas.BatchGenerateAddressResponse;
 import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
 import com.cregis.sdk.domain.waas.CheckAddressLegalityResponse;
 import com.cregis.sdk.domain.waas.GenerateAddressRequest;
 import com.cregis.sdk.domain.waas.GenerateAddressResponse;
+import com.cregis.sdk.domain.waas.GeneratedAddress;
 import com.cregis.sdk.domain.waas.PayoutRequest;
 import com.cregis.sdk.domain.waas.PayoutResponse;
 import com.cregis.sdk.domain.waas.PayoutV1Request;
@@ -41,6 +42,7 @@ public class CregisWaasClient extends CregisBaseClient {
         super(
                 builder.endpoint,
                 builder.debug,
+                builder.httpConfig,
                 objectMapper -> new com.cregis.sdk.core.interceptor.CregisAuthInterceptor(
                         builder.pid,
                         builder.apiKey,
@@ -66,11 +68,11 @@ public class CregisWaasClient extends CregisBaseClient {
      * @param request The batch generation request.
      * @return The list of generated addresses.
      */
-    public java.util.List<BatchGenerateAddressResponse.GeneratedAddress> batchGenerateAddress(
+    public java.util.List<GeneratedAddress> batchGenerateAddress(
             BatchGenerateAddressRequest request) {
         return execute(
                 post("/api/v1/batch/address/create", request).build(),
-                new TypeReference<ApiResponse<java.util.List<BatchGenerateAddressResponse.GeneratedAddress>>>() {
+                new TypeReference<ApiResponse<java.util.List<GeneratedAddress>>>() {
                 });
     }
 
@@ -249,6 +251,7 @@ public class CregisWaasClient extends CregisBaseClient {
         private Long pid;
         private String apiKey;
         private boolean debug = false;
+        private CregisHttpConfig httpConfig = CregisHttpConfig.defaults();
 
         public Builder endpoint(String endpoint) {
             this.endpoint = endpoint;
@@ -274,6 +277,14 @@ public class CregisWaasClient extends CregisBaseClient {
 
         public Builder debug(boolean debug) {
             this.debug = debug;
+            return this;
+        }
+
+        public Builder httpConfig(CregisHttpConfig httpConfig) {
+            if (httpConfig == null) {
+                throw new IllegalArgumentException("HTTP config is required");
+            }
+            this.httpConfig = httpConfig;
             return this;
         }
 

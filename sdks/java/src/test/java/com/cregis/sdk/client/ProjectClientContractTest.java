@@ -4,6 +4,7 @@ import com.cregis.sdk.domain.payment.CreateOrderRequest;
 import com.cregis.sdk.domain.payment.QueryOrderRequest;
 import com.cregis.sdk.core.exception.CregisHttpException;
 import com.cregis.sdk.core.exception.CregisServerException;
+import com.cregis.sdk.core.exception.CregisClientException;
 import com.cregis.sdk.domain.waas.AddressBalanceRequest;
 import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
 import com.cregis.sdk.domain.waas.AddressUpdateRequest;
@@ -191,6 +192,20 @@ class ProjectClientContractTest {
                 () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
         assertEquals("B0001", businessError.getCode());
         assertEquals("Signature Error", businessError.getMsg());
+    }
+
+    @Test
+    void reportsMalformedSuccessResponsesAsParsingErrors() {
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("not-json"));
+
+        CregisClientException error = assertThrows(
+                CregisClientException.class,
+                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+
+        assertTrue(error.getMessage().startsWith("Failed to parse Cregis response for POST /api/v1/coins"));
     }
 
     private void enqueueData(String dataJson) {

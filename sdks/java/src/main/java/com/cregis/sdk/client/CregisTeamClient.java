@@ -1,6 +1,7 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.client.CregisBaseClient;
+import com.cregis.sdk.core.client.CregisHttpConfig;
 import com.cregis.sdk.core.interceptor.CregisTeamAuthInterceptor;
 import com.cregis.sdk.domain.common.ApiResponse;
 import com.cregis.sdk.domain.team.ListTeamWalletAddressesRequest;
@@ -27,6 +28,7 @@ public class CregisTeamClient extends CregisBaseClient {
         super(
                 builder.endpoint,
                 builder.debug,
+                builder.httpConfig,
                 ignored -> new CregisTeamAuthInterceptor(builder.accessKey, builder.accessSecret));
     }
 
@@ -86,6 +88,7 @@ public class CregisTeamClient extends CregisBaseClient {
         private String accessKey;
         private String accessSecret;
         private boolean debug;
+        private CregisHttpConfig httpConfig = CregisHttpConfig.defaults();
 
         public Builder endpoint(String endpoint) {
             this.endpoint = endpoint;
@@ -100,6 +103,14 @@ public class CregisTeamClient extends CregisBaseClient {
 
         public Builder debug(boolean debug) {
             this.debug = debug;
+            return this;
+        }
+
+        public Builder httpConfig(CregisHttpConfig httpConfig) {
+            if (httpConfig == null) {
+                throw new IllegalArgumentException("HTTP config is required");
+            }
+            this.httpConfig = httpConfig;
             return this;
         }
 

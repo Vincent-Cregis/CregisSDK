@@ -143,6 +143,37 @@ TeamPagedResponse<TeamWallet> wallets = teamClient.listTeamWallets(
 );
 ```
 
+### HTTP transport configuration
+
+All clients use 30-second connect, read, and write timeouts by default. Because
+Cregis operations use POST and some create financial state, connection-failure
+retry is disabled by default. Redirects are always disabled so a signed request
+cannot be forwarded to another origin.
+
+Applications that need a proxy, shared connection pool, monitoring interceptor,
+or custom timeout can provide an OkHttp-based configuration:
+
+```java
+import com.cregis.sdk.core.client.CregisHttpConfig;
+import java.time.Duration;
+
+CregisHttpConfig httpConfig = CregisHttpConfig.builder()
+    .connectTimeout(Duration.ofSeconds(10))
+    .readTimeout(Duration.ofSeconds(20))
+    .writeTimeout(Duration.ofSeconds(20))
+    .build();
+
+CregisWaasClient client = CregisWaasClient.builder()
+    .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
+    .credentials("YOUR_PID", "YOUR_API_KEY")
+    .httpConfig(httpConfig)
+    .build();
+```
+
+`retryOnConnectionFailure(true)` is available as an explicit opt-in. Enable it
+only when the application reconciles ambiguous results using `order_id`,
+`third_party_id`, or `cid`.
+
 ### 4. Handling Callbacks (Webhooks)
 
 The SDK includes handlers to verify signatures and parse callback JSON payloads.
@@ -151,19 +182,25 @@ The SDK includes handlers to verify signatures and parse callback JSON payloads.
 
 ```java
 import com.cregis.sdk.client.CregisPaymentCallbackHandler;
-import com.cregis.sdk.domain.payment.PaymentCallbackNotification;
+import com.cregis.sdk.domain.payment.*;
 
 CregisPaymentCallbackHandler handler = new CregisPaymentCallbackHandler("YOUR_API_KEY");
 
 String rawJson = "{...}"; // From HTTP Request Body
 
 try {
-    // Verifies signature and parses JSON
-    PaymentCallbackNotification notification = handler.verifyAndParse(rawJson);
-    
-    if ("paid".equals(notification.getData().getStatus())) {
-        System.out.println("Order Paid: " + notification.getData().getOrderId());
-        System.out.println("Amount: " + notification.getData().getPayAmount());
+    PaymentCallbackNotification<? extends PaymentCallbackData> notification =
+        handler.verifyAndParse(rawJson);
+
+    if (notification.getData() instanceof PaymentCompletedCallbackData) {
+        PaymentCompletedCallbackData payment =
+            (PaymentCompletedCallbackData) notification.getData();
+        System.out.println("Order Paid: " + payment.getOrderId());
+        System.out.println("Amount: " + payment.getPayAmount());
+    } else if (notification.getData() instanceof PaymentRefundedCallbackData) {
+        PaymentRefundedCallbackData refund =
+            (PaymentRefundedCallbackData) notification.getData();
+        System.out.println("Refund: " + refund.getRefundId());
     }
 } catch (Exception e) {
     System.err.println("Invalid Signature or Payload: " + e.getMessage());
@@ -186,6 +223,11 @@ PayoutExternalVerificationCallbackNotification verification =
     handler.handlePayoutExternalVerificationCallback(rawJson);
 // Return exactly "ok" to approve or "deny" to reject.
 ```
+
+Signature verification must run before business processing. Cregis may retry a
+valid callback, so applications must also enforce business idempotency using
+stable identifiers such as `cregis_id`, `cid`, or `txid` before returning
+`success`.
 
 ## Testing
 

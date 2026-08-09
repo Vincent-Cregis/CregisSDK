@@ -1,5 +1,6 @@
 package com.cregis.sdk.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -17,6 +18,16 @@ public enum PaymentEventType {
 
     PaymentEventType(String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static PaymentEventType fromValue(String value) {
+        for (PaymentEventType eventType : values()) {
+            if (eventType.value.equals(value)) {
+                return eventType;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported Payment callback event_type: " + value);
     }
 
     @JsonValue

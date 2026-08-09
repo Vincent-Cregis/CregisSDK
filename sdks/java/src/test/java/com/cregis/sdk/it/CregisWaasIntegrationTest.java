@@ -9,7 +9,7 @@ import com.cregis.sdk.domain.waas.AddressUpdateRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectRequest;
 import com.cregis.sdk.domain.waas.BalanceCollectResponse;
 import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
-import com.cregis.sdk.domain.waas.BatchGenerateAddressResponse;
+import com.cregis.sdk.domain.waas.GeneratedAddress;
 import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
 import com.cregis.sdk.domain.waas.CheckAddressLegalityResponse;
 import com.cregis.sdk.domain.waas.GenerateAddressRequest;
@@ -125,7 +125,7 @@ public class CregisWaasIntegrationTest {
     @Order(3)
     void createsBatchAddresses() {
         requireCoinSelection();
-        List<BatchGenerateAddressResponse.GeneratedAddress> addresses = client.batchGenerateAddress(
+        List<GeneratedAddress> addresses = client.batchGenerateAddress(
                 BatchGenerateAddressRequest.builder()
                         .chainId(chainId)
                         .number("2")

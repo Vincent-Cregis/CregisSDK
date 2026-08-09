@@ -21,12 +21,15 @@ of truth for this checklist.
 - [x] Project and Team signature test vectors
 - [x] Nested Payment response and webhook fixtures
 - [x] State-changing Sandbox tests require explicit opt-in
-- [ ] Add a CI OpenAPI-to-Java drift check when generation is introduced
+- [x] Add local OpenAPI-to-Java operation drift check
+- [x] Test drift-check behavior in CI
+- [ ] Add sanitized backend callback signature fixture
+- [ ] Normalize inline schemas for stable generated Java model names
 
 ## Release readiness
 
 - [ ] Complete public Javadoc
-- [ ] Add Maven Central metadata and release plugins
-- [ ] Add source and Javadoc artifacts
-- [ ] Add repository license file
-- [ ] Publish a Java beta before `1.0.0`
+- [x] Add Maven Central metadata and release plugins
+- [x] Add source and Javadoc artifacts
+- [x] Add repository license file
+- [ ] Publish a Java beta before `1.0.0` (postponed)

@@ -5,7 +5,7 @@ import com.cregis.sdk.domain.enums.PaymentEventType;
 import lombok.Data;
 
 @Data
-public class PaymentCallbackNotification {
+public class PaymentCallbackNotification<T extends PaymentCallbackData> {
 
     @JsonProperty("event_name")
     private String eventName;
@@ -26,5 +26,5 @@ public class PaymentCallbackNotification {
     private String sign;
 
     @JsonProperty("data")
-    private PaymentCallbackData data;
+    private T data;
 }

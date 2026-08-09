@@ -1,8 +1,14 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.signer.CregisSigner;
+import com.cregis.sdk.core.exception.CregisClientException;
+import com.cregis.sdk.domain.payment.PaymentCallbackData;
 import com.cregis.sdk.domain.enums.PaymentEventType;
 import com.cregis.sdk.domain.payment.PaymentCallbackNotification;
+import com.cregis.sdk.domain.payment.PaymentCompletedCallbackData;
+import com.cregis.sdk.domain.payment.PaymentExpiredCallbackData;
+import com.cregis.sdk.domain.payment.PaymentRefundedCallbackData;
+import com.cregis.sdk.domain.payment.PaymentRemainingCallbackData;
 import com.cregis.sdk.domain.waas.AddressDepositCallbackNotification;
 import com.cregis.sdk.domain.waas.PayoutCallbackNotification;
 import com.cregis.sdk.domain.waas.PayoutExternalVerificationCallbackNotification;
@@ -12,8 +18,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CallbackContractTest {
 
@@ -33,13 +43,17 @@ class CallbackContractTest {
         data.put("future_field", "ignored-for-forward-compatibility");
 
         Map<String, Object> envelope = paymentEnvelope("refunded", data);
-        PaymentCallbackNotification notification = new CregisPaymentCallbackHandler(API_KEY)
+        PaymentCallbackNotification<? extends PaymentCallbackData> notification =
+                new CregisPaymentCallbackHandler(API_KEY)
                 .verifyAndParse(sign(envelope));
+        PaymentRefundedCallbackData refund = assertInstanceOf(
+                PaymentRefundedCallbackData.class,
+                notification.getData());
 
-        assertEquals("rf-1", notification.getData().getRefundId());
+        assertEquals("rf-1", refund.getRefundId());
         assertEquals(PaymentEventType.REFUNDED, notification.getEventType());
-        assertEquals(1, notification.getData().getRefundStatus());
-        assertEquals(1719994383015L, notification.getData().getRefundTransactTime());
+        assertEquals(1, refund.getRefundStatus());
+        assertEquals(1719994383015L, refund.getRefundTransactTime());
     }
 
     @Test
@@ -49,11 +63,61 @@ class CallbackContractTest {
         data.put("additional_payment_transact_time", 1719994483015L);
 
         Map<String, Object> envelope = paymentEnvelope("paid_remain", data);
-        PaymentCallbackNotification notification = new CregisPaymentCallbackHandler(API_KEY)
+        PaymentCallbackNotification<? extends PaymentCallbackData> notification =
+                new CregisPaymentCallbackHandler(API_KEY)
                 .verifyAndParse(sign(envelope));
+        PaymentRemainingCallbackData remaining = assertInstanceOf(
+                PaymentRemainingCallbackData.class,
+                notification.getData());
 
-        assertEquals(1719994483015L, notification.getData().getAdditionalPaymentTransactTime());
+        assertEquals(1719994483015L, remaining.getAdditionalPaymentTransactTime());
         assertEquals("success", CregisPaymentCallbackHandler.CALLBACK_SUCCESS);
+    }
+
+    @Test
+    void dispatchesPaymentEventsToSpecificDataTypes() throws Exception {
+        CregisPaymentCallbackHandler handler = new CregisPaymentCallbackHandler(API_KEY);
+
+        assertInstanceOf(
+                PaymentCompletedCallbackData.class,
+                handler.verifyAndParse(sign(paymentEnvelope("paid", new LinkedHashMap<>())))
+                        .getData());
+        assertInstanceOf(
+                PaymentCompletedCallbackData.class,
+                handler.verifyAndParse(sign(paymentEnvelope("paid_partial", new LinkedHashMap<>())))
+                        .getData());
+        assertInstanceOf(
+                PaymentCompletedCallbackData.class,
+                handler.verifyAndParse(sign(paymentEnvelope("paid_over", new LinkedHashMap<>())))
+                        .getData());
+        assertInstanceOf(
+                PaymentExpiredCallbackData.class,
+                handler.verifyAndParse(sign(paymentEnvelope("expired", new LinkedHashMap<>())))
+                        .getData());
+    }
+
+    @Test
+    void rejectsMalformedSignaturesAndUnknownPaymentEvents() throws Exception {
+        CregisPaymentCallbackHandler handler = new CregisPaymentCallbackHandler(API_KEY);
+
+        assertThrows(CregisClientException.class, () -> handler.verifyAndParse(null));
+        assertThrows(CregisClientException.class, () -> handler.verifyAndParse("{}"));
+
+        Map<String, Object> unknown = paymentEnvelope("future_event", new LinkedHashMap<>());
+        assertThrows(CregisClientException.class, () -> handler.verifyAndParse(sign(unknown)));
+    }
+
+    @Test
+    void verifiesStableSyntheticNestedPaymentFixture() throws Exception {
+        String rawJson = readResource("/webhooks/payment-refunded-synthetic.json");
+
+        PaymentCallbackNotification<? extends PaymentCallbackData> notification =
+                new CregisPaymentCallbackHandler("fixture-api-key").verifyAndParse(rawJson);
+        PaymentRefundedCallbackData refund = assertInstanceOf(
+                PaymentRefundedCallbackData.class,
+                notification.getData());
+
+        assertEquals("rf-test", refund.getRefundId());
     }
 
     @Test
@@ -138,5 +202,14 @@ class CallbackContractTest {
         Map<String, Object> signed = new LinkedHashMap<>(payload);
         signed.put("sign", CregisSigner.sign(payload, API_KEY));
         return objectMapper.writeValueAsString(signed);
+    }
+
+    private String readResource(String path) throws Exception {
+        try (InputStream input = CallbackContractTest.class.getResourceAsStream(path)) {
+            if (input == null) {
+                throw new IllegalStateException("Missing test resource: " + path);
+            }
+            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

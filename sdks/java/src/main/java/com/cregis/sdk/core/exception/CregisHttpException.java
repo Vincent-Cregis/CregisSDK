@@ -6,7 +6,7 @@ import lombok.Getter;
  * Represents a non-successful HTTP response from a Cregis endpoint.
  */
 @Getter
-public class CregisHttpException extends CregisClientException {
+public class CregisHttpException extends CregisException {
 
     private final int statusCode;
     private final String responseBody;

@@ -1,16 +1,19 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.exception.CregisClientException;
-import com.cregis.sdk.core.signer.CregisSigner;
+import com.cregis.sdk.core.webhook.CregisProjectCallbackVerifier;
+import com.cregis.sdk.domain.enums.PaymentEventType;
+import com.cregis.sdk.domain.payment.PaymentCallbackData;
 import com.cregis.sdk.domain.payment.PaymentCallbackNotification;
+import com.cregis.sdk.domain.payment.PaymentCompletedCallbackData;
+import com.cregis.sdk.domain.payment.PaymentExpiredCallbackData;
+import com.cregis.sdk.domain.payment.PaymentRefundedCallbackData;
+import com.cregis.sdk.domain.payment.PaymentRemainingCallbackData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,40 +44,60 @@ public class CregisPaymentCallbackHandler {
      * @throws CregisClientException If signature verification fails or parsing
      *                               error occurs.
      */
-    public PaymentCallbackNotification verifyAndParse(String rawJsonBody) {
+    public PaymentCallbackNotification<? extends PaymentCallbackData> verifyAndParse(String rawJsonBody) {
         try {
-            // 1. Parse to Map for validation
-            Map<String, Object> paramMap = objectMapper.readValue(
+            Map<String, Object> parameters = CregisProjectCallbackVerifier.verify(
                     rawJsonBody,
-                    new TypeReference<Map<String, Object>>() {
-                    });
-
-            // 2. Validate Signature
-            if (!paramMap.containsKey("sign")) {
-                throw new CregisClientException("Missing signature in callback");
+                    apiKey,
+                    objectMapper);
+            if (!"order".equals(parameters.get("event_name"))) {
+                throw new CregisClientException("Unsupported Payment callback event_name");
+            }
+            if (!(parameters.get("data") instanceof Map)) {
+                throw new CregisClientException("Payment callback data must be a JSON object");
             }
 
-            Object incomingSignValue = paramMap.get("sign");
-            if (!(incomingSignValue instanceof String)) {
-                throw new CregisClientException("Callback signature must be a string");
+            Object rawEventType = parameters.get("event_type");
+            if (!(rawEventType instanceof String)) {
+                throw new CregisClientException("Payment callback event_type is required");
             }
-            String incomingSign = (String) incomingSignValue;
-            // sign is not part of calculation
-            paramMap.remove("sign");
-
-            String calculatedSign = CregisSigner.sign(paramMap, apiKey);
-
-            if (!MessageDigest.isEqual(
-                    calculatedSign.getBytes(StandardCharsets.US_ASCII),
-                    incomingSign.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.US_ASCII))) {
-                throw new CregisClientException("Callback signature verification failed");
+            PaymentEventType eventType;
+            try {
+                eventType = PaymentEventType.fromValue((String) rawEventType);
+            } catch (IllegalArgumentException e) {
+                throw new CregisClientException(e.getMessage(), e);
             }
 
-            // 3. Parse to Object
-            return objectMapper.readValue(rawJsonBody, PaymentCallbackNotification.class);
+            return parseNotification(rawJsonBody, dataTypeFor(eventType));
 
         } catch (JsonProcessingException e) {
             throw new CregisClientException("Failed to parse callback JSON", e);
         }
+    }
+
+    private Class<? extends PaymentCallbackData> dataTypeFor(PaymentEventType eventType) {
+        switch (eventType) {
+            case PAID:
+            case PAID_PARTIAL:
+            case PAID_OVER:
+                return PaymentCompletedCallbackData.class;
+            case EXPIRED:
+                return PaymentExpiredCallbackData.class;
+            case REFUNDED:
+                return PaymentRefundedCallbackData.class;
+            case PAID_REMAIN:
+                return PaymentRemainingCallbackData.class;
+            default:
+                throw new CregisClientException("Unsupported Payment callback event_type: " + eventType.getValue());
+        }
+    }
+
+    private <T extends PaymentCallbackData> PaymentCallbackNotification<T> parseNotification(
+            String rawJsonBody,
+            Class<T> dataType) throws JsonProcessingException {
+        JavaType notificationType = objectMapper.getTypeFactory().constructParametricType(
+                PaymentCallbackNotification.class,
+                dataType);
+        return objectMapper.readValue(rawJsonBody, notificationType);
     }
 }

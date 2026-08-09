@@ -27,6 +27,7 @@ public abstract class CregisBaseClient {
     protected CregisBaseClient(
             String baseUrl,
             boolean debug,
+            CregisHttpConfig httpConfig,
             Function<ObjectMapper, Interceptor> authenticationInterceptorFactory) {
         this.baseUrl = normalizeBaseUrl(baseUrl);
         this.objectMapper = JsonMapper.builder()
@@ -37,11 +38,24 @@ public abstract class CregisBaseClient {
                         JsonInclude.Include.NON_NULL))
                 .build();
 
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        CregisHttpConfig resolvedHttpConfig = httpConfig == null
+                ? CregisHttpConfig.defaults()
+                : httpConfig;
+        OkHttpClient suppliedClient = resolvedHttpConfig.getHttpClient();
+        OkHttpClient.Builder builder = suppliedClient == null
+                ? new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true);
+                : suppliedClient.newBuilder();
+
+        applyTimeout(builder::connectTimeout, resolvedHttpConfig.getConnectTimeout());
+        applyTimeout(builder::readTimeout, resolvedHttpConfig.getReadTimeout());
+        applyTimeout(builder::writeTimeout, resolvedHttpConfig.getWriteTimeout());
+
+        builder.retryOnConnectionFailure(resolvedHttpConfig.isRetryOnConnectionFailure())
+                .followRedirects(false)
+                .followSslRedirects(false);
 
         if (authenticationInterceptorFactory != null) {
             builder.addInterceptor(authenticationInterceptorFactory.apply(objectMapper));
@@ -80,12 +94,22 @@ public abstract class CregisBaseClient {
 
             return apiResponse.getData();
 
+        } catch (JsonProcessingException e) {
+            throw new CregisClientException(
+                    "Failed to parse Cregis response for "
+                            + request.method() + " " + request.url().encodedPath(),
+                    e);
         } catch (IOException e) {
-            throw new CregisClientException("IO Exception executing request", e);
+            throw new CregisClientException(
+                    "I/O error executing " + request.method() + " " + request.url().encodedPath(),
+                    e);
         }
     }
 
     protected Request.Builder post(String path, Object payload) {
+        if (payload == null) {
+            throw new IllegalArgumentException("Request payload is required");
+        }
         try {
             String json = objectMapper.writeValueAsString(payload);
             RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
@@ -95,6 +119,17 @@ public abstract class CregisBaseClient {
         } catch (JsonProcessingException e) {
             throw new CregisClientException("Failed to serialize request body", e);
         }
+    }
+
+    private static void applyTimeout(TimeoutSetter setter, java.time.Duration timeout) {
+        if (timeout != null) {
+            setter.set(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    @FunctionalInterface
+    private interface TimeoutSetter {
+        void set(long timeout, TimeUnit unit);
     }
 
     private static String normalizeBaseUrl(String baseUrl) {

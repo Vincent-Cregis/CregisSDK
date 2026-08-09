@@ -1,0 +1,13 @@
+{
+  "library": "native",
+  "serializationLibrary": "jackson",
+  "dateLibrary": "java8",
+  "sourceFolder": "src/main/java",
+  "hideGenerationTimestamp": true,
+  "openApiNullable": false,
+  "generateBuilders": true,
+  "enumUnknownDefaultCase": true,
+  "disallowAdditionalPropertiesIfNotPresent": false,
+  "artifactId": "cregis-sdk-java-generated-staging",
+  "artifactVersion": "0.0.0"
+}

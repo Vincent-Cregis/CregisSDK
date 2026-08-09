@@ -1,0 +1,14 @@
+{
+  "event_name": "order",
+  "event_type": "refunded",
+  "pid": 123456789,
+  "nonce": "abc123",
+  "timestamp": 1719994383015,
+  "data": {
+    "cregis_id": "po-test",
+    "order_id": "merchant-test",
+    "refund_id": "rf-test",
+    "refund_status": 1
+  },
+  "sign": "9e2b39ae45341e1d912dda3e31a3dddf"
+}

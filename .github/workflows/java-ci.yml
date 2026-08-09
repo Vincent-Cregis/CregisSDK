@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "sdks/java/**"
+      - "codegen/**"
       - ".github/workflows/java-ci.yml"
       - ".github/workflows/java-release.yml"
       - "scripts/verify-java-version.sh"
@@ -14,6 +15,7 @@ on:
       - main
     paths:
       - "sdks/java/**"
+      - "codegen/**"
       - ".github/workflows/java-ci.yml"
       - ".github/workflows/java-release.yml"
       - "scripts/verify-java-version.sh"
@@ -25,6 +27,22 @@ permissions:
   contents: read
 
 jobs:
+  codegen-checks:
+    name: Test OpenAPI drift tooling
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Run drift-tool tests
+        run: |
+          python3 -m unittest discover -s codegen/tests -v
+          python3 -m json.tool codegen/configs/java-operations.json >/dev/null
+          python3 -m json.tool codegen/configs/java-generator.json >/dev/null
+          bash -n codegen/scripts/generate-java-staging.sh
+
   test:
     name: Build and unit test on Java ${{ matrix.java }}
     runs-on: ubuntu-latest
