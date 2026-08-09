@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -206,6 +207,35 @@ class ProjectClientContractTest {
                 () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
 
         assertTrue(error.getMessage().startsWith("Failed to parse Cregis response for POST /api/v1/coins"));
+    }
+
+    @Test
+    void doesNotRetryAnAmbiguousPostFailureByDefault() {
+        server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
+        enqueueData("{\"payout_coins\":[],\"address_coins\":[]}");
+
+        assertThrows(
+                CregisClientException.class,
+                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+
+        assertEquals(1, server.getRequestCount());
+    }
+
+    @Test
+    void doesNotFollowSignedRequestRedirects() throws Exception {
+        try (MockWebServer redirectTarget = new MockWebServer()) {
+            redirectTarget.start();
+            server.enqueue(new MockResponse()
+                    .setResponseCode(307)
+                    .setHeader("Location", redirectTarget.url("/capture")));
+
+            CregisHttpException error = assertThrows(
+                    CregisHttpException.class,
+                    () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+
+            assertEquals(307, error.getStatusCode());
+            assertEquals(0, redirectTarget.getRequestCount());
+        }
     }
 
     private void enqueueData(String dataJson) {
