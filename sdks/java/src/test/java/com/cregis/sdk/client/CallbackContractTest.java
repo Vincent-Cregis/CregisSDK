@@ -108,6 +108,32 @@ class CallbackContractTest {
     }
 
     @Test
+    void rejectsSignedCallbacksWithInvalidCommonEnvelopeFields() throws Exception {
+        CregisPaymentCallbackHandler handler = new CregisPaymentCallbackHandler(API_KEY);
+
+        Map<String, Object> missingPid = paymentEnvelope("paid", new LinkedHashMap<>());
+        missingPid.remove("pid");
+        CregisClientException pidError = assertThrows(
+                CregisClientException.class,
+                () -> handler.verifyAndParse(sign(missingPid)));
+        assertEquals("Callback pid must be a positive integer", pidError.getMessage());
+
+        Map<String, Object> blankNonce = paymentEnvelope("paid", new LinkedHashMap<>());
+        blankNonce.put("nonce", " ");
+        CregisClientException nonceError = assertThrows(
+                CregisClientException.class,
+                () -> handler.verifyAndParse(sign(blankNonce)));
+        assertEquals("Callback nonce must be a non-empty string", nonceError.getMessage());
+
+        Map<String, Object> fractionalTimestamp = paymentEnvelope("paid", new LinkedHashMap<>());
+        fractionalTimestamp.put("timestamp", 1.5);
+        CregisClientException timestampError = assertThrows(
+                CregisClientException.class,
+                () -> handler.verifyAndParse(sign(fractionalTimestamp)));
+        assertEquals("Callback timestamp must be a positive integer", timestampError.getMessage());
+    }
+
+    @Test
     void verifiesStableSyntheticNestedPaymentFixture() throws Exception {
         String rawJson = readResource("/webhooks/payment-refunded-synthetic.json");
 

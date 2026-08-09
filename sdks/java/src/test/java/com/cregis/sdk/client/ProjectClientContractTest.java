@@ -210,6 +210,29 @@ class ProjectClientContractTest {
     }
 
     @Test
+    void rejectsMissingOrNullResponseEnvelopesAsClientErrors() {
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("null"));
+
+        CregisClientException nullEnvelope = assertThrows(
+                CregisClientException.class,
+                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+        assertEquals("Cregis response must be a JSON object", nullEnvelope.getMessage());
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"msg\":\"ok\",\"data\":{}}"));
+
+        CregisClientException missingCode = assertThrows(
+                CregisClientException.class,
+                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+        assertEquals("Cregis response is missing required field: code", missingCode.getMessage());
+    }
+
+    @Test
     void doesNotRetryAnAmbiguousPostFailureByDefault() {
         server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
         enqueueData("{\"payout_coins\":[],\"address_coins\":[]}");

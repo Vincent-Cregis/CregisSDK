@@ -85,8 +85,14 @@ public abstract class CregisBaseClient {
             }
 
             String bodyString = response.body().string();
-            // Parse into ApiResponse
             ApiResponse<T> apiResponse = objectMapper.readValue(bodyString, typeReference);
+
+            if (apiResponse == null) {
+                throw new CregisClientException("Cregis response must be a JSON object");
+            }
+            if (apiResponse.getCode() == null || apiResponse.getCode().trim().isEmpty()) {
+                throw new CregisClientException("Cregis response is missing required field: code");
+            }
 
             if (!apiResponse.isSuccess()) {
                 throw new CregisServerException(apiResponse.getCode(), apiResponse.getMsg());
