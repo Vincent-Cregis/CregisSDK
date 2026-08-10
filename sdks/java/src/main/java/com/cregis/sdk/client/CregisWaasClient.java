@@ -3,34 +3,33 @@ package com.cregis.sdk.client;
 import com.cregis.sdk.core.client.CregisBaseClient;
 import com.cregis.sdk.core.client.CregisHttpConfig;
 import com.cregis.sdk.domain.common.ApiResponse;
-import com.cregis.sdk.domain.waas.AddressBalanceRequest;
-import com.cregis.sdk.domain.waas.AddressBalanceResponse;
-import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
-import com.cregis.sdk.domain.waas.AddressBalanceV2Response;
-import com.cregis.sdk.domain.waas.AddressUpdateRequest;
-import com.cregis.sdk.domain.waas.BalanceCollectRequest;
-import com.cregis.sdk.domain.waas.BalanceCollectResponse;
-import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
-import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
-import com.cregis.sdk.domain.waas.CheckAddressLegalityResponse;
-import com.cregis.sdk.domain.waas.GenerateAddressRequest;
-import com.cregis.sdk.domain.waas.GenerateAddressResponse;
-import com.cregis.sdk.domain.waas.GeneratedAddress;
-import com.cregis.sdk.domain.waas.PayoutRequest;
-import com.cregis.sdk.domain.waas.PayoutResponse;
-import com.cregis.sdk.domain.waas.PayoutV1Request;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryResponse;
-import com.cregis.sdk.domain.waas.QueryPayoutRequest;
-import com.cregis.sdk.domain.waas.QueryPayoutResponse;
-import com.cregis.sdk.domain.waas.QueryWithdrawalRequest;
-import com.cregis.sdk.domain.waas.QueryWithdrawalResponse;
-import com.cregis.sdk.domain.waas.TradeRecordQueryRequest;
-import com.cregis.sdk.domain.waas.TradeRecordQueryResponse;
-import com.cregis.sdk.domain.waas.ValidateAddressRequest;
-import com.cregis.sdk.domain.waas.ValidateAddressResponse;
-import com.cregis.sdk.domain.waas.WithdrawalRequest;
-import com.cregis.sdk.domain.waas.WithdrawalResponse;
+import com.cregis.sdk.generated.waas.model.AddressBalanceRequest;
+import com.cregis.sdk.generated.waas.model.AddressBalanceResponse;
+import com.cregis.sdk.generated.waas.model.AddressBalanceV2Request;
+import com.cregis.sdk.generated.waas.model.AddressBalanceV2Response;
+import com.cregis.sdk.generated.waas.model.AddressUpdateRequest;
+import com.cregis.sdk.generated.waas.model.BalanceCollectRequest;
+import com.cregis.sdk.generated.waas.model.BalanceCollectResponse;
+import com.cregis.sdk.generated.waas.model.BatchGenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.CheckAddressLegalityRequest;
+import com.cregis.sdk.generated.waas.model.CheckAddressLegalityResponse;
+import com.cregis.sdk.generated.waas.model.GenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.GenerateAddressResponse;
+import com.cregis.sdk.generated.waas.model.GeneratedAddress;
+import com.cregis.sdk.generated.waas.model.PayoutRequest;
+import com.cregis.sdk.generated.waas.model.PayoutResponse;
+import com.cregis.sdk.generated.waas.model.PayoutV1Request;
+import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponse;
+import com.cregis.sdk.generated.waas.model.QueryPayoutRequest;
+import com.cregis.sdk.generated.waas.model.QueryPayoutResponse;
+import com.cregis.sdk.generated.waas.model.QueryWithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.QueryWithdrawalResponse;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryRequest;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
+import com.cregis.sdk.generated.waas.model.ValidateAddressRequest;
+import com.cregis.sdk.generated.waas.model.ValidateAddressResponse;
+import com.cregis.sdk.generated.waas.model.WithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.WithdrawalResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
@@ -159,13 +158,12 @@ public class CregisWaasClient extends CregisBaseClient {
 
     /**
      * Query supported project currencies.
-     * 
-     * @param request The query request (empty body).
+     *
      * @return The list of supported coins.
      */
-    public ProjectCoinQueryResponse queryProjectCoins(ProjectCoinQueryRequest request) {
+    public ProjectCoinQueryResponse queryProjectCoins() {
         return execute(
-                post("/api/v1/coins", request).build(),
+                post("/api/v1/coins", java.util.Collections.emptyMap()).build(),
                 new TypeReference<ApiResponse<ProjectCoinQueryResponse>>() {
                 });
     }

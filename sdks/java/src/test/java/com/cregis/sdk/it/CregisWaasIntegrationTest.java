@@ -1,34 +1,34 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisWaasClient;
-import com.cregis.sdk.domain.waas.AddressBalanceRequest;
-import com.cregis.sdk.domain.waas.AddressBalanceResponse;
-import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
-import com.cregis.sdk.domain.waas.AddressBalanceV2Response;
-import com.cregis.sdk.domain.waas.AddressUpdateRequest;
-import com.cregis.sdk.domain.waas.BalanceCollectRequest;
-import com.cregis.sdk.domain.waas.BalanceCollectResponse;
-import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
-import com.cregis.sdk.domain.waas.GeneratedAddress;
-import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
-import com.cregis.sdk.domain.waas.CheckAddressLegalityResponse;
-import com.cregis.sdk.domain.waas.GenerateAddressRequest;
-import com.cregis.sdk.domain.waas.GenerateAddressResponse;
-import com.cregis.sdk.domain.waas.PayoutRequest;
-import com.cregis.sdk.domain.waas.PayoutResponse;
-import com.cregis.sdk.domain.waas.PayoutV1Request;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryResponse;
-import com.cregis.sdk.domain.waas.QueryPayoutRequest;
-import com.cregis.sdk.domain.waas.QueryPayoutResponse;
-import com.cregis.sdk.domain.waas.QueryWithdrawalRequest;
-import com.cregis.sdk.domain.waas.QueryWithdrawalResponse;
-import com.cregis.sdk.domain.waas.TradeRecordQueryRequest;
-import com.cregis.sdk.domain.waas.TradeRecordQueryResponse;
-import com.cregis.sdk.domain.waas.ValidateAddressRequest;
-import com.cregis.sdk.domain.waas.ValidateAddressResponse;
-import com.cregis.sdk.domain.waas.WithdrawalRequest;
-import com.cregis.sdk.domain.waas.WithdrawalResponse;
+import com.cregis.sdk.generated.waas.model.AddressBalanceRequest;
+import com.cregis.sdk.generated.waas.model.AddressBalanceResponse;
+import com.cregis.sdk.generated.waas.model.AddressBalanceV2Request;
+import com.cregis.sdk.generated.waas.model.AddressBalanceV2Response;
+import com.cregis.sdk.generated.waas.model.AddressUpdateRequest;
+import com.cregis.sdk.generated.waas.model.BalanceCollectRequest;
+import com.cregis.sdk.generated.waas.model.BalanceCollectResponse;
+import com.cregis.sdk.generated.waas.model.BatchGenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.GeneratedAddress;
+import com.cregis.sdk.generated.waas.model.CheckAddressLegalityRequest;
+import com.cregis.sdk.generated.waas.model.CheckAddressLegalityResponse;
+import com.cregis.sdk.generated.waas.model.GenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.GenerateAddressResponse;
+import com.cregis.sdk.generated.waas.model.PayoutRequest;
+import com.cregis.sdk.generated.waas.model.PayoutResponse;
+import com.cregis.sdk.generated.waas.model.PayoutV1Request;
+import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponse;
+import com.cregis.sdk.generated.waas.model.ProjectCoin;
+import com.cregis.sdk.generated.waas.model.QueryPayoutRequest;
+import com.cregis.sdk.generated.waas.model.QueryPayoutResponse;
+import com.cregis.sdk.generated.waas.model.QueryWithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.QueryWithdrawalResponse;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryRequest;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
+import com.cregis.sdk.generated.waas.model.ValidateAddressRequest;
+import com.cregis.sdk.generated.waas.model.ValidateAddressResponse;
+import com.cregis.sdk.generated.waas.model.WithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.WithdrawalResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -84,7 +84,7 @@ public class CregisWaasIntegrationTest {
     @Test
     @Order(1)
     void queriesProjectCoinsAndSelectsSandboxCurrency() {
-        ProjectCoinQueryResponse response = client.queryProjectCoins(ProjectCoinQueryRequest.builder().build());
+        ProjectCoinQueryResponse response = client.queryProjectCoins();
 
         assertNotNull(response);
         assertNotNull(response.getAddressCoins());
@@ -93,7 +93,7 @@ public class CregisWaasIntegrationTest {
         assertFalse(response.getPayoutCoins().isEmpty(), "Project needs at least one payout coin");
 
         String preferredChainId = valueOrDefault(IntegrationTestEnvironment.get("WAAS_CHAIN_ID"), "198");
-        ProjectCoinQueryResponse.CoinInfo payoutCoin = selectPayoutCoin(
+        ProjectCoin payoutCoin = selectPayoutCoin(
                 response.getPayoutCoins(), response.getAddressCoins(), preferredChainId);
         assertNotNull(payoutCoin, "Project needs a chain that supports both address creation and payout");
         assertNotNull(payoutCoin.getChainId());
@@ -247,7 +247,7 @@ public class CregisWaasIntegrationTest {
     void submitsPayoutV2() {
         requireGeneratedAddress();
         String walletId = IntegrationTestEnvironment.get("WAAS_WALLET_ID");
-        PayoutRequest.PayoutRequestBuilder request = PayoutRequest.builder()
+        PayoutRequest.Builder request = PayoutRequest.builder()
                 .currency(currency)
                 .toAddress(payoutDestination)
                 .amount(testAmount)
@@ -312,12 +312,12 @@ public class CregisWaasIntegrationTest {
         assertNotNull(response.getCid());
     }
 
-    private static ProjectCoinQueryResponse.CoinInfo selectPayoutCoin(
-            List<ProjectCoinQueryResponse.CoinInfo> payoutCoins,
-            List<ProjectCoinQueryResponse.CoinInfo> addressCoins,
+    private static ProjectCoin selectPayoutCoin(
+            List<ProjectCoin> payoutCoins,
+            List<ProjectCoin> addressCoins,
             String preferredChainId) {
-        ProjectCoinQueryResponse.CoinInfo fallback = null;
-        for (ProjectCoinQueryResponse.CoinInfo payoutCoin : payoutCoins) {
+        ProjectCoin fallback = null;
+        for (ProjectCoin payoutCoin : payoutCoins) {
             if (!hasAddressChain(addressCoins, payoutCoin.getChainId())) {
                 continue;
             }
@@ -332,9 +332,9 @@ public class CregisWaasIntegrationTest {
     }
 
     private static boolean hasAddressChain(
-            List<ProjectCoinQueryResponse.CoinInfo> addressCoins,
+            List<ProjectCoin> addressCoins,
             String candidateChainId) {
-        for (ProjectCoinQueryResponse.CoinInfo addressCoin : addressCoins) {
+        for (ProjectCoin addressCoin : addressCoins) {
             if (candidateChainId != null && candidateChainId.equals(addressCoin.getChainId())) {
                 return true;
             }

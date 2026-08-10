@@ -1,10 +1,9 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisWaasClient;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryResponse;
-import com.cregis.sdk.domain.waas.TradeRecordQueryRequest;
-import com.cregis.sdk.domain.waas.TradeRecordQueryResponse;
+import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponse;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryRequest;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,8 +35,7 @@ class CregisWaasReadOnlyIntegrationTest {
 
     @Test
     void queriesProjectCoins() {
-        ProjectCoinQueryResponse response = client.queryProjectCoins(
-                ProjectCoinQueryRequest.builder().build());
+        ProjectCoinQueryResponse response = client.queryProjectCoins();
 
         assertNotNull(response);
         assertNotNull(response.getAddressCoins(), "WaaS should return the address coin list");

@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "sdkManagedRequestFields": ["pid", "nonce", "timestamp", "sign"],
+  "apis": {
+    "payment": {
+      "modelPackage": "com.cregis.sdk.generated.payment.model",
+      "componentNames": {
+        "PaymentEngineOrderDetails": "OrderDetails",
+        "PaymentEngineOrderItem": "OrderItem",
+        "PaymentEngineOrderSettlementDetail": "OrderSettlementDetail",
+        "PaymentEngineQueryOrderDetails": "QueryOrderDetails",
+        "PaymentEngineQueryOrderItem": "QueryOrderItem",
+        "PaymentEngineQuerySubMerchant": "QuerySubMerchant",
+        "PaymentEngineSettlementDetails": "SettlementDetails",
+        "PaymentEngineSubMerchant": "SubMerchant"
+      },
+      "schemaNames": {
+        "createOrder.response.payment_info.items": "PaymentInfo",
+        "queryOrder.response.payment_detail.items": "PaymentDetail",
+        "queryOrder.response.payment_info.items": "PaymentInfo",
+        "queryOrder.response.refund_data": "RefundData"
+      },
+      "operations": {
+        "createOrder": {"requestModel": "CreateOrderRequest", "responseModel": "CreateOrderResponse"},
+        "queryOrder": {"requestModel": "QueryOrderRequest", "responseModel": "QueryOrderResponse"}
+      }
+    },
+    "waas": {
+      "modelPackage": "com.cregis.sdk.generated.waas.model",
+      "componentNames": {},
+      "schemaNames": {
+        "batchCreateAddress.response.items": "GeneratedAddress",
+        "getProjectCoins.response.payout_coins.items": "ProjectCoin",
+        "getProjectCoins.response.address_coins.items": "ProjectCoin",
+        "tradePage.response.rows.items": "TradeRecord",
+        "subAddressBalancePage.response.rows.items": "AddressBalance",
+        "querySubAddressBalanceV2.response.rows.items": "AddressBalanceV2"
+      },
+      "operations": {
+        "createAddress": {"requestModel": "GenerateAddressRequest", "responseModel": "GenerateAddressResponse"},
+        "batchCreateAddress": {"requestModel": "BatchGenerateAddressRequest", "responseModel": "GeneratedAddress", "responseContainer": "array"},
+        "updateAddress": {"requestModel": "AddressUpdateRequest"},
+        "verifyAddress": {"requestModel": "ValidateAddressRequest", "responseModel": "ValidateAddressResponse"},
+        "validateAddressFormat": {"requestModel": "CheckAddressLegalityRequest", "responseModel": "CheckAddressLegalityResponse"},
+        "initiatePayout": {"requestModel": "PayoutV1Request", "responseModel": "PayoutResponse"},
+        "initiatePayoutV2": {"requestModel": "PayoutRequest", "responseModel": "PayoutResponse"},
+        "subAddressWithdrawal": {"requestModel": "WithdrawalRequest", "responseModel": "WithdrawalResponse"},
+        "initiateCollection": {"requestModel": "BalanceCollectRequest", "responseModel": "BalanceCollectResponse"},
+        "getProjectCoins": {"responseModel": "ProjectCoinQueryResponse"},
+        "tradePage": {"requestModel": "TradeRecordQueryRequest", "responseModel": "TradeRecordQueryResponse"},
+        "queryPayout": {"requestModel": "QueryPayoutRequest", "responseModel": "QueryPayoutResponse"},
+        "querySubAddressWithdrawal": {"requestModel": "QueryWithdrawalRequest", "responseModel": "QueryWithdrawalResponse"},
+        "subAddressBalancePage": {"requestModel": "AddressBalanceRequest", "responseModel": "AddressBalanceResponse"},
+        "querySubAddressBalanceV2": {"requestModel": "AddressBalanceV2Request", "responseModel": "AddressBalanceV2Response"}
+      }
+    },
+    "team": {
+      "modelPackage": "com.cregis.sdk.generated.team.model",
+      "componentNames": {
+        "TeamWallet": "TeamWallet",
+        "TeamWalletAddress": "TeamWalletAddress",
+        "TeamWalletAddressBalance": "TeamWalletAddressBalance",
+        "TeamWalletBalance": "TeamWalletBalance",
+        "TeamWalletProcessingTransaction": "TeamWalletProcessingTransaction",
+        "TeamWalletToken": "TeamWalletToken",
+        "TeamWalletTransaction": "TeamWalletTransaction"
+      },
+      "schemaNames": {},
+      "operations": {
+        "listTeamWallets": {"requestModel": "ListTeamWalletsRequest", "responseModel": "ListTeamWalletsResponse"},
+        "listTeamWalletAddresses": {"requestModel": "ListTeamWalletAddressesRequest", "responseModel": "ListTeamWalletAddressesResponse"},
+        "queryTeamWalletBalance": {"requestModel": "QueryTeamWalletBalanceRequest", "responseModel": "QueryTeamWalletBalanceResponse"},
+        "queryTeamWalletAddressBalance": {"requestModel": "QueryTeamWalletAddressBalanceRequest", "responseModel": "QueryTeamWalletAddressBalanceResponse"},
+        "queryTeamWalletHistoryTransactions": {"requestModel": "QueryTeamWalletHistoryTransactionsRequest", "responseModel": "QueryTeamWalletHistoryTransactionsResponse"},
+        "queryTeamWalletProcessingTransactions": {"requestModel": "QueryTeamWalletProcessingTransactionsRequest", "responseModel": "QueryTeamWalletProcessingTransactionsResponse"}
+      }
+    }
+  }
+}

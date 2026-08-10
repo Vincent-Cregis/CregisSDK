@@ -1,20 +1,25 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisTeamClient;
-import com.cregis.sdk.domain.team.ListTeamWalletAddressesRequest;
-import com.cregis.sdk.domain.team.ListTeamWalletsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletAddressBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletHistoryTransactionsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletProcessingTransactionsRequest;
-import com.cregis.sdk.domain.team.TeamPagedResponse;
-import com.cregis.sdk.domain.team.TeamWallet;
-import com.cregis.sdk.domain.team.TeamWalletAddress;
-import com.cregis.sdk.domain.team.TeamWalletAddressBalance;
-import com.cregis.sdk.domain.team.TeamWalletBalance;
-import com.cregis.sdk.domain.team.TeamWalletProcessingTransaction;
-import com.cregis.sdk.domain.team.TeamWalletToken;
-import com.cregis.sdk.domain.team.TeamWalletTransaction;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesResponse;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletAddressBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletAddressBalanceResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletBalanceResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletHistoryTransactionsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletHistoryTransactionsResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletProcessingTransactionsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletProcessingTransactionsResponse;
+import com.cregis.sdk.generated.team.model.TeamWallet;
+import com.cregis.sdk.generated.team.model.TeamWalletAddress;
+import com.cregis.sdk.generated.team.model.TeamWalletAddressBalance;
+import com.cregis.sdk.generated.team.model.TeamWalletBalance;
+import com.cregis.sdk.generated.team.model.TeamWalletProcessingTransaction;
+import com.cregis.sdk.generated.team.model.TeamWalletToken;
+import com.cregis.sdk.generated.team.model.TeamWalletTransaction;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -57,7 +62,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Test
     @Order(1)
     void listsTeamWallets() {
-        TeamPagedResponse<TeamWallet> response = client.listTeamWallets(
+        ListTeamWalletsResponse response = client.listTeamWallets(
                 ListTeamWalletsRequest.builder().pageNum(1).pageSize(10).build());
 
         assertNotNull(response);
@@ -78,7 +83,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Order(2)
     void listsTeamWalletAddresses() {
         requireWalletAndChain();
-        TeamPagedResponse<TeamWalletAddress> response = client.listTeamWalletAddresses(
+        ListTeamWalletAddressesResponse response = client.listTeamWalletAddresses(
                 ListTeamWalletAddressesRequest.builder()
                         .walletId(walletId)
                         .chainId(chainId)
@@ -97,7 +102,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Order(3)
     void queriesTeamWalletBalance() {
         requireWallet();
-        TeamPagedResponse<TeamWalletBalance> response = client.queryTeamWalletBalance(
+        QueryTeamWalletBalanceResponse response = client.queryTeamWalletBalance(
                 QueryTeamWalletBalanceRequest.builder()
                         .walletId(walletId)
                         .chainId(chainId)
@@ -114,7 +119,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Order(4)
     void queriesTeamWalletAddressBalance() {
         requireWallet();
-        TeamPagedResponse<TeamWalletAddressBalance> response = client.queryTeamWalletAddressBalance(
+        QueryTeamWalletAddressBalanceResponse response = client.queryTeamWalletAddressBalance(
                 QueryTeamWalletAddressBalanceRequest.builder()
                         .walletId(walletId)
                         .address(walletAddress)
@@ -132,7 +137,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Order(5)
     void queriesTeamWalletHistoryTransactions() {
         requireWallet();
-        TeamPagedResponse<TeamWalletTransaction> response = client.queryTeamWalletHistoryTransactions(
+        QueryTeamWalletHistoryTransactionsResponse response = client.queryTeamWalletHistoryTransactions(
                 QueryTeamWalletHistoryTransactionsRequest.builder()
                         .walletId(walletId)
                         .chainId(chainId)
@@ -149,7 +154,7 @@ class CregisTeamReadOnlyIntegrationTest {
     @Order(6)
     void queriesTeamWalletProcessingTransactions() {
         requireWallet();
-        TeamPagedResponse<TeamWalletProcessingTransaction> response = client.queryTeamWalletProcessingTransactions(
+        QueryTeamWalletProcessingTransactionsResponse response = client.queryTeamWalletProcessingTransactions(
                 QueryTeamWalletProcessingTransactionsRequest.builder()
                         .walletId(walletId)
                         .chainId(chainId)

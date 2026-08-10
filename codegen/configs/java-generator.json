@@ -6,6 +6,7 @@
   "hideGenerationTimestamp": true,
   "openApiNullable": false,
   "generateBuilders": true,
+  "generateAliasAsModel": true,
   "enumUnknownDefaultCase": true,
   "disallowAdditionalPropertiesIfNotPresent": false,
   "artifactId": "cregis-sdk-java-generated-staging",

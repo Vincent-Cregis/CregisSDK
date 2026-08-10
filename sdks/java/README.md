@@ -49,11 +49,12 @@ Before the release candidate is available from Maven Central, run `mvn install` 
 
 ```java
 import com.cregis.sdk.client.CregisWaasClient;
-import com.cregis.sdk.domain.waas.*;
+import com.cregis.sdk.generated.waas.model.GenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.GenerateAddressResponse;
 
 // Initialize Client
 CregisWaasClient client = CregisWaasClient.builder()
-    .credentials("YOUR_PID", "YOUR_API_KEY")
+    .credentials(123456789L, "YOUR_API_KEY")
     .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
     .build();
 
@@ -75,17 +76,23 @@ try {
 
 ### 2. Payment Example (Create Order)
 
-The SDK provides helper methods to easily handle complex objects like Order Details and Sub-Merchants.
+The Payment API represents `order_details`, `sub_merchant`, and `tokens` as
+JSON text inside string fields. `CregisPaymentValues.jsonString(...)` safely
+encodes structured Java values for those fields.
 
 ```java
 import com.cregis.sdk.client.CregisPaymentClient;
-import com.cregis.sdk.domain.payment.*;
+import com.cregis.sdk.generated.payment.model.CreateOrderRequest;
+import com.cregis.sdk.generated.payment.model.CreateOrderResponse;
+import com.cregis.sdk.generated.payment.model.OrderDetails;
+import com.cregis.sdk.generated.payment.model.OrderItem;
+import com.cregis.sdk.payment.CregisPaymentValues;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
 // Initialize Client
 CregisPaymentClient client = CregisPaymentClient.builder()
-    .credentials("YOUR_PID", "YOUR_API_KEY")
+    .credentials(123456789L, "YOUR_API_KEY")
     .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
     .build();
 
@@ -94,7 +101,7 @@ OrderDetails details = OrderDetails.builder()
     .shoppingCost(new BigDecimal("5.00"))
     .taxCost(new BigDecimal("2.50"))
     .items(Arrays.asList(
-        OrderDetails.Item.builder()
+        OrderItem.builder()
             .itemId("ITEM-001")
             .itemName("Premium Subscription")
             .itemPrice(new BigDecimal("99.00"))
@@ -113,11 +120,10 @@ CreateOrderRequest request = CreateOrderRequest.builder()
     .payerEmail("user@example.com")
     .successUrl("https://merchant.example/payment/success")
     .cancelUrl("https://merchant.example/payment/cancel")
+    .orderDetails(CregisPaymentValues.jsonString(details))
+    .tokens(CregisPaymentValues.jsonString(
+        Arrays.asList("USDT-TRC20", "USDT-ERC20")))
     .build();
-
-// Set Complex Objects (Automatically Serialized)
-request.setOrderDetailsObject(details);
-request.setTokensList(Arrays.asList("USDT-TRC20", "USDT-ERC20"));
 
 // Execute
 CreateOrderResponse response = client.createOrder(request);
@@ -128,20 +134,37 @@ System.out.println("Checkout URL: " + response.getCheckoutUrl());
 
 ```java
 import com.cregis.sdk.client.CregisTeamClient;
-import com.cregis.sdk.domain.team.*;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsResponse;
 
 CregisTeamClient teamClient = CregisTeamClient.builder()
     .endpoint("YOUR_TEAM_SPECIFIC_BASE_URL")
     .credentials("YOUR_ACCESS_KEY", "YOUR_ACCESS_SECRET")
     .build();
 
-TeamPagedResponse<TeamWallet> wallets = teamClient.listTeamWallets(
+ListTeamWalletsResponse wallets = teamClient.listTeamWallets(
     ListTeamWalletsRequest.builder()
         .pageNum(1)
         .pageSize(10)
         .build()
 );
+
+wallets.getRows().forEach(wallet -> System.out.println(wallet.getWalletId()));
 ```
+
+### Generated operation models
+
+Request and response models are generated from the canonical OpenAPI files and
+live under these packages:
+
+- `com.cregis.sdk.generated.payment.model`
+- `com.cregis.sdk.generated.waas.model`
+- `com.cregis.sdk.generated.team.model`
+
+The Clients, signing, HTTP behavior, exceptions, and callback handling remain
+handwritten. Applications should import operation models from the generated
+packages; callback models continue to use `com.cregis.sdk.domain.payment` and
+`com.cregis.sdk.domain.waas`.
 
 ### HTTP transport configuration
 
@@ -165,7 +188,7 @@ CregisHttpConfig httpConfig = CregisHttpConfig.builder()
 
 CregisWaasClient client = CregisWaasClient.builder()
     .endpoint("YOUR_PROJECT_SPECIFIC_BASE_URL")
-    .credentials("YOUR_PID", "YOUR_API_KEY")
+    .credentials(123456789L, "YOUR_API_KEY")
     .httpConfig(httpConfig)
     .build();
 ```

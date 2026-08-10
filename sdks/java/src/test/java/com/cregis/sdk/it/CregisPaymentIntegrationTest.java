@@ -1,7 +1,7 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisPaymentClient;
-import com.cregis.sdk.domain.payment.*;
+import com.cregis.sdk.generated.payment.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class CregisPaymentIntegrationTest {
                 .cancelUrl("https://example.com/cancel")
                 .remark("Integration Test Order")
                 .validTime(60)
-                .language("sc")
+                .language(CreateOrderRequest.LanguageEnum.SC)
                 .underpaidTolerance(0.1f)
                 .overpaidTolerance(0.1f)
                 .build();

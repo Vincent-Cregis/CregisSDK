@@ -1,52 +1,82 @@
 # SDK code generation
 
-The canonical OpenAPI files remain in the separate
-`cregis-developer-docs` repository. This repository does not keep a second
-copy.
+The canonical Payment Engine, WaaS, and Team OpenAPI files remain in the
+separate `cregis-developer-docs` repository. This repository deliberately does
+not keep a second copy of those specifications.
 
-## Check Java operation drift
+## Java model pipeline
 
-Pass the local canonical-spec directory explicitly:
+Run the pipeline from the root of this repository and point it at a local
+checkout of the canonical specifications:
+
+```bash
+./codegen/scripts/generate-java-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs
+```
+
+The command performs these steps:
+
+1. Verifies that all OpenAPI operations are mapped in
+   `codegen/configs/java-operations.json` and `codegen/configs/java-models.json`.
+2. Builds disposable prepared specifications in a temporary directory.
+3. Removes SDK-managed `pid`, `nonce`, `timestamp`, and `sign` fields from
+   Payment/WaaS request models.
+4. Unwraps response `data` objects and assigns stable names to inline schemas.
+5. Generates models with the digest-pinned OpenAPI Generator 7.19.0 image.
+6. Replaces `sdks/java/src/generated/java` and writes
+   `codegen/manifests/java-models.lock.json`.
+7. Checks that the generated boundary has no missing files, duplicate
+   handwritten operation DTOs, or leaked SDK-managed request fields.
+
+The prepared specifications are always temporary. The generated Java models
+and lock manifest are committed so SDK consumers do not need Docker or the
+documentation repository.
+
+Do not edit `sdks/java/src/generated/java` by hand. Change the canonical
+OpenAPI file or the stable-name mapping and regenerate instead.
+
+## Verify reproducibility
+
+Use `--check` when the committed output must not be changed:
+
+```bash
+./codegen/scripts/generate-java-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs \
+  --check
+```
+
+This regenerates into a temporary directory and fails if either the Java files
+or the lock manifest differ from the committed result.
+
+The following faster check does not require the OpenAPI files or Docker. CI
+runs it to validate the committed generated/handwritten boundary:
+
+```bash
+./codegen/scripts/check-java-generated-models.py
+```
+
+## Check operation drift
+
+Compare the canonical operations and Java Client paths:
 
 ```bash
 ./codegen/scripts/check-java-openapi.py \
   --spec-dir ../cregis-developer-docs/api-sources/specs
 ```
 
-The command compares all HTTP methods, paths, and OpenAPI `operationId` values
-with `codegen/configs/java-operations.json`, then confirms that the mapped Java
-client method still calls the expected path. It currently expects 2 Payment,
-15 WaaS, and 6 Team operations.
+It currently expects 2 Payment, 15 WaaS, and 6 Team operations.
 
-The checker does not download or copy specifications. Its own tests run in CI:
+Run all code-generation tool tests with:
 
 ```bash
 python3 -m unittest discover -s codegen/tests -v
 ```
 
-## Generate disposable Java models
+## Handwritten boundary
 
-The staging generator uses OpenAPI Generator 7.19.0 through an immutable Docker
-image digest. It never writes into `sdks/java` and requires an empty output
-directory:
+Only operation request/response models are generated. HTTP transport, signing,
+exceptions, the public Clients, Payment/WaaS webhook models, and webhook
+handlers remain handwritten. Generated code must never overwrite those files.
 
-```bash
-output_dir="$(mktemp -d)"
-./codegen/scripts/generate-java-staging.sh \
-  --spec-dir ../cregis-developer-docs/api-sources/specs \
-  --output-dir "$output_dir"
-```
-
-The output contains models only, under separate Payment, WaaS, and Team
-packages. It is inspection output, not production source code.
-
-The current specifications use inline request and response schemas and include
-authentication fields in public request bodies. Standard generated names such
-as `CreateOrder200ResponseAllOfData` are not suitable as a stable SDK API, and
-users must not be asked to populate `pid`, `nonce`, `timestamp`, or `sign`.
-Before generated models replace handwritten models, the generation preparation
-step must give inline schemas stable semantic names and remove SDK-managed
-authentication fields from outbound request models.
-
-Handwritten HTTP, signing, exception, and webhook code must never be placed in
-or copied into a generated output directory.
+`generate-java-staging.sh` remains available for disposable inspection of raw
+generator output; it is not the production Java model pipeline.

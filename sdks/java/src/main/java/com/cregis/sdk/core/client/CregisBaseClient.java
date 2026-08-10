@@ -12,9 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -116,6 +119,7 @@ public abstract class CregisBaseClient {
         if (payload == null) {
             throw new IllegalArgumentException("Request payload is required");
         }
+        validateRequiredProperties(payload);
         try {
             String json = objectMapper.writeValueAsString(payload);
             RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
@@ -124,6 +128,25 @@ public abstract class CregisBaseClient {
                     .post(body);
         } catch (JsonProcessingException e) {
             throw new CregisClientException("Failed to serialize request body", e);
+        }
+    }
+
+    private static void validateRequiredProperties(Object payload) {
+        for (Method method : payload.getClass().getMethods()) {
+            JsonProperty property = method.getAnnotation(JsonProperty.class);
+            if (property == null || !property.required() || method.getParameterCount() != 0) {
+                continue;
+            }
+            try {
+                if (method.invoke(payload) == null) {
+                    throw new CregisClientException(
+                            "Missing required request field: " + property.value());
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new CregisClientException(
+                        "Failed to validate required request field: " + property.value(),
+                        e);
+            }
         }
     }
 

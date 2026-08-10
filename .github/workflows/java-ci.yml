@@ -39,9 +39,13 @@ jobs:
       - name: Run drift-tool tests
         run: |
           python3 -m unittest discover -s codegen/tests -v
+          ./codegen/scripts/check-java-generated-models.py
           python3 -m json.tool codegen/configs/java-operations.json >/dev/null
           python3 -m json.tool codegen/configs/java-generator.json >/dev/null
+          python3 -m json.tool codegen/configs/java-models.json >/dev/null
+          python3 -m json.tool codegen/manifests/java-models.lock.json >/dev/null
           bash -n codegen/scripts/generate-java-staging.sh
+          bash -n codegen/scripts/generate-java-models.sh
 
   test:
     name: Build and unit test on Java ${{ matrix.java }}

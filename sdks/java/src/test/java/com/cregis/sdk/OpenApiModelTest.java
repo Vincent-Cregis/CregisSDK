@@ -1,18 +1,24 @@
 package com.cregis.sdk;
 
-import com.cregis.sdk.domain.payment.CreateOrderResponse;
-import com.cregis.sdk.domain.payment.CreateOrderRequest;
-import com.cregis.sdk.domain.payment.QueryOrderResponse;
-import com.cregis.sdk.domain.team.ListTeamWalletAddressesRequest;
-import com.cregis.sdk.domain.waas.AddressBalanceResponse;
-import com.cregis.sdk.domain.waas.PayoutV1Request;
-import com.cregis.sdk.domain.waas.TradeRecordQueryResponse;
+import com.cregis.sdk.generated.payment.model.CreateOrderResponse;
+import com.cregis.sdk.generated.payment.model.CreateOrderRequest;
+import com.cregis.sdk.generated.payment.model.OrderDetails;
+import com.cregis.sdk.generated.payment.model.OrderItem;
+import com.cregis.sdk.generated.payment.model.QueryOrderResponse;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesRequest;
+import com.cregis.sdk.generated.waas.model.AddressBalanceResponse;
+import com.cregis.sdk.generated.waas.model.PayoutV1Request;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
+import com.cregis.sdk.payment.CregisPaymentValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenApiModelTest {
 
@@ -53,7 +59,9 @@ class OpenApiModelTest {
         assertEquals("rf-1", response.getRefundData().getRefundId());
         assertEquals("10001", response.getOrderDetails().getItems().get(0).getItemId());
         assertEquals("sub-1", response.getSubMerchant().getSubMerchantId());
-        assertEquals("settled", response.getSettlementDetails().getOrderSettlementDetail().getStatus());
+        assertEquals(
+                "settled",
+                response.getSettlementDetails().getOrderSettlementDetail().getStatus().getValue());
     }
 
     @Test
@@ -71,9 +79,35 @@ class OpenApiModelTest {
     }
 
     @Test
-    void buildersEnforceOpenApiRequiredBusinessFields() {
-        assertThrows(NullPointerException.class, () -> CreateOrderRequest.builder().build());
-        assertThrows(NullPointerException.class, () -> PayoutV1Request.builder().build());
-        assertThrows(NullPointerException.class, () -> ListTeamWalletAddressesRequest.builder().build());
+    void generatedModelsRetainOpenApiRequiredFieldMetadata() throws Exception {
+        assertTrue(CreateOrderRequest.class.getMethod("getOrderId")
+                .getAnnotation(com.fasterxml.jackson.annotation.JsonProperty.class).required());
+        assertTrue(PayoutV1Request.class.getMethod("getAmount")
+                .getAnnotation(com.fasterxml.jackson.annotation.JsonProperty.class).required());
+        assertTrue(ListTeamWalletAddressesRequest.class.getMethod("getWalletId")
+                .getAnnotation(com.fasterxml.jackson.annotation.JsonProperty.class).required());
+    }
+
+    @Test
+    void paymentStructuredValuesAreEncodedAsJsonStrings() throws Exception {
+        OrderDetails details = OrderDetails.builder()
+                .shoppingCost(new BigDecimal("5.00"))
+                .items(Arrays.asList(OrderItem.builder().itemId("ITEM-001").build()))
+                .build();
+
+        CreateOrderRequest request = CreateOrderRequest.builder()
+                .orderId("order-1")
+                .orderAmount("5.00")
+                .orderCurrency("USD")
+                .payerId("payer-1")
+                .successUrl("https://merchant.example/success")
+                .cancelUrl("https://merchant.example/cancel")
+                .orderDetails(CregisPaymentValues.jsonString(details))
+                .tokens(CregisPaymentValues.jsonString(Arrays.asList("USDT-TRC20")))
+                .build();
+
+        assertEquals("ITEM-001", objectMapper.readTree(request.getOrderDetails())
+                .get("items").get(0).get("item_id").asText());
+        assertEquals("USDT-TRC20", objectMapper.readTree(request.getTokens()).get(0).asText());
     }
 }

@@ -4,19 +4,18 @@ import com.cregis.sdk.core.client.CregisBaseClient;
 import com.cregis.sdk.core.client.CregisHttpConfig;
 import com.cregis.sdk.core.interceptor.CregisTeamAuthInterceptor;
 import com.cregis.sdk.domain.common.ApiResponse;
-import com.cregis.sdk.domain.team.ListTeamWalletAddressesRequest;
-import com.cregis.sdk.domain.team.ListTeamWalletsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletAddressBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletHistoryTransactionsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletProcessingTransactionsRequest;
-import com.cregis.sdk.domain.team.TeamPagedResponse;
-import com.cregis.sdk.domain.team.TeamWallet;
-import com.cregis.sdk.domain.team.TeamWalletAddress;
-import com.cregis.sdk.domain.team.TeamWalletAddressBalance;
-import com.cregis.sdk.domain.team.TeamWalletBalance;
-import com.cregis.sdk.domain.team.TeamWalletProcessingTransaction;
-import com.cregis.sdk.domain.team.TeamWalletTransaction;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesResponse;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletAddressBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletAddressBalanceResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletBalanceResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletHistoryTransactionsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletHistoryTransactionsResponse;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletProcessingTransactionsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletProcessingTransactionsResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
@@ -32,50 +31,50 @@ public class CregisTeamClient extends CregisBaseClient {
                 ignored -> new CregisTeamAuthInterceptor(builder.accessKey, builder.accessSecret));
     }
 
-    public TeamPagedResponse<TeamWallet> listTeamWallets(ListTeamWalletsRequest request) {
+    public ListTeamWalletsResponse listTeamWallets(ListTeamWalletsRequest request) {
         return execute(
                 post("/openapi/v1/wallets", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWallet>>>() {
+                new TypeReference<ApiResponse<ListTeamWalletsResponse>>() {
                 });
     }
 
-    public TeamPagedResponse<TeamWalletAddress> listTeamWalletAddresses(
+    public ListTeamWalletAddressesResponse listTeamWalletAddresses(
             ListTeamWalletAddressesRequest request) {
         return execute(
                 post("/openapi/v1/wallet_address", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWalletAddress>>>() {
+                new TypeReference<ApiResponse<ListTeamWalletAddressesResponse>>() {
                 });
     }
 
-    public TeamPagedResponse<TeamWalletBalance> queryTeamWalletBalance(
+    public QueryTeamWalletBalanceResponse queryTeamWalletBalance(
             QueryTeamWalletBalanceRequest request) {
         return execute(
                 post("/openapi/v1/wallet_balance", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWalletBalance>>>() {
+                new TypeReference<ApiResponse<QueryTeamWalletBalanceResponse>>() {
                 });
     }
 
-    public TeamPagedResponse<TeamWalletAddressBalance> queryTeamWalletAddressBalance(
+    public QueryTeamWalletAddressBalanceResponse queryTeamWalletAddressBalance(
             QueryTeamWalletAddressBalanceRequest request) {
         return execute(
                 post("/openapi/v1/wallet_address_balance", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWalletAddressBalance>>>() {
+                new TypeReference<ApiResponse<QueryTeamWalletAddressBalanceResponse>>() {
                 });
     }
 
-    public TeamPagedResponse<TeamWalletTransaction> queryTeamWalletHistoryTransactions(
+    public QueryTeamWalletHistoryTransactionsResponse queryTeamWalletHistoryTransactions(
             QueryTeamWalletHistoryTransactionsRequest request) {
         return execute(
                 post("/openapi/v1/wallet_history_transaction_info", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWalletTransaction>>>() {
+                new TypeReference<ApiResponse<QueryTeamWalletHistoryTransactionsResponse>>() {
                 });
     }
 
-    public TeamPagedResponse<TeamWalletProcessingTransaction> queryTeamWalletProcessingTransactions(
+    public QueryTeamWalletProcessingTransactionsResponse queryTeamWalletProcessingTransactions(
             QueryTeamWalletProcessingTransactionsRequest request) {
         return execute(
                 post("/openapi/v1/wallet_processing_transaction_info", request).build(),
-                new TypeReference<ApiResponse<TeamPagedResponse<TeamWalletProcessingTransaction>>>() {
+                new TypeReference<ApiResponse<QueryTeamWalletProcessingTransactionsResponse>>() {
                 });
     }
 

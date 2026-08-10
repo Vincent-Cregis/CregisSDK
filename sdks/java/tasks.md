@@ -24,7 +24,9 @@ of truth for this checklist.
 - [x] Add local OpenAPI-to-Java operation drift check
 - [x] Test drift-check behavior in CI
 - [ ] Add sanitized backend callback signature fixture
-- [ ] Normalize inline schemas for stable generated Java model names
+- [x] Normalize inline schemas for stable generated Java model names
+- [x] Generate and commit operation models from the prepared specifications
+- [x] Reject stale files, handwritten DTO duplicates, and leaked auth fields
 
 ## Release readiness
 

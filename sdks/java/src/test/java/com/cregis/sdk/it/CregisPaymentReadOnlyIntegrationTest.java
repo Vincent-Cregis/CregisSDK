@@ -1,8 +1,8 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisPaymentClient;
-import com.cregis.sdk.domain.payment.QueryOrderRequest;
-import com.cregis.sdk.domain.payment.QueryOrderResponse;
+import com.cregis.sdk.generated.payment.model.QueryOrderRequest;
+import com.cregis.sdk.generated.payment.model.QueryOrderResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

@@ -134,3 +134,21 @@ the local documentation repository:
 
 This check does not use Sandbox credentials and does not copy the specs into the
 SDK repository.
+
+## Generated model checks
+
+From the repository root, validate the committed generated-model boundary
+without Docker or a specification checkout:
+
+```bash
+./codegen/scripts/check-java-generated-models.py
+```
+
+To prove that the committed Java models can be reproduced byte-for-byte from
+the canonical OpenAPI files:
+
+```bash
+./codegen/scripts/generate-java-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs \
+  --check
+```

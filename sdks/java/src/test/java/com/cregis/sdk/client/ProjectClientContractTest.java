@@ -1,25 +1,24 @@
 package com.cregis.sdk.client;
 
-import com.cregis.sdk.domain.payment.CreateOrderRequest;
-import com.cregis.sdk.domain.payment.QueryOrderRequest;
+import com.cregis.sdk.generated.payment.model.CreateOrderRequest;
+import com.cregis.sdk.generated.payment.model.QueryOrderRequest;
 import com.cregis.sdk.core.exception.CregisHttpException;
 import com.cregis.sdk.core.exception.CregisServerException;
 import com.cregis.sdk.core.exception.CregisClientException;
-import com.cregis.sdk.domain.waas.AddressBalanceRequest;
-import com.cregis.sdk.domain.waas.AddressBalanceV2Request;
-import com.cregis.sdk.domain.waas.AddressUpdateRequest;
-import com.cregis.sdk.domain.waas.BalanceCollectRequest;
-import com.cregis.sdk.domain.waas.BatchGenerateAddressRequest;
-import com.cregis.sdk.domain.waas.CheckAddressLegalityRequest;
-import com.cregis.sdk.domain.waas.GenerateAddressRequest;
-import com.cregis.sdk.domain.waas.PayoutRequest;
-import com.cregis.sdk.domain.waas.PayoutV1Request;
-import com.cregis.sdk.domain.waas.ProjectCoinQueryRequest;
-import com.cregis.sdk.domain.waas.QueryPayoutRequest;
-import com.cregis.sdk.domain.waas.QueryWithdrawalRequest;
-import com.cregis.sdk.domain.waas.TradeRecordQueryRequest;
-import com.cregis.sdk.domain.waas.ValidateAddressRequest;
-import com.cregis.sdk.domain.waas.WithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.AddressBalanceRequest;
+import com.cregis.sdk.generated.waas.model.AddressBalanceV2Request;
+import com.cregis.sdk.generated.waas.model.AddressUpdateRequest;
+import com.cregis.sdk.generated.waas.model.BalanceCollectRequest;
+import com.cregis.sdk.generated.waas.model.BatchGenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.CheckAddressLegalityRequest;
+import com.cregis.sdk.generated.waas.model.GenerateAddressRequest;
+import com.cregis.sdk.generated.waas.model.PayoutRequest;
+import com.cregis.sdk.generated.waas.model.PayoutV1Request;
+import com.cregis.sdk.generated.waas.model.QueryPayoutRequest;
+import com.cregis.sdk.generated.waas.model.QueryWithdrawalRequest;
+import com.cregis.sdk.generated.waas.model.TradeRecordQueryRequest;
+import com.cregis.sdk.generated.waas.model.ValidateAddressRequest;
+import com.cregis.sdk.generated.waas.model.WithdrawalRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
@@ -80,6 +79,16 @@ class ProjectClientContractTest {
         enqueueData("{}");
         paymentClient.queryOrder(QueryOrderRequest.builder().cregisId("po-1").build());
         assertNextPath("/api/v2/order/info");
+    }
+
+    @Test
+    void rejectsMissingRequiredGeneratedFieldsBeforeSending() {
+        CregisClientException error = assertThrows(
+                CregisClientException.class,
+                () -> paymentClient.createOrder(CreateOrderRequest.builder().build()));
+
+        assertTrue(error.getMessage().startsWith("Missing required request field: "));
+        assertEquals(0, server.getRequestCount());
     }
 
     @Test
@@ -149,7 +158,7 @@ class ProjectClientContractTest {
         assertNextPath("/api/v1/collection");
 
         enqueueData("{\"payout_coins\":[],\"address_coins\":[]}");
-        waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build());
+        waasClient.queryProjectCoins();
         assertNextPath("/api/v1/coins");
 
         enqueueData("{\"total\":0,\"page_num\":1,\"page_size\":10,\"rows\":[]}");
@@ -180,7 +189,7 @@ class ProjectClientContractTest {
                 .setBody("rate limited"));
         CregisHttpException httpError = assertThrows(
                 CregisHttpException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
         assertEquals(429, httpError.getStatusCode());
         assertEquals("rate limited", httpError.getResponseBody());
 
@@ -190,7 +199,7 @@ class ProjectClientContractTest {
                 .setBody("{\"code\":\"B0001\",\"msg\":\"Signature Error\",\"data\":null}"));
         CregisServerException businessError = assertThrows(
                 CregisServerException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
         assertEquals("B0001", businessError.getCode());
         assertEquals("Signature Error", businessError.getMsg());
     }
@@ -204,7 +213,7 @@ class ProjectClientContractTest {
 
         CregisClientException error = assertThrows(
                 CregisClientException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
 
         assertTrue(error.getMessage().startsWith("Failed to parse Cregis response for POST /api/v1/coins"));
     }
@@ -218,7 +227,7 @@ class ProjectClientContractTest {
 
         CregisClientException nullEnvelope = assertThrows(
                 CregisClientException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
         assertEquals("Cregis response must be a JSON object", nullEnvelope.getMessage());
 
         server.enqueue(new MockResponse()
@@ -228,7 +237,7 @@ class ProjectClientContractTest {
 
         CregisClientException missingCode = assertThrows(
                 CregisClientException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
         assertEquals("Cregis response is missing required field: code", missingCode.getMessage());
     }
 
@@ -239,7 +248,7 @@ class ProjectClientContractTest {
 
         assertThrows(
                 CregisClientException.class,
-                () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                () -> waasClient.queryProjectCoins());
 
         assertEquals(1, server.getRequestCount());
     }
@@ -254,7 +263,7 @@ class ProjectClientContractTest {
 
             CregisHttpException error = assertThrows(
                     CregisHttpException.class,
-                    () -> waasClient.queryProjectCoins(ProjectCoinQueryRequest.builder().build()));
+                    () -> waasClient.queryProjectCoins());
 
             assertEquals(307, error.getStatusCode());
             assertEquals(0, redirectTarget.getRequestCount());

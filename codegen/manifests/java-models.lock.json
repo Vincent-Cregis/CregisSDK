@@ -1,0 +1,285 @@
+{
+  "apis": {
+    "payment": {
+      "inputSha256": "762be18f6af8d0f929a26ca71d22a5be6cce230ed39c78a0cb3c418770a54ed4",
+      "modelPackage": "com.cregis.sdk.generated.payment.model",
+      "models": [
+        "CreateOrderRequest",
+        "CreateOrderResponse",
+        "OrderDetails",
+        "OrderItem",
+        "OrderSettlementDetail",
+        "PaymentDetail",
+        "PaymentInfo",
+        "QueryOrderDetails",
+        "QueryOrderItem",
+        "QueryOrderRequest",
+        "QueryOrderResponse",
+        "QuerySubMerchant",
+        "RefundData",
+        "SettlementDetails",
+        "SubMerchant"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "createOrder",
+          "path": "/api/v2/checkout",
+          "requestModel": "CreateOrderRequest",
+          "responseContainer": null,
+          "responseModel": "CreateOrderResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryOrder",
+          "path": "/api/v2/order/info",
+          "requestModel": "QueryOrderRequest",
+          "responseContainer": null,
+          "responseModel": "QueryOrderResponse"
+        }
+      ],
+      "specFile": "payment-engine-api.json"
+    },
+    "team": {
+      "inputSha256": "6d85dd65605af791a5800eb7bd361fa24065f8a2f084c2943f19ca26f654d77c",
+      "modelPackage": "com.cregis.sdk.generated.team.model",
+      "models": [
+        "ListTeamWalletAddressesRequest",
+        "ListTeamWalletAddressesResponse",
+        "ListTeamWalletsRequest",
+        "ListTeamWalletsResponse",
+        "QueryTeamWalletAddressBalanceRequest",
+        "QueryTeamWalletAddressBalanceResponse",
+        "QueryTeamWalletBalanceRequest",
+        "QueryTeamWalletBalanceResponse",
+        "QueryTeamWalletHistoryTransactionsRequest",
+        "QueryTeamWalletHistoryTransactionsResponse",
+        "QueryTeamWalletProcessingTransactionsRequest",
+        "QueryTeamWalletProcessingTransactionsResponse",
+        "TeamWallet",
+        "TeamWalletAddress",
+        "TeamWalletAddressBalance",
+        "TeamWalletBalance",
+        "TeamWalletProcessingTransaction",
+        "TeamWalletToken",
+        "TeamWalletTransaction"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "listTeamWallets",
+          "path": "/openapi/v1/wallets",
+          "requestModel": "ListTeamWalletsRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletsResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "listTeamWalletAddresses",
+          "path": "/openapi/v1/wallet_address",
+          "requestModel": "ListTeamWalletAddressesRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletAddressesResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletBalance",
+          "path": "/openapi/v1/wallet_balance",
+          "requestModel": "QueryTeamWalletBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletAddressBalance",
+          "path": "/openapi/v1/wallet_address_balance",
+          "requestModel": "QueryTeamWalletAddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletAddressBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletHistoryTransactions",
+          "path": "/openapi/v1/wallet_history_transaction_info",
+          "requestModel": "QueryTeamWalletHistoryTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletHistoryTransactionsResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletProcessingTransactions",
+          "path": "/openapi/v1/wallet_processing_transaction_info",
+          "requestModel": "QueryTeamWalletProcessingTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletProcessingTransactionsResponse"
+        }
+      ],
+      "specFile": "team-api.json"
+    },
+    "waas": {
+      "inputSha256": "b03441211d549a57347b978b683908c85ee2363c8a278fa56473bbe3a036e3f0",
+      "modelPackage": "com.cregis.sdk.generated.waas.model",
+      "models": [
+        "AddressBalance",
+        "AddressBalanceRequest",
+        "AddressBalanceResponse",
+        "AddressBalanceV2",
+        "AddressBalanceV2Request",
+        "AddressBalanceV2Response",
+        "AddressUpdateRequest",
+        "BalanceCollectRequest",
+        "BalanceCollectResponse",
+        "BatchGenerateAddressRequest",
+        "CheckAddressLegalityRequest",
+        "CheckAddressLegalityResponse",
+        "GenerateAddressRequest",
+        "GenerateAddressResponse",
+        "GeneratedAddress",
+        "PayoutRequest",
+        "PayoutResponse",
+        "PayoutV1Request",
+        "ProjectCoin",
+        "ProjectCoinQueryResponse",
+        "QueryPayoutRequest",
+        "QueryPayoutResponse",
+        "QueryWithdrawalRequest",
+        "QueryWithdrawalResponse",
+        "TradeRecord",
+        "TradeRecordQueryRequest",
+        "TradeRecordQueryResponse",
+        "ValidateAddressRequest",
+        "ValidateAddressResponse",
+        "WithdrawalRequest",
+        "WithdrawalResponse"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "createAddress",
+          "path": "/api/v1/address/create",
+          "requestModel": "GenerateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "GenerateAddressResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "batchCreateAddress",
+          "path": "/api/v1/batch/address/create",
+          "requestModel": "BatchGenerateAddressRequest",
+          "responseContainer": "array",
+          "responseModel": "GeneratedAddress"
+        },
+        {
+          "method": "post",
+          "operationId": "updateAddress",
+          "path": "/api/v1/address/update",
+          "requestModel": "AddressUpdateRequest",
+          "responseContainer": null,
+          "responseModel": null
+        },
+        {
+          "method": "post",
+          "operationId": "verifyAddress",
+          "path": "/api/v1/address/inner",
+          "requestModel": "ValidateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "ValidateAddressResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "validateAddressFormat",
+          "path": "/api/v1/address/legal",
+          "requestModel": "CheckAddressLegalityRequest",
+          "responseContainer": null,
+          "responseModel": "CheckAddressLegalityResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiatePayout",
+          "path": "/api/v1/payout",
+          "requestModel": "PayoutV1Request",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiatePayoutV2",
+          "path": "/api/v2/payout",
+          "requestModel": "PayoutRequest",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "subAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal",
+          "requestModel": "WithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "WithdrawalResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiateCollection",
+          "path": "/api/v1/collection",
+          "requestModel": "BalanceCollectRequest",
+          "responseContainer": null,
+          "responseModel": "BalanceCollectResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "getProjectCoins",
+          "path": "/api/v1/coins",
+          "requestModel": null,
+          "responseContainer": null,
+          "responseModel": "ProjectCoinQueryResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "tradePage",
+          "path": "/api/v1/trade/page",
+          "requestModel": "TradeRecordQueryRequest",
+          "responseContainer": null,
+          "responseModel": "TradeRecordQueryResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryPayout",
+          "path": "/api/v1/payout/query",
+          "requestModel": "QueryPayoutRequest",
+          "responseContainer": null,
+          "responseModel": "QueryPayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "querySubAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal/info",
+          "requestModel": "QueryWithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "QueryWithdrawalResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "subAddressBalancePage",
+          "path": "/api/v1/sub_address_balance",
+          "requestModel": "AddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "querySubAddressBalanceV2",
+          "path": "/api/v2/sub_address_balance",
+          "requestModel": "AddressBalanceV2Request",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceV2Response"
+        }
+      ],
+      "specFile": "waas-api.json"
+    }
+  },
+  "generator": {
+    "image": "openapitools/openapi-generator-cli",
+    "version": "7.19.0"
+  },
+  "version": 1
+}

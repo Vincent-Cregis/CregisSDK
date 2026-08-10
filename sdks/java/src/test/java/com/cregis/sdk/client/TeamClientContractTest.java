@@ -1,12 +1,12 @@
 package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.signer.CregisTeamSigner;
-import com.cregis.sdk.domain.team.ListTeamWalletAddressesRequest;
-import com.cregis.sdk.domain.team.ListTeamWalletsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletAddressBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletBalanceRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletHistoryTransactionsRequest;
-import com.cregis.sdk.domain.team.QueryTeamWalletProcessingTransactionsRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletAddressBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletBalanceRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletHistoryTransactionsRequest;
+import com.cregis.sdk.generated.team.model.QueryTeamWalletProcessingTransactionsRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -62,7 +62,7 @@ class TeamClientContractTest {
     void allTeamMethodsMatchOpenApiPathsAndHeaders() throws Exception {
         enqueuePage();
         client.listTeamWallets(ListTeamWalletsRequest.builder()
-                .walletType("single_sign")
+                .walletType(ListTeamWalletsRequest.WalletTypeEnum.SINGLE_SIGN)
                 .pageSize(10)
                 .pageNum(1)
                 .build());
