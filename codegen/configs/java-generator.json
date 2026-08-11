@@ -9,6 +9,6 @@
   "generateAliasAsModel": true,
   "enumUnknownDefaultCase": true,
   "disallowAdditionalPropertiesIfNotPresent": false,
-  "artifactId": "cregis-sdk-java-generated-staging",
+  "artifactId": "cregis-sdk-java-generated-models",
   "artifactVersion": "0.0.0"
 }

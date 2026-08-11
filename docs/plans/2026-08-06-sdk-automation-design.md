@@ -13,7 +13,7 @@ The SDK repository contains all language SDKs and the shared generation tooling.
 ## Layout
 
 - `codegen/configs`: per-language generator configuration
-- `codegen/templates`: Cregis-specific templates, added only when configuration is insufficient
+- Cregis-specific templates are added only if generator configuration proves insufficient
 - `codegen/scripts`: fetch, validate, generate, diff, and test commands
 - `sdks/<language>`: independently buildable and releasable SDK packages
 - `.github/workflows`: cross-repository update and release automation

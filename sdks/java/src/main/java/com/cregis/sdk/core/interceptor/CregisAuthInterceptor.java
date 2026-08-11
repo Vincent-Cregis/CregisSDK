@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import okhttp3.*;
 import okio.Buffer;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,9 +31,8 @@ public class CregisAuthInterceptor implements Interceptor {
         this.objectMapper = objectMapper;
     }
 
-    @NotNull
     @Override
-    public Response intercept(@NotNull Chain chain) throws IOException {
+    public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
 
         if (original.body() == null) {

@@ -4,7 +4,7 @@ This repository contains the official Cregis SDKs and the tooling used to genera
 
 ## Repository layout
 
-- `codegen/`: generator configuration, templates, and scripts
+- `codegen/`: generator configuration and scripts
 - `sdks/java/`: Java SDK
 - `sdks/typescript/`: TypeScript and Node.js SDK
 - `sdks/python/`: Python SDK

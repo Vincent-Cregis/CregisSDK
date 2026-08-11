@@ -77,6 +77,3 @@ python3 -m unittest discover -s codegen/tests -v
 Only operation request/response models are generated. HTTP transport, signing,
 exceptions, the public Clients, Payment/WaaS webhook models, and webhook
 handlers remain handwritten. Generated code must never overwrite those files.
-
-`generate-java-staging.sh` remains available for disposable inspection of raw
-generator output; it is not the production Java model pipeline.

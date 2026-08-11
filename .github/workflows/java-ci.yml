@@ -44,7 +44,6 @@ jobs:
           python3 -m json.tool codegen/configs/java-generator.json >/dev/null
           python3 -m json.tool codegen/configs/java-models.json >/dev/null
           python3 -m json.tool codegen/manifests/java-models.lock.json >/dev/null
-          bash -n codegen/scripts/generate-java-staging.sh
           bash -n codegen/scripts/generate-java-models.sh
 
   test:
