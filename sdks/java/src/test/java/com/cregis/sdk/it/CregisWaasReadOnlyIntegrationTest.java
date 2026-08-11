@@ -1,6 +1,7 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisWaasClient;
+import com.cregis.sdk.contract.SandboxContractProbe;
 import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponse;
 import com.cregis.sdk.generated.waas.model.TradeRecordQueryRequest;
 import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -25,11 +27,13 @@ class CregisWaasReadOnlyIntegrationTest {
                 IntegrationTestEnvironment.allPresent("WAAS_PID", "WAAS_API_KEY", "WAAS_ENDPOINT"),
                 "Skipping: WaaS Sandbox credentials or project Base URL not found");
 
+        SandboxContractProbe contractProbe = SandboxContractProbe.forApi("waas");
         client = CregisWaasClient.builder()
                 .endpoint(IntegrationTestEnvironment.get("WAAS_ENDPOINT"))
                 .credentials(
                         IntegrationTestEnvironment.get("WAAS_PID"),
                         IntegrationTestEnvironment.get("WAAS_API_KEY"))
+                .httpConfig(contractProbe.httpConfig())
                 .build();
     }
 
@@ -39,6 +43,8 @@ class CregisWaasReadOnlyIntegrationTest {
 
         assertNotNull(response);
         assertNotNull(response.getAddressCoins(), "WaaS should return the address coin list");
+        assertFalse(response.getAddressCoins().isEmpty(), "WaaS should return at least one address coin");
+        assertNotNull(response.getAddressCoins().get(0).getDecimals());
     }
 
     @Test
@@ -50,6 +56,8 @@ class CregisWaasReadOnlyIntegrationTest {
                         .build());
 
         assertNotNull(response);
+        assertNotNull(response.getPageNum());
+        assertNotNull(response.getPageSize());
         assertNotNull(response.getRows(), "WaaS should return the trade record list");
     }
 }

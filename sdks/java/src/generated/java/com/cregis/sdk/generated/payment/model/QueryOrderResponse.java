@@ -168,9 +168,11 @@ public class QueryOrderResponse {
   private SettlementDetails settlementDetails;
 
   /**
-   * 结算单状态。仅在已生成结算单时返回  - settling：正在结算 - settled：结算已完成
+   * 结算单状态  - unsettled：尚未结算 - settling：正在结算 - settled：结算已完成
    */
   public enum SettlementStatusEnum {
+    UNSETTLED(String.valueOf("unsettled")),
+
     SETTLING(String.valueOf("settling")),
 
     SETTLED(String.valueOf("settled")),
@@ -209,9 +211,11 @@ public class QueryOrderResponse {
   private SettlementStatusEnum settlementStatus;
 
   /**
-   * 结算类型  - system：自动结算 - manual：手动结算
+   * 结算类型；尚未结算时返回空字符串  - system：自动结算 - manual：手动结算
    */
   public enum SettlementTypeEnum {
+    EMPTY(String.valueOf("")),
+
     SYSTEM(String.valueOf("system")),
 
     MANUAL(String.valueOf("manual")),
@@ -719,7 +723,7 @@ public class QueryOrderResponse {
   }
 
   /**
-   * 结算单状态。仅在已生成结算单时返回  - settling：正在结算 - settled：结算已完成
+   * 结算单状态  - unsettled：尚未结算 - settling：正在结算 - settled：结算已完成
    * @return settlementStatus
    */
   @javax.annotation.Nullable
@@ -743,7 +747,7 @@ public class QueryOrderResponse {
   }
 
   /**
-   * 结算类型  - system：自动结算 - manual：手动结算
+   * 结算类型；尚未结算时返回空字符串  - system：自动结算 - manual：手动结算
    * @return settlementType
    */
   @javax.annotation.Nullable

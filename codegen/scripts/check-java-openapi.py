@@ -87,6 +87,163 @@ def collect_spec_operations(api_name: str, spec: Dict[str, Any]) -> Dict[str, Di
     return operations
 
 
+def json_type_name(value: Any) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "boolean"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, int):
+        return "integer"
+    if isinstance(value, float):
+        return "number"
+    if isinstance(value, list):
+        return "array"
+    if isinstance(value, dict):
+        return "object"
+    return type(value).__name__
+
+
+def resolve_local_ref(spec: Dict[str, Any], reference: str) -> Any:
+    if not reference.startswith("#/"):
+        raise ValueError(f"Only local OpenAPI references are supported: {reference}")
+    current: Any = spec
+    for raw_part in reference[2:].split("/"):
+        part = raw_part.replace("~1", "/").replace("~0", "~")
+        if not isinstance(current, dict) or part not in current:
+            raise ValueError(f"Unresolvable OpenAPI reference: {reference}")
+        current = current[part]
+    return current
+
+
+def example_matches_schema(
+    spec: Dict[str, Any],
+    schema: Dict[str, Any],
+    value: Any,
+    location: str,
+) -> List[str]:
+    """Return type/enum issues for one explicit example without exposing its value."""
+    if value is None:
+        if schema.get("nullable") is True or not any(
+            key in schema for key in ("type", "$ref", "allOf", "oneOf", "anyOf", "properties", "items")
+        ):
+            return []
+        return [f"{location} is null but the schema is not nullable"]
+
+    reference = schema.get("$ref")
+    if isinstance(reference, str):
+        resolved = resolve_local_ref(spec, reference)
+        if not isinstance(resolved, dict):
+            return [f"{location} references a non-object schema"]
+        problems = example_matches_schema(spec, resolved, value, location)
+        sibling_schema = {key: item for key, item in schema.items() if key != "$ref"}
+        if sibling_schema:
+            problems.extend(example_matches_schema(spec, sibling_schema, value, location))
+        return problems
+
+    for keyword in ("allOf",):
+        alternatives = schema.get(keyword)
+        if isinstance(alternatives, list):
+            problems: List[str] = []
+            for item in alternatives:
+                if isinstance(item, dict):
+                    problems.extend(example_matches_schema(spec, item, value, location))
+            return problems
+
+    for keyword in ("oneOf", "anyOf"):
+        alternatives = schema.get(keyword)
+        if isinstance(alternatives, list):
+            attempted = [
+                example_matches_schema(spec, item, value, location)
+                for item in alternatives
+                if isinstance(item, dict)
+            ]
+            if any(not problems for problems in attempted):
+                return []
+            return attempted[0] if attempted else []
+
+    expected = schema.get("type")
+    if not isinstance(expected, str):
+        if isinstance(schema.get("properties"), dict):
+            expected = "object"
+        elif isinstance(schema.get("items"), dict):
+            expected = "array"
+
+    actual = json_type_name(value)
+    type_matches = {
+        "string": isinstance(value, str),
+        "integer": isinstance(value, int) and not isinstance(value, bool),
+        "number": isinstance(value, (int, float)) and not isinstance(value, bool),
+        "boolean": isinstance(value, bool),
+        "array": isinstance(value, list),
+        "object": isinstance(value, dict),
+    }
+    if expected in type_matches and not type_matches[expected]:
+        return [f"{location} has JSON type {actual}, expected {expected}"]
+
+    enum_values = schema.get("enum")
+    if isinstance(enum_values, list) and value not in enum_values:
+        return [f"{location} is outside the documented enum"]
+
+    if expected == "integer":
+        if schema.get("format") == "int32" and not -(2**31) <= value < 2**31:
+            return [f"{location} is outside the int32 range"]
+        if schema.get("format") == "int64" and not -(2**63) <= value < 2**63:
+            return [f"{location} is outside the int64 range"]
+
+    if expected == "array" and isinstance(value, list):
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            problems = []
+            for index, item in enumerate(value):
+                problems.extend(example_matches_schema(spec, item_schema, item, f"{location}[{index}]"))
+            return problems
+
+    if expected == "object" and isinstance(value, dict):
+        properties = schema.get("properties")
+        if isinstance(properties, dict):
+            problems = []
+            for name, property_schema in properties.items():
+                if name in value and isinstance(property_schema, dict):
+                    problems.extend(
+                        example_matches_schema(spec, property_schema, value[name], f"{location}.{name}")
+                    )
+            return problems
+
+    return []
+
+
+def collect_example_issues(api_name: str, spec: Dict[str, Any]) -> List[str]:
+    issues: List[str] = []
+
+    def walk(value: Any, path: str) -> None:
+        if isinstance(value, dict):
+            if "example" in value:
+                schema: Any
+                if isinstance(value.get("schema"), dict):
+                    schema = value["schema"]
+                elif any(
+                    key in value
+                    for key in ("type", "$ref", "allOf", "oneOf", "anyOf", "properties", "items", "enum")
+                ):
+                    schema = value
+                else:
+                    schema = None
+                if isinstance(schema, dict):
+                    for problem in example_matches_schema(spec, schema, value["example"], f"{path}.example"):
+                        issues.append(f"{api_name}: {problem}")
+            for key, item in value.items():
+                if key != "example":
+                    walk(item, f"{path}.{key}")
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                walk(item, f"{path}[{index}]")
+
+    walk(spec, "$")
+    return issues
+
+
 def method_slices(source: str) -> Dict[str, List[str]]:
     matches = list(METHOD_DECLARATION.finditer(source))
     result: Dict[str, List[str]] = {}
@@ -163,6 +320,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
 
         spec_path = args.spec_dir / spec_file
         spec = read_json(spec_path)
+        issues.extend(collect_example_issues(api_name, spec))
         actual = collect_spec_operations(api_name, spec)
         configured_operations = api_config.get("operations")
         if not isinstance(configured_operations, list):

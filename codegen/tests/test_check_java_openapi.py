@@ -37,6 +37,9 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
             encoding="utf-8",
         )
 
+    def write_raw_spec(self, value):
+        (self.spec_dir / "api.json").write_text(json.dumps(value), encoding="utf-8")
+
     def write_manifest(self, path):
         self.manifest.write_text(
             json.dumps({
@@ -106,6 +109,50 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
         self.assertEqual(1, result.returncode)
         self.assertIn("Java method doThing uses /v1/wrong, expected /v1/do", result.stderr)
         self.assertIn("untracked POST path /v1/wrong", result.stderr)
+
+    def test_reports_parameter_example_with_wrong_json_type(self):
+        self.write_raw_spec({
+            "openapi": "3.0.3",
+            "components": {
+                "parameters": {
+                    "Timestamp": {
+                        "name": "Access-Timestamp",
+                        "in": "header",
+                        "schema": {"type": "integer", "format": "int64"},
+                        "example": "{{CURRENT_TIMESTAMP_MS}}",
+                    },
+                },
+            },
+            "paths": {"/v1/do": {"post": {"operationId": "doThing"}}},
+        })
+
+        result = self.run_check()
+
+        self.assertEqual(1, result.returncode)
+        self.assertIn("has JSON type string, expected integer", result.stderr)
+        self.assertNotIn("CURRENT_TIMESTAMP_MS", result.stderr)
+
+    def test_accepts_nested_examples_with_exact_json_types(self):
+        self.write_raw_spec({
+            "openapi": "3.0.3",
+            "components": {
+                "schemas": {
+                    "Payload": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {"type": "boolean"},
+                            "count": {"type": "integer", "format": "int32"},
+                        },
+                        "example": {"enabled": True, "count": 2},
+                    },
+                },
+            },
+            "paths": {"/v1/do": {"post": {"operationId": "doThing"}}},
+        })
+
+        result = self.run_check()
+
+        self.assertEqual(0, result.returncode, result.stderr)
 
 
 if __name__ == "__main__":

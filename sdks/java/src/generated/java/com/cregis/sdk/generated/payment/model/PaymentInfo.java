@@ -19,12 +19,15 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import com.cregis.sdk.generated.payment.model.PaymentInfoConsolidatedQrcodesItem;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -35,6 +38,7 @@ import com.cregis.sdk.generated.ApiClient;
 @JsonPropertyOrder({
   PaymentInfo.JSON_PROPERTY_ASSET_LOGO,
   PaymentInfo.JSON_PROPERTY_BLOCKCHAIN,
+  PaymentInfo.JSON_PROPERTY_CONSOLIDATED_QRCODES,
   PaymentInfo.JSON_PROPERTY_EXCHANGE_RATE,
   PaymentInfo.JSON_PROPERTY_LOGO_URL,
   PaymentInfo.JSON_PROPERTY_PAYMENT_ADDRESS,
@@ -53,6 +57,10 @@ public class PaymentInfo {
   public static final String JSON_PROPERTY_BLOCKCHAIN = "blockchain";
   @javax.annotation.Nullable
   private String blockchain;
+
+  public static final String JSON_PROPERTY_CONSOLIDATED_QRCODES = "consolidated_qrcodes";
+  @javax.annotation.Nullable
+  private List<PaymentInfoConsolidatedQrcodesItem> consolidatedQrcodes = new ArrayList<>();
 
   public static final String JSON_PROPERTY_EXCHANGE_RATE = "exchange_rate";
   @javax.annotation.Nullable
@@ -134,6 +142,38 @@ public class PaymentInfo {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockchain(@javax.annotation.Nullable String blockchain) {
     this.blockchain = blockchain;
+  }
+
+
+  public PaymentInfo consolidatedQrcodes(@javax.annotation.Nullable List<PaymentInfoConsolidatedQrcodesItem> consolidatedQrcodes) {
+    this.consolidatedQrcodes = consolidatedQrcodes;
+    return this;
+  }
+
+  public PaymentInfo addConsolidatedQrcodesItem(PaymentInfoConsolidatedQrcodesItem consolidatedQrcodesItem) {
+    if (this.consolidatedQrcodes == null) {
+      this.consolidatedQrcodes = new ArrayList<>();
+    }
+    this.consolidatedQrcodes.add(consolidatedQrcodesItem);
+    return this;
+  }
+
+  /**
+   * 聚合钱包二维码信息；不支持时返回 null
+   * @return consolidatedQrcodes
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_CONSOLIDATED_QRCODES, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public List<PaymentInfoConsolidatedQrcodesItem> getConsolidatedQrcodes() {
+    return consolidatedQrcodes;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_CONSOLIDATED_QRCODES, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConsolidatedQrcodes(@javax.annotation.Nullable List<PaymentInfoConsolidatedQrcodesItem> consolidatedQrcodes) {
+    this.consolidatedQrcodes = consolidatedQrcodes;
   }
 
 
@@ -343,6 +383,7 @@ public class PaymentInfo {
     PaymentInfo paymentInfo = (PaymentInfo) o;
     return Objects.equals(this.assetLogo, paymentInfo.assetLogo) &&
         Objects.equals(this.blockchain, paymentInfo.blockchain) &&
+        Objects.equals(this.consolidatedQrcodes, paymentInfo.consolidatedQrcodes) &&
         Objects.equals(this.exchangeRate, paymentInfo.exchangeRate) &&
         Objects.equals(this.logoUrl, paymentInfo.logoUrl) &&
         Objects.equals(this.paymentAddress, paymentInfo.paymentAddress) &&
@@ -355,7 +396,7 @@ public class PaymentInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(assetLogo, blockchain, exchangeRate, logoUrl, paymentAddress, receiveAmount, receiveCurrency, tokenDecimals, tokenName, tokenSymbol);
+    return Objects.hash(assetLogo, blockchain, consolidatedQrcodes, exchangeRate, logoUrl, paymentAddress, receiveAmount, receiveCurrency, tokenDecimals, tokenName, tokenSymbol);
   }
 
   @Override
@@ -364,6 +405,7 @@ public class PaymentInfo {
     sb.append("class PaymentInfo {\n");
     sb.append("    assetLogo: ").append(toIndentedString(assetLogo)).append("\n");
     sb.append("    blockchain: ").append(toIndentedString(blockchain)).append("\n");
+    sb.append("    consolidatedQrcodes: ").append(toIndentedString(consolidatedQrcodes)).append("\n");
     sb.append("    exchangeRate: ").append(toIndentedString(exchangeRate)).append("\n");
     sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
     sb.append("    paymentAddress: ").append(toIndentedString(paymentAddress)).append("\n");
@@ -429,6 +471,16 @@ public class PaymentInfo {
       joiner.add(String.format(java.util.Locale.ROOT, "%sblockchain%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlockchain()))));
     }
 
+    // add `consolidated_qrcodes` to the URL query string
+    if (getConsolidatedQrcodes() != null) {
+      for (int i = 0; i < getConsolidatedQrcodes().size(); i++) {
+        if (getConsolidatedQrcodes().get(i) != null) {
+          joiner.add(getConsolidatedQrcodes().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sconsolidated_qrcodes%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
     // add `exchange_rate` to the URL query string
     if (getExchangeRate() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%sexchange_rate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExchangeRate()))));
@@ -490,6 +542,10 @@ public class PaymentInfo {
     }
     public PaymentInfo.Builder blockchain(String blockchain) {
       this.instance.blockchain = blockchain;
+      return this;
+    }
+    public PaymentInfo.Builder consolidatedQrcodes(List<PaymentInfoConsolidatedQrcodesItem> consolidatedQrcodes) {
+      this.instance.consolidatedQrcodes = consolidatedQrcodes;
       return this;
     }
     public PaymentInfo.Builder exchangeRate(String exchangeRate) {
@@ -560,6 +616,7 @@ public class PaymentInfo {
     return new PaymentInfo.Builder()
       .assetLogo(getAssetLogo())
       .blockchain(getBlockchain())
+      .consolidatedQrcodes(getConsolidatedQrcodes())
       .exchangeRate(getExchangeRate())
       .logoUrl(getLogoUrl())
       .paymentAddress(getPaymentAddress())

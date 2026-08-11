@@ -1,6 +1,7 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisWaasClient;
+import com.cregis.sdk.contract.SandboxContractProbe;
 import com.cregis.sdk.generated.waas.model.AddressBalanceRequest;
 import com.cregis.sdk.generated.waas.model.AddressBalanceResponse;
 import com.cregis.sdk.generated.waas.model.AddressBalanceV2Request;
@@ -29,6 +30,7 @@ import com.cregis.sdk.generated.waas.model.ValidateAddressRequest;
 import com.cregis.sdk.generated.waas.model.ValidateAddressResponse;
 import com.cregis.sdk.generated.waas.model.WithdrawalRequest;
 import com.cregis.sdk.generated.waas.model.WithdrawalResponse;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -51,6 +53,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 public class CregisWaasIntegrationTest {
 
     private static CregisWaasClient client;
+    private static SandboxContractProbe contractProbe;
     private static String chainId;
     private static String currency;
     private static String generatedAddress;
@@ -73,12 +76,21 @@ public class CregisWaasIntegrationTest {
 
         sourceAddress = IntegrationTestEnvironment.get("WITHDRAW_ADDRESS");
         testAmount = valueOrDefault(IntegrationTestEnvironment.get("WAAS_TEST_AMOUNT"), "0.001");
+        contractProbe = SandboxContractProbe.forApi("waas");
         client = CregisWaasClient.builder()
                 .endpoint(IntegrationTestEnvironment.get("WAAS_ENDPOINT"))
                 .credentials(
                         IntegrationTestEnvironment.get("WAAS_PID"),
                         IntegrationTestEnvironment.get("WAAS_API_KEY"))
+                .httpConfig(contractProbe.httpConfig())
                 .build();
+    }
+
+    @AfterAll
+    static void verifyAllWaasContractsWereCovered() {
+        if (contractProbe != null) {
+            contractProbe.assertAllCallableOperationsCovered();
+        }
     }
 
     @Test

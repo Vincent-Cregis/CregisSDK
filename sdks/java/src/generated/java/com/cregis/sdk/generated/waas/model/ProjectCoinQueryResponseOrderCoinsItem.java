@@ -30,16 +30,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.cregis.sdk.generated.ApiClient;
 /**
- * ProjectCoin
+ * ProjectCoinQueryResponseOrderCoinsItem
  */
 @JsonPropertyOrder({
-  ProjectCoin.JSON_PROPERTY_CHAIN_ID,
-  ProjectCoin.JSON_PROPERTY_COIN_NAME,
-  ProjectCoin.JSON_PROPERTY_DECIMALS,
-  ProjectCoin.JSON_PROPERTY_TOKEN_ID
+  ProjectCoinQueryResponseOrderCoinsItem.JSON_PROPERTY_CHAIN_ID,
+  ProjectCoinQueryResponseOrderCoinsItem.JSON_PROPERTY_COIN_NAME,
+  ProjectCoinQueryResponseOrderCoinsItem.JSON_PROPERTY_DECIMALS,
+  ProjectCoinQueryResponseOrderCoinsItem.JSON_PROPERTY_TOKEN_ID
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
-public class ProjectCoin {
+public class ProjectCoinQueryResponseOrderCoinsItem {
   public static final String JSON_PROPERTY_CHAIN_ID = "chain_id";
   @javax.annotation.Nullable
   private String chainId;
@@ -56,10 +56,10 @@ public class ProjectCoin {
   @javax.annotation.Nullable
   private String tokenId;
 
-  public ProjectCoin() {
+  public ProjectCoinQueryResponseOrderCoinsItem() {
   }
 
-  public ProjectCoin chainId(@javax.annotation.Nullable String chainId) {
+  public ProjectCoinQueryResponseOrderCoinsItem chainId(@javax.annotation.Nullable String chainId) {
     this.chainId = chainId;
     return this;
   }
@@ -83,7 +83,7 @@ public class ProjectCoin {
   }
 
 
-  public ProjectCoin coinName(@javax.annotation.Nullable String coinName) {
+  public ProjectCoinQueryResponseOrderCoinsItem coinName(@javax.annotation.Nullable String coinName) {
     this.coinName = coinName;
     return this;
   }
@@ -107,7 +107,7 @@ public class ProjectCoin {
   }
 
 
-  public ProjectCoin decimals(@javax.annotation.Nullable String decimals) {
+  public ProjectCoinQueryResponseOrderCoinsItem decimals(@javax.annotation.Nullable String decimals) {
     this.decimals = decimals;
     return this;
   }
@@ -131,7 +131,7 @@ public class ProjectCoin {
   }
 
 
-  public ProjectCoin tokenId(@javax.annotation.Nullable String tokenId) {
+  public ProjectCoinQueryResponseOrderCoinsItem tokenId(@javax.annotation.Nullable String tokenId) {
     this.tokenId = tokenId;
     return this;
   }
@@ -156,7 +156,7 @@ public class ProjectCoin {
 
 
   /**
-   * Return true if this ProjectCoin object is equal to o.
+   * Return true if this ProjectCoinQueryResponseOrderCoinsItem object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -166,11 +166,11 @@ public class ProjectCoin {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ProjectCoin projectCoin = (ProjectCoin) o;
-    return Objects.equals(this.chainId, projectCoin.chainId) &&
-        Objects.equals(this.coinName, projectCoin.coinName) &&
-        Objects.equals(this.decimals, projectCoin.decimals) &&
-        Objects.equals(this.tokenId, projectCoin.tokenId);
+    ProjectCoinQueryResponseOrderCoinsItem projectCoinQueryResponseOrderCoinsItem = (ProjectCoinQueryResponseOrderCoinsItem) o;
+    return Objects.equals(this.chainId, projectCoinQueryResponseOrderCoinsItem.chainId) &&
+        Objects.equals(this.coinName, projectCoinQueryResponseOrderCoinsItem.coinName) &&
+        Objects.equals(this.decimals, projectCoinQueryResponseOrderCoinsItem.decimals) &&
+        Objects.equals(this.tokenId, projectCoinQueryResponseOrderCoinsItem.tokenId);
   }
 
   @Override
@@ -181,7 +181,7 @@ public class ProjectCoin {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ProjectCoin {\n");
+    sb.append("class ProjectCoinQueryResponseOrderCoinsItem {\n");
     sb.append("    chainId: ").append(toIndentedString(chainId)).append("\n");
     sb.append("    coinName: ").append(toIndentedString(coinName)).append("\n");
     sb.append("    decimals: ").append(toIndentedString(decimals)).append("\n");
@@ -258,40 +258,40 @@ public class ProjectCoin {
 
     public static class Builder {
 
-    private ProjectCoin instance;
+    private ProjectCoinQueryResponseOrderCoinsItem instance;
 
     public Builder() {
-      this(new ProjectCoin());
+      this(new ProjectCoinQueryResponseOrderCoinsItem());
     }
 
-    protected Builder(ProjectCoin instance) {
+    protected Builder(ProjectCoinQueryResponseOrderCoinsItem instance) {
       this.instance = instance;
     }
 
-    public ProjectCoin.Builder chainId(String chainId) {
+    public ProjectCoinQueryResponseOrderCoinsItem.Builder chainId(String chainId) {
       this.instance.chainId = chainId;
       return this;
     }
-    public ProjectCoin.Builder coinName(String coinName) {
+    public ProjectCoinQueryResponseOrderCoinsItem.Builder coinName(String coinName) {
       this.instance.coinName = coinName;
       return this;
     }
-    public ProjectCoin.Builder decimals(String decimals) {
+    public ProjectCoinQueryResponseOrderCoinsItem.Builder decimals(String decimals) {
       this.instance.decimals = decimals;
       return this;
     }
-    public ProjectCoin.Builder tokenId(String tokenId) {
+    public ProjectCoinQueryResponseOrderCoinsItem.Builder tokenId(String tokenId) {
       this.instance.tokenId = tokenId;
       return this;
     }
 
 
     /**
-    * returns a built ProjectCoin instance.
+    * returns a built ProjectCoinQueryResponseOrderCoinsItem instance.
     *
     * The builder is not reusable.
     */
-    public ProjectCoin build() {
+    public ProjectCoinQueryResponseOrderCoinsItem build() {
       try {
         return this.instance;
       } finally {
@@ -309,15 +309,15 @@ public class ProjectCoin {
   /**
   * Create a builder with no initialized field.
   */
-  public static ProjectCoin.Builder builder() {
-    return new ProjectCoin.Builder();
+  public static ProjectCoinQueryResponseOrderCoinsItem.Builder builder() {
+    return new ProjectCoinQueryResponseOrderCoinsItem.Builder();
   }
 
   /**
   * Create a builder with a shallow copy of this instance.
   */
-  public ProjectCoin.Builder toBuilder() {
-    return new ProjectCoin.Builder()
+  public ProjectCoinQueryResponseOrderCoinsItem.Builder toBuilder() {
+    return new ProjectCoinQueryResponseOrderCoinsItem.Builder()
       .chainId(getChainId())
       .coinName(getCoinName())
       .decimals(getDecimals())

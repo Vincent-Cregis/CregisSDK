@@ -14,6 +14,13 @@ The default Maven build explicitly excludes classes named `*IntegrationTest`. CI
 
 Integration tests connect to Cregis APIs. Use only Sandbox credentials and the project-specific Sandbox Base URL. Read-only checks are separate from state-changing tests. State-changing tests require an additional explicit opt-in flag.
 
+Every Sandbox suite attaches a test-only OpenAPI contract probe. It validates
+the final signed request and the untouched response JSON before Jackson maps it
+to Java objects. The checks cover required headers and fields, exact JSON types,
+nested arrays and objects, enum values, integer ranges, and undocumented
+response fields. Contract errors report only the operation and JSON path; they
+do not print payload values or credentials.
+
 ### Prerequisites
 
 1. Copy `.env.example` to `.env` and fill in Sandbox credentials.
@@ -82,6 +89,11 @@ The full callable OpenAPI coverage is:
 
 Webhook definitions are inbound notifications rather than callable operations. They are covered by local callback contract tests. The repository includes a stable synthetic nested Payment fixture; a sanitized callback captured from the backend, or an independent backend signature vector, is still required before GA to prove nested-value encoding against the real sender.
 
+The local webhook contract suite validates five definitions: one Payment Engine
+order callback and four WaaS callbacks. These samples prove schema and local
+signature compatibility, but they are not a substitute for receiving a real
+end-to-end callback from the backend.
+
 ### Run WaaS integration tests
 
 ```bash
@@ -120,6 +132,13 @@ CREGIS_ALLOW_MUTATING_TESTS=true mvn verify -Pintegration-tests
 
 Run this only with `.dev` Sandbox Base URLs. The command creates Sandbox data and submits funds-moving Sandbox operations.
 
+By default, contract tests locate the canonical specifications in a sibling
+`cregis-developer-docs/api-sources/specs` checkout. For another layout, set:
+
+```bash
+export CREGIS_OPENAPI_SPEC_DIR=/absolute/path/to/api-sources/specs
+```
+
 Signature behavior is covered by deterministic local test vectors. Do not log API keys, Access Secrets, canonical signing strings, full request bodies, or callback payloads in shared environments.
 
 ## OpenAPI operation drift
@@ -133,7 +152,10 @@ the local documentation repository:
 ```
 
 This check does not use Sandbox credentials and does not copy the specs into the
-SDK repository.
+SDK repository. In addition to operation and Java path drift, it recursively
+checks explicit OpenAPI example values for the documented JSON type, enum, and
+integer range. This prevents placeholder strings from silently becoming
+integer or boolean examples.
 
 ## Generated model checks
 

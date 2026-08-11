@@ -1,7 +1,7 @@
 {
   "apis": {
     "payment": {
-      "inputSha256": "762be18f6af8d0f929a26ca71d22a5be6cce230ed39c78a0cb3c418770a54ed4",
+      "inputSha256": "6a04c4c67b086a84d36d74953dc2c0550cfdd5f86789c24c30dc0bfe0292cc10",
       "modelPackage": "com.cregis.sdk.generated.payment.model",
       "models": [
         "CreateOrderRequest",
@@ -11,6 +11,7 @@
         "OrderSettlementDetail",
         "PaymentDetail",
         "PaymentInfo",
+        "PaymentInfoConsolidatedQrcodesItem",
         "QueryOrderDetails",
         "QueryOrderItem",
         "QueryOrderRequest",
@@ -41,7 +42,7 @@
       "specFile": "payment-engine-api.json"
     },
     "team": {
-      "inputSha256": "6d85dd65605af791a5800eb7bd361fa24065f8a2f084c2943f19ca26f654d77c",
+      "inputSha256": "e8e4a94f0447df48dd953cb2b1b72de38c8991a15e002bad09fbcd5a62b8b6fd",
       "modelPackage": "com.cregis.sdk.generated.team.model",
       "models": [
         "ListTeamWalletAddressesRequest",
@@ -117,7 +118,7 @@
       "specFile": "team-api.json"
     },
     "waas": {
-      "inputSha256": "b03441211d549a57347b978b683908c85ee2363c8a278fa56473bbe3a036e3f0",
+      "inputSha256": "b67415006c26b3f57c29eece940e25571502910d302664dc3704a8033282486b",
       "modelPackage": "com.cregis.sdk.generated.waas.model",
       "models": [
         "AddressBalance",
@@ -140,6 +141,7 @@
         "PayoutV1Request",
         "ProjectCoin",
         "ProjectCoinQueryResponse",
+        "ProjectCoinQueryResponseOrderCoinsItem",
         "QueryPayoutRequest",
         "QueryPayoutResponse",
         "QueryWithdrawalRequest",

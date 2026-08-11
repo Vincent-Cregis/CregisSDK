@@ -1,7 +1,9 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisPaymentClient;
+import com.cregis.sdk.contract.SandboxContractProbe;
 import com.cregis.sdk.generated.payment.model.*;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CregisPaymentIntegrationTest {
 
     private static CregisPaymentClient client;
+    private static SandboxContractProbe contractProbe;
     private static String createdCregisId;
 
     @BeforeAll
@@ -34,10 +37,19 @@ public class CregisPaymentIntegrationTest {
         org.junit.jupiter.api.Assumptions.assumeTrue(mutatingTestsEnabled,
                 "Skipping state-changing Payment tests: CREGIS_ALLOW_MUTATING_TESTS is not true");
 
+        contractProbe = SandboxContractProbe.forApi("payment");
         client = CregisPaymentClient.builder()
                 .endpoint(endpoint)
                 .credentials(pid, apiKey)
+                .httpConfig(contractProbe.httpConfig())
                 .build();
+    }
+
+    @AfterAll
+    static void verifyAllPaymentContractsWereCovered() {
+        if (contractProbe != null) {
+            contractProbe.assertAllCallableOperationsCovered();
+        }
     }
 
     @Test

@@ -36,15 +36,19 @@ import com.cregis.sdk.generated.ApiClient;
   TradeRecord.JSON_PROPERTY_AMOUNT,
   TradeRecord.JSON_PROPERTY_BLOCK_HEIGHT,
   TradeRecord.JSON_PROPERTY_BLOCK_TIME,
+  TradeRecord.JSON_PROPERTY_BUSINESS_TYPE,
   TradeRecord.JSON_PROPERTY_CHAIN_ID,
   TradeRecord.JSON_PROPERTY_CID,
   TradeRecord.JSON_PROPERTY_CURRENCY,
   TradeRecord.JSON_PROPERTY_FEE,
   TradeRecord.JSON_PROPERTY_FROM_ADDRESS,
+  TradeRecord.JSON_PROPERTY_MEMO,
   TradeRecord.JSON_PROPERTY_PID,
+  TradeRecord.JSON_PROPERTY_REMARK,
   TradeRecord.JSON_PROPERTY_STATUS,
   TradeRecord.JSON_PROPERTY_TO_ADDRESS,
   TradeRecord.JSON_PROPERTY_TOKEN_ID,
+  TradeRecord.JSON_PROPERTY_TRADE_TYPE,
   TradeRecord.JSON_PROPERTY_TXID
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
@@ -60,6 +64,10 @@ public class TradeRecord {
   public static final String JSON_PROPERTY_BLOCK_TIME = "block_time";
   @javax.annotation.Nullable
   private Long blockTime;
+
+  public static final String JSON_PROPERTY_BUSINESS_TYPE = "business_type";
+  @javax.annotation.Nullable
+  private String businessType;
 
   public static final String JSON_PROPERTY_CHAIN_ID = "chain_id";
   @javax.annotation.Nullable
@@ -81,9 +89,17 @@ public class TradeRecord {
   @javax.annotation.Nullable
   private String fromAddress;
 
+  public static final String JSON_PROPERTY_MEMO = "memo";
+  @javax.annotation.Nullable
+  private String memo;
+
   public static final String JSON_PROPERTY_PID = "pid";
   @javax.annotation.Nullable
   private Long pid;
+
+  public static final String JSON_PROPERTY_REMARK = "remark";
+  @javax.annotation.Nullable
+  private String remark;
 
   /**
    * 交易状态  - &#x60;0&#x60;：待确认 - &#x60;1&#x60;：成功 - &#x60;2&#x60;：失败
@@ -135,6 +151,10 @@ public class TradeRecord {
   public static final String JSON_PROPERTY_TOKEN_ID = "token_id";
   @javax.annotation.Nullable
   private String tokenId;
+
+  public static final String JSON_PROPERTY_TRADE_TYPE = "trade_type";
+  @javax.annotation.Nullable
+  private String tradeType;
 
   public static final String JSON_PROPERTY_TXID = "txid";
   @javax.annotation.Nullable
@@ -212,6 +232,30 @@ public class TradeRecord {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockTime(@javax.annotation.Nullable Long blockTime) {
     this.blockTime = blockTime;
+  }
+
+
+  public TradeRecord businessType(@javax.annotation.Nullable String businessType) {
+    this.businessType = businessType;
+    return this;
+  }
+
+  /**
+   * 后端返回的业务类型
+   * @return businessType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_BUSINESS_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getBusinessType() {
+    return businessType;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_BUSINESS_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBusinessType(@javax.annotation.Nullable String businessType) {
+    this.businessType = businessType;
   }
 
 
@@ -335,6 +379,30 @@ public class TradeRecord {
   }
 
 
+  public TradeRecord memo(@javax.annotation.Nullable String memo) {
+    this.memo = memo;
+    return this;
+  }
+
+  /**
+   * 链上 memo 或 tag
+   * @return memo
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_MEMO, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getMemo() {
+    return memo;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_MEMO, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMemo(@javax.annotation.Nullable String memo) {
+    this.memo = memo;
+  }
+
+
   public TradeRecord pid(@javax.annotation.Nullable Long pid) {
     this.pid = pid;
     return this;
@@ -356,6 +424,30 @@ public class TradeRecord {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPid(@javax.annotation.Nullable Long pid) {
     this.pid = pid;
+  }
+
+
+  public TradeRecord remark(@javax.annotation.Nullable String remark) {
+    this.remark = remark;
+    return this;
+  }
+
+  /**
+   * 交易备注
+   * @return remark
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_REMARK, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getRemark() {
+    return remark;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_REMARK, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRemark(@javax.annotation.Nullable String remark) {
+    this.remark = remark;
   }
 
 
@@ -431,6 +523,30 @@ public class TradeRecord {
   }
 
 
+  public TradeRecord tradeType(@javax.annotation.Nullable String tradeType) {
+    this.tradeType = tradeType;
+    return this;
+  }
+
+  /**
+   * 后端返回的交易类型
+   * @return tradeType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_TRADE_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getTradeType() {
+    return tradeType;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_TRADE_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTradeType(@javax.annotation.Nullable String tradeType) {
+    this.tradeType = tradeType;
+  }
+
+
   public TradeRecord txid(@javax.annotation.Nullable String txid) {
     this.txid = txid;
     return this;
@@ -470,21 +586,25 @@ public class TradeRecord {
     return Objects.equals(this.amount, tradeRecord.amount) &&
         Objects.equals(this.blockHeight, tradeRecord.blockHeight) &&
         Objects.equals(this.blockTime, tradeRecord.blockTime) &&
+        Objects.equals(this.businessType, tradeRecord.businessType) &&
         Objects.equals(this.chainId, tradeRecord.chainId) &&
         Objects.equals(this.cid, tradeRecord.cid) &&
         Objects.equals(this.currency, tradeRecord.currency) &&
         Objects.equals(this.fee, tradeRecord.fee) &&
         Objects.equals(this.fromAddress, tradeRecord.fromAddress) &&
+        Objects.equals(this.memo, tradeRecord.memo) &&
         Objects.equals(this.pid, tradeRecord.pid) &&
+        Objects.equals(this.remark, tradeRecord.remark) &&
         Objects.equals(this.status, tradeRecord.status) &&
         Objects.equals(this.toAddress, tradeRecord.toAddress) &&
         Objects.equals(this.tokenId, tradeRecord.tokenId) &&
+        Objects.equals(this.tradeType, tradeRecord.tradeType) &&
         Objects.equals(this.txid, tradeRecord.txid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, blockHeight, blockTime, chainId, cid, currency, fee, fromAddress, pid, status, toAddress, tokenId, txid);
+    return Objects.hash(amount, blockHeight, blockTime, businessType, chainId, cid, currency, fee, fromAddress, memo, pid, remark, status, toAddress, tokenId, tradeType, txid);
   }
 
   @Override
@@ -494,15 +614,19 @@ public class TradeRecord {
     sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
     sb.append("    blockHeight: ").append(toIndentedString(blockHeight)).append("\n");
     sb.append("    blockTime: ").append(toIndentedString(blockTime)).append("\n");
+    sb.append("    businessType: ").append(toIndentedString(businessType)).append("\n");
     sb.append("    chainId: ").append(toIndentedString(chainId)).append("\n");
     sb.append("    cid: ").append(toIndentedString(cid)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    fee: ").append(toIndentedString(fee)).append("\n");
     sb.append("    fromAddress: ").append(toIndentedString(fromAddress)).append("\n");
+    sb.append("    memo: ").append(toIndentedString(memo)).append("\n");
     sb.append("    pid: ").append(toIndentedString(pid)).append("\n");
+    sb.append("    remark: ").append(toIndentedString(remark)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    toAddress: ").append(toIndentedString(toAddress)).append("\n");
     sb.append("    tokenId: ").append(toIndentedString(tokenId)).append("\n");
+    sb.append("    tradeType: ").append(toIndentedString(tradeType)).append("\n");
     sb.append("    txid: ").append(toIndentedString(txid)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -566,6 +690,11 @@ public class TradeRecord {
       joiner.add(String.format(java.util.Locale.ROOT, "%sblock_time%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlockTime()))));
     }
 
+    // add `business_type` to the URL query string
+    if (getBusinessType() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%sbusiness_type%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBusinessType()))));
+    }
+
     // add `chain_id` to the URL query string
     if (getChainId() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%schain_id%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChainId()))));
@@ -591,9 +720,19 @@ public class TradeRecord {
       joiner.add(String.format(java.util.Locale.ROOT, "%sfrom_address%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromAddress()))));
     }
 
+    // add `memo` to the URL query string
+    if (getMemo() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%smemo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMemo()))));
+    }
+
     // add `pid` to the URL query string
     if (getPid() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%spid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPid()))));
+    }
+
+    // add `remark` to the URL query string
+    if (getRemark() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%sremark%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemark()))));
     }
 
     // add `status` to the URL query string
@@ -609,6 +748,11 @@ public class TradeRecord {
     // add `token_id` to the URL query string
     if (getTokenId() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%stoken_id%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenId()))));
+    }
+
+    // add `trade_type` to the URL query string
+    if (getTradeType() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%strade_type%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTradeType()))));
     }
 
     // add `txid` to the URL query string
@@ -643,6 +787,10 @@ public class TradeRecord {
       this.instance.blockTime = blockTime;
       return this;
     }
+    public TradeRecord.Builder businessType(String businessType) {
+      this.instance.businessType = businessType;
+      return this;
+    }
     public TradeRecord.Builder chainId(String chainId) {
       this.instance.chainId = chainId;
       return this;
@@ -663,8 +811,16 @@ public class TradeRecord {
       this.instance.fromAddress = fromAddress;
       return this;
     }
+    public TradeRecord.Builder memo(String memo) {
+      this.instance.memo = memo;
+      return this;
+    }
     public TradeRecord.Builder pid(Long pid) {
       this.instance.pid = pid;
+      return this;
+    }
+    public TradeRecord.Builder remark(String remark) {
+      this.instance.remark = remark;
       return this;
     }
     public TradeRecord.Builder status(StatusEnum status) {
@@ -677,6 +833,10 @@ public class TradeRecord {
     }
     public TradeRecord.Builder tokenId(String tokenId) {
       this.instance.tokenId = tokenId;
+      return this;
+    }
+    public TradeRecord.Builder tradeType(String tradeType) {
+      this.instance.tradeType = tradeType;
       return this;
     }
     public TradeRecord.Builder txid(String txid) {
@@ -720,15 +880,19 @@ public class TradeRecord {
       .amount(getAmount())
       .blockHeight(getBlockHeight())
       .blockTime(getBlockTime())
+      .businessType(getBusinessType())
       .chainId(getChainId())
       .cid(getCid())
       .currency(getCurrency())
       .fee(getFee())
       .fromAddress(getFromAddress())
+      .memo(getMemo())
       .pid(getPid())
+      .remark(getRemark())
       .status(getStatus())
       .toAddress(getToAddress())
       .tokenId(getTokenId())
+      .tradeType(getTradeType())
       .txid(getTxid());
   }
 

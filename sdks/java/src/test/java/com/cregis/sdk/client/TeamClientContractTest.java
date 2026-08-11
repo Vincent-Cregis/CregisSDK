@@ -124,7 +124,7 @@ class TeamClientContractTest {
                 .setResponseCode(200)
                 .setHeader("Content-Type", "application/json")
                 .setBody("{\"code\":\"00000\",\"msg\":\"ok\",\"data\":"
-                        + "{\"total\":0,\"page_num\":1,\"page_size\":10,\"rows\":[]}}"));
+                        + "{\"total\":0,\"pageNum\":1,\"pageSize\":10,\"rows\":[]}}"));
     }
 
     private RecordedRequest assertNextPath(String expectedPath) throws Exception {

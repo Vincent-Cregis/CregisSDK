@@ -1,6 +1,7 @@
 package com.cregis.sdk.it;
 
 import com.cregis.sdk.client.CregisPaymentClient;
+import com.cregis.sdk.contract.SandboxContractProbe;
 import com.cregis.sdk.generated.payment.model.QueryOrderRequest;
 import com.cregis.sdk.generated.payment.model.QueryOrderResponse;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,11 +29,13 @@ class CregisPaymentReadOnlyIntegrationTest {
                 "Skipping: Payment Sandbox credentials, project Base URL, or existing Cregis ID not found");
 
         cregisId = IntegrationTestEnvironment.get("PAYMENT_CREGIS_ID");
+        SandboxContractProbe contractProbe = SandboxContractProbe.forApi("payment");
         client = CregisPaymentClient.builder()
                 .endpoint(IntegrationTestEnvironment.get("PAYMENT_ENDPOINT"))
                 .credentials(
                         IntegrationTestEnvironment.get("PAYMENT_PID"),
                         IntegrationTestEnvironment.get("PAYMENT_API_KEY"))
+                .httpConfig(contractProbe.httpConfig())
                 .build();
     }
 

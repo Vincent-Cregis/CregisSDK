@@ -39,9 +39,9 @@ import com.cregis.sdk.generated.ApiClient;
   TeamWallet.JSON_PROPERTY_ALIAS,
   TeamWallet.JSON_PROPERTY_CREATE_TIME,
   TeamWallet.JSON_PROPERTY_TOKENS,
+  TeamWallet.JSON_PROPERTY_WALLET_TYPE,
   TeamWallet.JSON_PROPERTY_WALLET_ID,
-  TeamWallet.JSON_PROPERTY_WALLET_STATUS,
-  TeamWallet.JSON_PROPERTY_WALLET_TYPE
+  TeamWallet.JSON_PROPERTY_WALLET_STATUS
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class TeamWallet {
@@ -56,6 +56,47 @@ public class TeamWallet {
   public static final String JSON_PROPERTY_TOKENS = "tokens";
   @javax.annotation.Nullable
   private List<TeamWalletToken> tokens = new ArrayList<>();
+
+  /**
+   * 钱包类型  - &#x60;single_sign&#x60;：单签钱包 - &#x60;multi_sign&#x60;：多签钱包
+   */
+  public enum WalletTypeEnum {
+    SINGLE_SIGN(String.valueOf("single_sign")),
+
+    MULTI_SIGN(String.valueOf("multi_sign")),
+
+    UNKNOWN_DEFAULT_OPEN_API(String.valueOf("unknown_default_open_api"));
+
+    private String value;
+
+    WalletTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static WalletTypeEnum fromValue(String value) {
+      for (WalletTypeEnum b : WalletTypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      return UNKNOWN_DEFAULT_OPEN_API;
+    }
+  }
+
+  public static final String JSON_PROPERTY_WALLET_TYPE = "walletType";
+  @javax.annotation.Nullable
+  private WalletTypeEnum walletType;
 
   public static final String JSON_PROPERTY_WALLET_ID = "wallet_id";
   @javax.annotation.Nullable
@@ -99,47 +140,6 @@ public class TeamWallet {
   public static final String JSON_PROPERTY_WALLET_STATUS = "wallet_status";
   @javax.annotation.Nullable
   private WalletStatusEnum walletStatus;
-
-  /**
-   * 钱包类型  - &#x60;single_sign&#x60;：单签钱包 - &#x60;multi_sign&#x60;：多签钱包
-   */
-  public enum WalletTypeEnum {
-    SINGLE_SIGN(String.valueOf("single_sign")),
-
-    MULTI_SIGN(String.valueOf("multi_sign")),
-
-    UNKNOWN_DEFAULT_OPEN_API(String.valueOf("unknown_default_open_api"));
-
-    private String value;
-
-    WalletTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static WalletTypeEnum fromValue(String value) {
-      for (WalletTypeEnum b : WalletTypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      return UNKNOWN_DEFAULT_OPEN_API;
-    }
-  }
-
-  public static final String JSON_PROPERTY_WALLET_TYPE = "wallet_type";
-  @javax.annotation.Nullable
-  private WalletTypeEnum walletType;
 
   public TeamWallet() {
   }
@@ -224,6 +224,30 @@ public class TeamWallet {
   }
 
 
+  public TeamWallet walletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
+    this.walletType = walletType;
+    return this;
+  }
+
+  /**
+   * 钱包类型  - &#x60;single_sign&#x60;：单签钱包 - &#x60;multi_sign&#x60;：多签钱包
+   * @return walletType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public WalletTypeEnum getWalletType() {
+    return walletType;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWalletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
+    this.walletType = walletType;
+  }
+
+
   public TeamWallet walletId(@javax.annotation.Nullable Long walletId) {
     this.walletId = walletId;
     return this;
@@ -272,30 +296,6 @@ public class TeamWallet {
   }
 
 
-  public TeamWallet walletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
-    this.walletType = walletType;
-    return this;
-  }
-
-  /**
-   * 钱包类型  - &#x60;single_sign&#x60;：单签钱包 - &#x60;multi_sign&#x60;：多签钱包
-   * @return walletType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public WalletTypeEnum getWalletType() {
-    return walletType;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWalletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
-    this.walletType = walletType;
-  }
-
-
   /**
    * Return true if this TeamWallet object is equal to o.
    */
@@ -311,14 +311,14 @@ public class TeamWallet {
     return Objects.equals(this.alias, teamWallet.alias) &&
         Objects.equals(this.createTime, teamWallet.createTime) &&
         Objects.equals(this.tokens, teamWallet.tokens) &&
+        Objects.equals(this.walletType, teamWallet.walletType) &&
         Objects.equals(this.walletId, teamWallet.walletId) &&
-        Objects.equals(this.walletStatus, teamWallet.walletStatus) &&
-        Objects.equals(this.walletType, teamWallet.walletType);
+        Objects.equals(this.walletStatus, teamWallet.walletStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(alias, createTime, tokens, walletId, walletStatus, walletType);
+    return Objects.hash(alias, createTime, tokens, walletType, walletId, walletStatus);
   }
 
   @Override
@@ -328,9 +328,9 @@ public class TeamWallet {
     sb.append("    alias: ").append(toIndentedString(alias)).append("\n");
     sb.append("    createTime: ").append(toIndentedString(createTime)).append("\n");
     sb.append("    tokens: ").append(toIndentedString(tokens)).append("\n");
+    sb.append("    walletType: ").append(toIndentedString(walletType)).append("\n");
     sb.append("    walletId: ").append(toIndentedString(walletId)).append("\n");
     sb.append("    walletStatus: ").append(toIndentedString(walletStatus)).append("\n");
-    sb.append("    walletType: ").append(toIndentedString(walletType)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -398,6 +398,11 @@ public class TeamWallet {
       }
     }
 
+    // add `walletType` to the URL query string
+    if (getWalletType() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%swalletType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletType()))));
+    }
+
     // add `wallet_id` to the URL query string
     if (getWalletId() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%swallet_id%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletId()))));
@@ -406,11 +411,6 @@ public class TeamWallet {
     // add `wallet_status` to the URL query string
     if (getWalletStatus() != null) {
       joiner.add(String.format(java.util.Locale.ROOT, "%swallet_status%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletStatus()))));
-    }
-
-    // add `wallet_type` to the URL query string
-    if (getWalletType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%swallet_type%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletType()))));
     }
 
     return joiner.toString();
@@ -440,16 +440,16 @@ public class TeamWallet {
       this.instance.tokens = tokens;
       return this;
     }
+    public TeamWallet.Builder walletType(WalletTypeEnum walletType) {
+      this.instance.walletType = walletType;
+      return this;
+    }
     public TeamWallet.Builder walletId(Long walletId) {
       this.instance.walletId = walletId;
       return this;
     }
     public TeamWallet.Builder walletStatus(WalletStatusEnum walletStatus) {
       this.instance.walletStatus = walletStatus;
-      return this;
-    }
-    public TeamWallet.Builder walletType(WalletTypeEnum walletType) {
-      this.instance.walletType = walletType;
       return this;
     }
 
@@ -489,9 +489,9 @@ public class TeamWallet {
       .alias(getAlias())
       .createTime(getCreateTime())
       .tokens(getTokens())
+      .walletType(getWalletType())
       .walletId(getWalletId())
-      .walletStatus(getWalletStatus())
-      .walletType(getWalletType());
+      .walletStatus(getWalletStatus());
   }
 
 }

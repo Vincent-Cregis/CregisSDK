@@ -43,11 +43,11 @@ import com.cregis.sdk.generated.ApiClient;
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class QueryTeamWalletHistoryTransactionsResponse {
-  public static final String JSON_PROPERTY_PAGE_NUM = "page_num";
+  public static final String JSON_PROPERTY_PAGE_NUM = "pageNum";
   @javax.annotation.Nullable
   private Integer pageNum;
 
-  public static final String JSON_PROPERTY_PAGE_SIZE = "page_size";
+  public static final String JSON_PROPERTY_PAGE_SIZE = "pageSize";
   @javax.annotation.Nullable
   private Integer pageSize;
 
@@ -244,14 +244,14 @@ public class QueryTeamWalletHistoryTransactionsResponse {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `page_num` to the URL query string
+    // add `pageNum` to the URL query string
     if (getPageNum() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%spage_num%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPageNum()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%spageNum%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPageNum()))));
     }
 
-    // add `page_size` to the URL query string
+    // add `pageSize` to the URL query string
     if (getPageSize() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%spage_size%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPageSize()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%spageSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPageSize()))));
     }
 
     // add `rows` to the URL query string

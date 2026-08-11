@@ -6,8 +6,10 @@ import com.cregis.sdk.generated.payment.model.OrderDetails;
 import com.cregis.sdk.generated.payment.model.OrderItem;
 import com.cregis.sdk.generated.payment.model.QueryOrderResponse;
 import com.cregis.sdk.generated.team.model.ListTeamWalletAddressesRequest;
+import com.cregis.sdk.generated.team.model.ListTeamWalletsResponse;
 import com.cregis.sdk.generated.waas.model.AddressBalanceResponse;
 import com.cregis.sdk.generated.waas.model.PayoutV1Request;
+import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponse;
 import com.cregis.sdk.generated.waas.model.TradeRecordQueryResponse;
 import com.cregis.sdk.payment.CregisPaymentValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,12 +37,16 @@ class OpenApiModelTest {
                 + "\"order_currency\":\"HKD\","
                 + "\"created_time\":1687848653294,"
                 + "\"expire_time\":1687850453294,"
-                + "\"payment_info\":[{\"token_symbol\":\"USDT\",\"token_decimals\":6}]"
+                + "\"payment_info\":[{\"token_symbol\":\"USDT\",\"token_decimals\":6,"
+                + "\"consolidated_qrcodes\":[{\"wallet_name\":\"Wallet\",\"qrcode\":\"qr\","
+                + "\"wallet_icon\":\"https://example.com/wallet.png\"}]}]"
                 + "}";
 
         CreateOrderResponse response = objectMapper.readValue(json, CreateOrderResponse.class);
         assertEquals("Merchant", response.getMerchantName());
         assertEquals(6, response.getPaymentInfo().get(0).getTokenDecimals());
+        assertEquals("Wallet", response.getPaymentInfo().get(0)
+                .getConsolidatedQrcodes().get(0).getWalletName());
     }
 
     @Test
@@ -65,17 +71,35 @@ class OpenApiModelTest {
     }
 
     @Test
-    void waasPaginationUsesSnakeCaseWireNames() throws Exception {
-        String json = "{\"total\":2,\"page_num\":3,\"page_size\":20,\"rows\":[]}";
+    void waasResponseModelsUseActualWireNamesAndTypes() throws Exception {
+        String balanceJson = "{\"total\":2,\"pageNum\":3,\"pageSize\":20,\"rows\":[]}";
+        String tradeJson = "{\"total\":2,\"pageNum\":3,\"pageSize\":20,\"rows\":[]}";
+        String coinsJson = "{\"address_coins\":[{\"coin_name\":\"USDT\",\"decimals\":\"6\"}],"
+                + "\"order_coins\":[{\"coin_name\":\"USDT\",\"decimals\":\"6\"}]}";
 
-        AddressBalanceResponse balances = objectMapper.readValue(json, AddressBalanceResponse.class);
-        TradeRecordQueryResponse trades = objectMapper.readValue(json, TradeRecordQueryResponse.class);
+        AddressBalanceResponse balances = objectMapper.readValue(balanceJson, AddressBalanceResponse.class);
+        TradeRecordQueryResponse trades = objectMapper.readValue(tradeJson, TradeRecordQueryResponse.class);
+        ProjectCoinQueryResponse coins = objectMapper.readValue(coinsJson, ProjectCoinQueryResponse.class);
 
         assertEquals(3, balances.getPageNum());
         assertEquals(20, balances.getPageSize());
         assertEquals(3, trades.getPageNum());
         assertEquals(20, trades.getPageSize());
         assertNotNull(trades.getRows());
+        assertEquals("6", coins.getAddressCoins().get(0).getDecimals());
+        assertEquals("6", coins.getOrderCoins().get(0).getDecimals());
+    }
+
+    @Test
+    void teamResponseModelsUseActualCamelCaseWireNames() throws Exception {
+        String json = "{\"total\":1,\"pageNum\":1,\"pageSize\":10,"
+                + "\"rows\":[{\"wallet_id\":1,\"walletType\":\"single_sign\"}]}";
+
+        ListTeamWalletsResponse response = objectMapper.readValue(json, ListTeamWalletsResponse.class);
+
+        assertEquals(1, response.getPageNum());
+        assertEquals(10, response.getPageSize());
+        assertEquals("single_sign", response.getRows().get(0).getWalletType().getValue());
     }
 
     @Test

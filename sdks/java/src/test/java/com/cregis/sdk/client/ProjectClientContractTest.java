@@ -161,7 +161,7 @@ class ProjectClientContractTest {
         waasClient.queryProjectCoins();
         assertNextPath("/api/v1/coins");
 
-        enqueueData("{\"total\":0,\"page_num\":1,\"page_size\":10,\"rows\":[]}");
+        enqueueData("{\"total\":0,\"pageNum\":1,\"pageSize\":10,\"rows\":[]}");
         waasClient.queryTradeRecords(TradeRecordQueryRequest.builder().build());
         assertNextPath("/api/v1/trade/page");
 

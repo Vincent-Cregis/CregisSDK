@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
 import com.cregis.sdk.generated.waas.model.ProjectCoin;
+import com.cregis.sdk.generated.waas.model.ProjectCoinQueryResponseOrderCoinsItem;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,6 +38,7 @@ import com.cregis.sdk.generated.ApiClient;
  */
 @JsonPropertyOrder({
   ProjectCoinQueryResponse.JSON_PROPERTY_ADDRESS_COINS,
+  ProjectCoinQueryResponse.JSON_PROPERTY_ORDER_COINS,
   ProjectCoinQueryResponse.JSON_PROPERTY_PAYOUT_COINS
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
@@ -44,6 +46,10 @@ public class ProjectCoinQueryResponse {
   public static final String JSON_PROPERTY_ADDRESS_COINS = "address_coins";
   @javax.annotation.Nullable
   private List<ProjectCoin> addressCoins = new ArrayList<>();
+
+  public static final String JSON_PROPERTY_ORDER_COINS = "order_coins";
+  @javax.annotation.Nullable
+  private List<ProjectCoinQueryResponseOrderCoinsItem> orderCoins = new ArrayList<>();
 
   public static final String JSON_PROPERTY_PAYOUT_COINS = "payout_coins";
   @javax.annotation.Nullable
@@ -81,6 +87,38 @@ public class ProjectCoinQueryResponse {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAddressCoins(@javax.annotation.Nullable List<ProjectCoin> addressCoins) {
     this.addressCoins = addressCoins;
+  }
+
+
+  public ProjectCoinQueryResponse orderCoins(@javax.annotation.Nullable List<ProjectCoinQueryResponseOrderCoinsItem> orderCoins) {
+    this.orderCoins = orderCoins;
+    return this;
+  }
+
+  public ProjectCoinQueryResponse addOrderCoinsItem(ProjectCoinQueryResponseOrderCoinsItem orderCoinsItem) {
+    if (this.orderCoins == null) {
+      this.orderCoins = new ArrayList<>();
+    }
+    this.orderCoins.add(orderCoinsItem);
+    return this;
+  }
+
+  /**
+   * 支持订单业务的代币列表；未配置时返回 null
+   * @return orderCoins
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_ORDER_COINS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public List<ProjectCoinQueryResponseOrderCoinsItem> getOrderCoins() {
+    return orderCoins;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_ORDER_COINS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrderCoins(@javax.annotation.Nullable List<ProjectCoinQueryResponseOrderCoinsItem> orderCoins) {
+    this.orderCoins = orderCoins;
   }
 
 
@@ -129,12 +167,13 @@ public class ProjectCoinQueryResponse {
     }
     ProjectCoinQueryResponse projectCoinQueryResponse = (ProjectCoinQueryResponse) o;
     return Objects.equals(this.addressCoins, projectCoinQueryResponse.addressCoins) &&
+        Objects.equals(this.orderCoins, projectCoinQueryResponse.orderCoins) &&
         Objects.equals(this.payoutCoins, projectCoinQueryResponse.payoutCoins);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(addressCoins, payoutCoins);
+    return Objects.hash(addressCoins, orderCoins, payoutCoins);
   }
 
   @Override
@@ -142,6 +181,7 @@ public class ProjectCoinQueryResponse {
     StringBuilder sb = new StringBuilder();
     sb.append("class ProjectCoinQueryResponse {\n");
     sb.append("    addressCoins: ").append(toIndentedString(addressCoins)).append("\n");
+    sb.append("    orderCoins: ").append(toIndentedString(orderCoins)).append("\n");
     sb.append("    payoutCoins: ").append(toIndentedString(payoutCoins)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -200,6 +240,16 @@ public class ProjectCoinQueryResponse {
       }
     }
 
+    // add `order_coins` to the URL query string
+    if (getOrderCoins() != null) {
+      for (int i = 0; i < getOrderCoins().size(); i++) {
+        if (getOrderCoins().get(i) != null) {
+          joiner.add(getOrderCoins().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sorder_coins%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
     // add `payout_coins` to the URL query string
     if (getPayoutCoins() != null) {
       for (int i = 0; i < getPayoutCoins().size(); i++) {
@@ -227,6 +277,10 @@ public class ProjectCoinQueryResponse {
 
     public ProjectCoinQueryResponse.Builder addressCoins(List<ProjectCoin> addressCoins) {
       this.instance.addressCoins = addressCoins;
+      return this;
+    }
+    public ProjectCoinQueryResponse.Builder orderCoins(List<ProjectCoinQueryResponseOrderCoinsItem> orderCoins) {
+      this.instance.orderCoins = orderCoins;
       return this;
     }
     public ProjectCoinQueryResponse.Builder payoutCoins(List<ProjectCoin> payoutCoins) {
@@ -268,6 +322,7 @@ public class ProjectCoinQueryResponse {
   public ProjectCoinQueryResponse.Builder toBuilder() {
     return new ProjectCoinQueryResponse.Builder()
       .addressCoins(getAddressCoins())
+      .orderCoins(getOrderCoins())
       .payoutCoins(getPayoutCoins());
   }
 
