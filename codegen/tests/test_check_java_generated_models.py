@@ -139,7 +139,7 @@ class JavaGeneratedModelsCheckTest(unittest.TestCase):
     def test_rejects_handwritten_duplicate(self):
         duplicate = (
             self.root
-            / "sdks/java/src/main/java/com/cregis/sdk/domain/example/ThingRequest.java"
+            / "sdks/java/src/main/java/com/cregis/sdk/webhook/example/model/ThingRequest.java"
         )
         duplicate.parent.mkdir(parents=True)
         duplicate.write_text("public final class ThingRequest {}\n", encoding="utf-8")

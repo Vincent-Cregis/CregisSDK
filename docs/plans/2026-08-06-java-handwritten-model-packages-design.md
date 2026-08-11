@@ -32,6 +32,6 @@ types would preserve the ambiguity this change removes.
 
 ## Verification
 
-Update production imports, tests, and README examples; ensure no
-`com.cregis.sdk.domain` reference remains; run the Java unit and integration
-test suites; and run the generated-model boundary checks.
+Update production imports, tests, and README examples; ensure no legacy domain
+package reference remains; run the Java unit and integration test suites; and
+run the generated-model boundary checks.

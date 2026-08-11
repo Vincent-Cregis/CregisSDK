@@ -1,4 +1,4 @@
-package com.cregis.sdk.domain.enums;
+package com.cregis.sdk.webhook.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

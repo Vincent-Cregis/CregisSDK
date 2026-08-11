@@ -2,7 +2,7 @@ package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.client.CregisBaseClient;
 import com.cregis.sdk.core.client.CregisHttpConfig;
-import com.cregis.sdk.domain.common.ApiResponse;
+import com.cregis.sdk.core.transport.ApiResponse;
 import com.cregis.sdk.generated.payment.model.CreateOrderRequest;
 import com.cregis.sdk.generated.payment.model.CreateOrderResponse;
 import com.cregis.sdk.generated.payment.model.QueryOrderRequest;

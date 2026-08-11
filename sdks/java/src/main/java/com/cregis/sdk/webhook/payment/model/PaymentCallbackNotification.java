@@ -1,7 +1,6 @@
-package com.cregis.sdk.domain.payment;
+package com.cregis.sdk.webhook.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.cregis.sdk.domain.enums.PaymentEventType;
 import lombok.Data;
 
 @Data

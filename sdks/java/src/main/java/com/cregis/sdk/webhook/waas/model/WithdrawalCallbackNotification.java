@@ -1,16 +1,22 @@
-package com.cregis.sdk.domain.waas;
+package com.cregis.sdk.webhook.waas.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class AddressDepositCallbackNotification {
+public class WithdrawalCallbackNotification {
 
     @JsonProperty("pid")
     private Long pid;
 
     @JsonProperty("cid")
     private Long cid;
+
+    @JsonProperty("from_address")
+    private String fromAddress;
+
+    @JsonProperty("to_address")
+    private String toAddress;
 
     @JsonProperty("chain_id")
     private String chainId;
@@ -21,14 +27,20 @@ public class AddressDepositCallbackNotification {
     @JsonProperty("currency")
     private String currency;
 
-    @JsonProperty("address")
-    private String address;
-
     @JsonProperty("amount")
     private String amount;
 
+    @JsonProperty("third_party_id")
+    private String thirdPartyId;
+
+    @JsonProperty("remark")
+    private String remark;
+
+    @JsonProperty("memo")
+    private String memo;
+
     @JsonProperty("status")
-    private String status; // "1" success, "2" failed
+    private Integer status; // 2, 4, 6, 7 like payout
 
     @JsonProperty("txid")
     private String txid;
@@ -37,10 +49,7 @@ public class AddressDepositCallbackNotification {
     private String blockHeight;
 
     @JsonProperty("block_time")
-    private String blockTime;
-
-    @JsonProperty("memo")
-    private String memo;
+    private Long blockTime;
 
     @JsonProperty("nonce")
     private String nonce;

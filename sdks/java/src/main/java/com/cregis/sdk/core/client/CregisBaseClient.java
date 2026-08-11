@@ -4,7 +4,7 @@ import com.cregis.sdk.core.exception.CregisClientException;
 import com.cregis.sdk.core.exception.CregisHttpException;
 import com.cregis.sdk.core.exception.CregisServerException;
 import com.cregis.sdk.core.interceptor.CregisLoggingInterceptor;
-import com.cregis.sdk.domain.common.ApiResponse;
+import com.cregis.sdk.core.transport.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;

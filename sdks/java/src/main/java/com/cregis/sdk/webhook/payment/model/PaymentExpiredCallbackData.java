@@ -1,4 +1,4 @@
-package com.cregis.sdk.domain.payment;
+package com.cregis.sdk.webhook.payment.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,4 +1,4 @@
-package com.cregis.sdk.domain.waas;
+package com.cregis.sdk.webhook.waas.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

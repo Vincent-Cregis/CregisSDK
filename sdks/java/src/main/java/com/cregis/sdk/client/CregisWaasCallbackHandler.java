@@ -2,10 +2,10 @@ package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.exception.CregisClientException;
 import com.cregis.sdk.core.webhook.CregisProjectCallbackVerifier;
-import com.cregis.sdk.domain.waas.AddressDepositCallbackNotification;
-import com.cregis.sdk.domain.waas.PayoutCallbackNotification;
-import com.cregis.sdk.domain.waas.PayoutExternalVerificationCallbackNotification;
-import com.cregis.sdk.domain.waas.WithdrawalCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.AddressDepositCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.PayoutCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.PayoutExternalVerificationCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.WithdrawalCallbackNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;

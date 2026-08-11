@@ -1,4 +1,4 @@
-package com.cregis.sdk.domain.common;
+package com.cregis.sdk.core.transport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

@@ -2,17 +2,17 @@ package com.cregis.sdk.client;
 
 import com.cregis.sdk.core.signer.CregisSigner;
 import com.cregis.sdk.core.exception.CregisClientException;
-import com.cregis.sdk.domain.payment.PaymentCallbackData;
-import com.cregis.sdk.domain.enums.PaymentEventType;
-import com.cregis.sdk.domain.payment.PaymentCallbackNotification;
-import com.cregis.sdk.domain.payment.PaymentCompletedCallbackData;
-import com.cregis.sdk.domain.payment.PaymentExpiredCallbackData;
-import com.cregis.sdk.domain.payment.PaymentRefundedCallbackData;
-import com.cregis.sdk.domain.payment.PaymentRemainingCallbackData;
-import com.cregis.sdk.domain.waas.AddressDepositCallbackNotification;
-import com.cregis.sdk.domain.waas.PayoutCallbackNotification;
-import com.cregis.sdk.domain.waas.PayoutExternalVerificationCallbackNotification;
-import com.cregis.sdk.domain.waas.WithdrawalCallbackNotification;
+import com.cregis.sdk.webhook.payment.model.PaymentCallbackData;
+import com.cregis.sdk.webhook.payment.model.PaymentCallbackNotification;
+import com.cregis.sdk.webhook.payment.model.PaymentCompletedCallbackData;
+import com.cregis.sdk.webhook.payment.model.PaymentEventType;
+import com.cregis.sdk.webhook.payment.model.PaymentExpiredCallbackData;
+import com.cregis.sdk.webhook.payment.model.PaymentRefundedCallbackData;
+import com.cregis.sdk.webhook.payment.model.PaymentRemainingCallbackData;
+import com.cregis.sdk.webhook.waas.model.AddressDepositCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.PayoutCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.PayoutExternalVerificationCallbackNotification;
+import com.cregis.sdk.webhook.waas.model.WithdrawalCallbackNotification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 

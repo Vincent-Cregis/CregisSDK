@@ -163,8 +163,8 @@ live under these packages:
 
 The Clients, signing, HTTP behavior, exceptions, and callback handling remain
 handwritten. Applications should import operation models from the generated
-packages; callback models continue to use `com.cregis.sdk.domain.payment` and
-`com.cregis.sdk.domain.waas`.
+packages. Callback models use `com.cregis.sdk.webhook.payment.model` and
+`com.cregis.sdk.webhook.waas.model`.
 
 ### HTTP transport configuration
 
@@ -205,7 +205,7 @@ The SDK includes handlers to verify signatures and parse callback JSON payloads.
 
 ```java
 import com.cregis.sdk.client.CregisPaymentCallbackHandler;
-import com.cregis.sdk.domain.payment.*;
+import com.cregis.sdk.webhook.payment.model.*;
 
 CregisPaymentCallbackHandler handler = new CregisPaymentCallbackHandler("YOUR_API_KEY");
 
@@ -234,7 +234,7 @@ try {
 
 ```java
 import com.cregis.sdk.client.CregisWaasCallbackHandler;
-import com.cregis.sdk.domain.waas.*;
+import com.cregis.sdk.webhook.waas.model.*;
 
 CregisWaasCallbackHandler handler = new CregisWaasCallbackHandler("YOUR_API_KEY");
 

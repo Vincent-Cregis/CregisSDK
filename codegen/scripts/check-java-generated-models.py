@@ -168,12 +168,12 @@ def check(repo_root: Path) -> int:
             f"Committed generated model files are stale; missing={missing}, extra={extra}"
         )
 
-    domain_root = repo_root / "sdks/java/src/main/java/com/cregis/sdk/domain"
+    handwritten_root = repo_root / "sdks/java/src/main/java"
     handwritten_duplicates = sorted(
         str(path.relative_to(repo_root))
-        for path in domain_root.rglob("*.java")
+        for path in handwritten_root.rglob("*.java")
         if path.stem in expected_model_names
-    ) if domain_root.is_dir() else []
+    ) if handwritten_root.is_dir() else []
     if handwritten_duplicates:
         raise GeneratedModelError(
             "Handwritten operation models duplicate generated models: "
