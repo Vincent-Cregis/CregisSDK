@@ -65,16 +65,25 @@ def operation_records(
 
 
 def check(repo_root: Path) -> int:
-    operation_config = read_json(repo_root / "codegen/configs/java-operations.json")
-    model_config = read_json(repo_root / "codegen/configs/java-models.json")
+    operation_config = read_json(repo_root / "codegen/configs/openapi-operations.json")
+    model_config = read_json(repo_root / "codegen/configs/openapi-models.json")
+    java_overrides = read_json(repo_root / "codegen/configs/java-overrides.json")
     lock = read_json(repo_root / "codegen/manifests/java-models.lock.json")
 
     operation_apis = operation_config.get("apis")
     model_apis = model_config.get("apis")
+    override_apis = java_overrides.get("apis")
     lock_apis = lock.get("apis")
-    if not all(isinstance(value, dict) for value in (operation_apis, model_apis, lock_apis)):
+    if not all(
+        isinstance(value, dict)
+        for value in (operation_apis, model_apis, override_apis, lock_apis)
+    ):
         raise GeneratedModelError("Java configs and lock manifest must define APIs")
-    if set(operation_apis) != set(model_apis) or set(operation_apis) != set(lock_apis):
+    if (
+        set(operation_apis) != set(model_apis)
+        or set(operation_apis) != set(override_apis)
+        or set(operation_apis) != set(lock_apis)
+    ):
         raise GeneratedModelError("Java configs and lock manifest define different APIs")
 
     managed_fields = model_config.get("sdkManagedRequestFields")
@@ -89,11 +98,15 @@ def check(repo_root: Path) -> int:
     for api_name in sorted(operation_apis):
         operation_api = operation_apis[api_name]
         model_api = model_apis[api_name]
+        java_api = override_apis[api_name]
         locked_api = lock_apis[api_name]
-        if not all(isinstance(value, dict) for value in (operation_api, model_api, locked_api)):
+        if not all(
+            isinstance(value, dict)
+            for value in (operation_api, model_api, java_api, locked_api)
+        ):
             raise GeneratedModelError(f"Invalid API configuration: {api_name}")
 
-        package = model_api.get("modelPackage")
+        package = java_api.get("modelPackage")
         models = locked_api.get("models")
         if not isinstance(package, str) or not isinstance(models, list) or not all(
             isinstance(model, str) for model in models
@@ -136,7 +149,7 @@ def check(repo_root: Path) -> int:
                         f"{api_name}.{request_model}"
                     )
 
-        client_source = operation_api.get("clientSource")
+        client_source = java_api.get("clientSource")
         if not isinstance(client_source, str):
             raise GeneratedModelError(f"Missing clientSource for API: {api_name}")
         client_path = repo_root / "sdks/java/src/main/java" / client_source

@@ -20,9 +20,23 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
         self.spec_dir.mkdir()
         (self.java_root / "example").mkdir(parents=True)
         self.manifest = self.root / "manifest.json"
+        self.java_overrides = self.root / "java-overrides.json"
 
         self.write_spec({"doThing": ("post", "/v1/do")})
         self.write_manifest("/v1/do")
+        self.java_overrides.write_text(
+            json.dumps({
+                "version": 1,
+                "apis": {
+                    "example": {
+                        "clientSource": "example/ExampleClient.java",
+                        "clientMethods": {"doThing": "doThing"},
+                        "modelPackage": "example.generated",
+                    },
+                },
+            }),
+            encoding="utf-8",
+        )
         self.write_client("/v1/do")
 
     def tearDown(self):
@@ -47,12 +61,10 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
                 "apis": {
                     "example": {
                         "specFile": "api.json",
-                        "clientSource": "example/ExampleClient.java",
                         "operations": [{
                             "operationId": "doThing",
                             "method": "post",
                             "path": path,
-                            "clientMethod": "doThing",
                         }],
                     },
                 },
@@ -70,14 +82,16 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def run_check(self):
+    def run_check(self, *extra_args):
         return subprocess.run(
             [
                 sys.executable,
                 str(SCRIPT),
                 "--spec-dir", str(self.spec_dir),
                 "--manifest", str(self.manifest),
+                "--java-overrides", str(self.java_overrides),
                 "--java-source-root", str(self.java_root),
+                *extra_args,
             ],
             text=True,
             capture_output=True,
@@ -109,6 +123,15 @@ class JavaOpenApiDriftCheckTest(unittest.TestCase):
         self.assertEqual(1, result.returncode)
         self.assertIn("Java method doThing uses /v1/wrong, expected /v1/do", result.stderr)
         self.assertIn("untracked POST path /v1/wrong", result.stderr)
+
+    def test_can_check_inventory_without_a_language_source(self):
+        self.write_client("/v1/wrong")
+        self.java_overrides.unlink()
+
+        result = self.run_check("--skip-source-check")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("OpenAPI inventory check passed", result.stdout)
 
     def test_reports_parameter_example_with_wrong_json_type(self):
         self.write_raw_spec({

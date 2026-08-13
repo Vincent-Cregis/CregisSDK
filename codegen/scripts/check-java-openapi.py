@@ -28,7 +28,12 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser.add_argument(
         "--manifest",
         type=Path,
-        default=repo_root / "codegen" / "configs" / "java-operations.json",
+        default=repo_root / "codegen" / "configs" / "openapi-operations.json",
+    )
+    parser.add_argument(
+        "--java-overrides",
+        type=Path,
+        default=repo_root / "codegen" / "configs" / "java-overrides.json",
     )
     parser.add_argument(
         "--java-source-root",
@@ -36,6 +41,11 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         default=repo_root / "sdks" / "java" / "src" / "main" / "java",
     )
     parser.add_argument("--json-output", type=Path, help="Optional machine-readable report path")
+    parser.add_argument(
+        "--skip-source-check",
+        action="store_true",
+        help="Compare only the OpenAPI inventory and examples with the manifest",
+    )
     return parser.parse_args(list(argv))
 
 
@@ -300,10 +310,17 @@ def compare_source(
 def compare(args: argparse.Namespace) -> Dict[str, Any]:
     manifest = read_json(args.manifest)
     if manifest.get("version") != 1:
-        raise ValueError("Unsupported java-operations manifest version")
+        raise ValueError("Unsupported OpenAPI operations manifest version")
     api_configs = manifest.get("apis")
     if not isinstance(api_configs, dict) or not api_configs:
         raise ValueError("Manifest must contain a non-empty apis object")
+    override_apis: Dict[str, Any] = {}
+    if not args.skip_source_check:
+        java_overrides = read_json(args.java_overrides)
+        raw_overrides = java_overrides.get("apis")
+        if not isinstance(raw_overrides, dict) or set(raw_overrides) != set(api_configs):
+            raise ValueError("Java overrides and OpenAPI manifest define different APIs")
+        override_apis = raw_overrides
 
     issues: List[str] = []
     report_apis: Dict[str, Any] = {}
@@ -364,7 +381,29 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                     f"{actual_item['method'].upper()} {actual_item['path']}"
                 )
 
-        compare_source(api_name, api_config, args.java_source_root, issues)
+        if not args.skip_source_check:
+            java_api_config = override_apis.get(api_name)
+            if not isinstance(java_api_config, dict):
+                issues.append(f"{api_name}: Java override must be an object")
+            else:
+                client_methods = java_api_config.get("clientMethods")
+                if not isinstance(client_methods, dict):
+                    issues.append(f"{api_name}: Java clientMethods must be an object")
+                    client_methods = {}
+                enriched_operations = [
+                    {
+                        **operation,
+                        "clientMethod": client_methods.get(operation.get("operationId")),
+                    }
+                    for operation in configured_operations
+                    if isinstance(operation, dict)
+                ]
+                compare_source(
+                    api_name,
+                    {**api_config, **java_api_config, "operations": enriched_operations},
+                    args.java_source_root,
+                    issues,
+                )
         count = len(actual)
         total_operations += count
         report_apis[api_name] = {
@@ -394,7 +433,8 @@ def main(argv: Iterable[str] = ()) -> int:
         args.json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     if report["issues"]:
-        print("Java/OpenAPI drift check failed:", file=sys.stderr)
+        label = "OpenAPI inventory" if args.skip_source_check else "Java/OpenAPI drift"
+        print(f"{label} check failed:", file=sys.stderr)
         for issue in report["issues"]:
             print(f"- {issue}", file=sys.stderr)
         return 1
@@ -403,7 +443,8 @@ def main(argv: Iterable[str] = ()) -> int:
         f"{name} {details['operationCount']}"
         for name, details in report["apis"].items()
     )
-    print(f"Java/OpenAPI drift check passed: {counts}; total {report['operationCount']}")
+    label = "OpenAPI inventory" if args.skip_source_check else "Java/OpenAPI drift"
+    print(f"{label} check passed: {counts}; total {report['operationCount']}")
     return 0
 
 

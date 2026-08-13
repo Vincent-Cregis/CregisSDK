@@ -34,7 +34,7 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
 config_file="${repo_root}/codegen/configs/java-generator.json"
-model_config_file="${repo_root}/codegen/configs/java-models.json"
+java_overrides_file="${repo_root}/codegen/configs/java-overrides.json"
 generated_root="${repo_root}/sdks/java/src/generated/java"
 lock_file="${repo_root}/codegen/manifests/java-models.lock.json"
 
@@ -55,9 +55,27 @@ generator_dir="${work_dir}/generator"
 candidate_root="${work_dir}/candidate"
 mkdir -p "$prepared_dir" "$generator_dir" "$candidate_root"
 
-"${repo_root}/codegen/scripts/prepare-java-openapi.py" \
+"${repo_root}/codegen/scripts/prepare-openapi.py" \
   --spec-dir "$spec_dir" \
   --output-dir "$prepared_dir"
+
+python3 - "$prepared_dir/manifest.json" "$java_overrides_file" <<'PY'
+import json
+import pathlib
+import sys
+
+manifest_path = pathlib.Path(sys.argv[1])
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+overrides = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding="utf-8"))
+if set(manifest["apis"]) != set(overrides["apis"]):
+    raise SystemExit("Java overrides and shared OpenAPI config define different APIs")
+for api_name, api in manifest["apis"].items():
+    api["modelPackage"] = overrides["apis"][api_name]["modelPackage"]
+manifest_path.write_text(
+    json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
 
 generate_api() {
   local api_name="$1"
@@ -65,7 +83,7 @@ generate_api() {
   local package_path
   local api_output="${generator_dir}/${api_name}"
 
-  model_package="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["apis"][sys.argv[2]]["modelPackage"])' "$model_config_file" "$api_name")"
+  model_package="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["apis"][sys.argv[2]]["modelPackage"])' "$java_overrides_file" "$api_name")"
   package_path="${model_package//.//}"
 
   mkdir -p "$api_output"

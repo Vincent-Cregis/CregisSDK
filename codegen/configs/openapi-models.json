@@ -3,11 +3,14 @@
   "sdkManagedRequestFields": ["pid", "nonce", "timestamp", "sign"],
   "apis": {
     "payment": {
-      "modelPackage": "com.cregis.sdk.generated.payment.model",
       "componentNames": {
         "PaymentEngineOrderDetails": "OrderDetails",
         "PaymentEngineOrderItem": "OrderItem",
         "PaymentEngineOrderSettlementDetail": "OrderSettlementDetail",
+        "PaymentEngineOrderCallbackExpiredData": "PaymentExpiredCallbackData",
+        "PaymentEngineOrderCallbackPaidRemainData": "PaymentRemainingCallbackData",
+        "PaymentEngineOrderCallbackPaymentData": "PaymentCompletedCallbackData",
+        "PaymentEngineOrderCallbackRefundedData": "PaymentRefundedCallbackData",
         "PaymentEngineQueryOrderDetails": "QueryOrderDetails",
         "PaymentEngineQueryOrderItem": "QueryOrderItem",
         "PaymentEngineQuerySubMerchant": "QuerySubMerchant",
@@ -18,7 +21,16 @@
         "createOrder.response.payment_info.items": "PaymentInfo",
         "queryOrder.response.payment_detail.items": "PaymentDetail",
         "queryOrder.response.payment_info.items": "PaymentInfo",
-        "queryOrder.response.refund_data": "RefundData"
+        "queryOrder.response.refund_data": "RefundData",
+        "orderCallback.webhook.data.oneOf.0": "PaymentCompletedCallbackData",
+        "orderCallback.webhook.data.oneOf.1": "PaymentExpiredCallbackData",
+        "orderCallback.webhook.data.oneOf.2": "PaymentRefundedCallbackData",
+        "orderCallback.webhook.data.oneOf.3": "PaymentRemainingCallbackData"
+      },
+      "webhooks": {
+        "orderCallback": {
+          "model": "PaymentCallbackEnvelope"
+        }
       },
       "operations": {
         "createOrder": {"requestModel": "CreateOrderRequest", "responseModel": "CreateOrderResponse"},
@@ -26,7 +38,6 @@
       }
     },
     "waas": {
-      "modelPackage": "com.cregis.sdk.generated.waas.model",
       "componentNames": {},
       "schemaNames": {
         "batchCreateAddress.response.items": "GeneratedAddress",
@@ -35,6 +46,20 @@
         "tradePage.response.rows.items": "TradeRecord",
         "subAddressBalancePage.response.rows.items": "AddressBalance",
         "querySubAddressBalanceV2.response.rows.items": "AddressBalanceV2"
+      },
+      "webhooks": {
+        "depositCallback": {
+          "model": "AddressDepositCallbackNotification"
+        },
+        "payoutCallback": {
+          "model": "PayoutCallbackNotification"
+        },
+        "payoutExternalVerificationCallback": {
+          "model": "PayoutExternalVerificationCallbackNotification"
+        },
+        "withdrawalCallback": {
+          "model": "WithdrawalCallbackNotification"
+        }
       },
       "operations": {
         "createAddress": {"requestModel": "GenerateAddressRequest", "responseModel": "GenerateAddressResponse"},
@@ -55,7 +80,6 @@
       }
     },
     "team": {
-      "modelPackage": "com.cregis.sdk.generated.team.model",
       "componentNames": {
         "TeamWallet": "TeamWallet",
         "TeamWalletAddress": "TeamWalletAddress",
@@ -66,6 +90,7 @@
         "TeamWalletTransaction": "TeamWalletTransaction"
       },
       "schemaNames": {},
+      "webhooks": {},
       "operations": {
         "listTeamWallets": {"requestModel": "ListTeamWalletsRequest", "responseModel": "ListTeamWalletsResponse"},
         "listTeamWalletAddresses": {"requestModel": "ListTeamWalletAddressesRequest", "responseModel": "ListTeamWalletAddressesResponse"},

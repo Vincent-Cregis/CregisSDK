@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "apis": {
+    "payment": {
+      "clientSource": "com/cregis/sdk/client/CregisPaymentClient.java",
+      "clientMethods": {
+        "createOrder": "createOrder",
+        "queryOrder": "queryOrder"
+      },
+      "modelPackage": "com.cregis.sdk.generated.payment.model"
+    },
+    "waas": {
+      "clientSource": "com/cregis/sdk/client/CregisWaasClient.java",
+      "clientMethods": {
+        "createAddress": "generateAddress",
+        "batchCreateAddress": "batchGenerateAddress",
+        "updateAddress": "updateAddress",
+        "verifyAddress": "validateAddress",
+        "validateAddressFormat": "checkAddressLegality",
+        "initiatePayout": "payoutV1",
+        "initiatePayoutV2": "payoutV2",
+        "subAddressWithdrawal": "withdrawal",
+        "initiateCollection": "balanceCollect",
+        "getProjectCoins": "queryProjectCoins",
+        "tradePage": "queryTradeRecords",
+        "queryPayout": "queryPayout",
+        "querySubAddressWithdrawal": "queryWithdrawal",
+        "subAddressBalancePage": "queryAddressBalance",
+        "querySubAddressBalanceV2": "queryAddressBalanceV2"
+      },
+      "modelPackage": "com.cregis.sdk.generated.waas.model"
+    },
+    "team": {
+      "clientSource": "com/cregis/sdk/client/CregisTeamClient.java",
+      "clientMethods": {
+        "listTeamWallets": "listTeamWallets",
+        "listTeamWalletAddresses": "listTeamWalletAddresses",
+        "queryTeamWalletBalance": "queryTeamWalletBalance",
+        "queryTeamWalletAddressBalance": "queryTeamWalletAddressBalance",
+        "queryTeamWalletHistoryTransactions": "queryTeamWalletHistoryTransactions",
+        "queryTeamWalletProcessingTransactions": "queryTeamWalletProcessingTransactions"
+      },
+      "modelPackage": "com.cregis.sdk.generated.team.model"
+    }
+  }
+}

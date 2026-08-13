@@ -34,12 +34,10 @@ class JavaGeneratedModelsCheckTest(unittest.TestCase):
             "apis": {
                 "example": {
                     "specFile": "example.json",
-                    "clientSource": "com/cregis/sdk/client/ExampleClient.java",
                     "operations": [{
                         "operationId": "doThing",
                         "method": "post",
                         "path": "/things",
-                        "clientMethod": "doThing",
                     }],
                 }
             },
@@ -84,8 +82,18 @@ class JavaGeneratedModelsCheckTest(unittest.TestCase):
                 }
             },
         }
-        self.write_json("codegen/configs/java-operations.json", operations)
-        self.write_json("codegen/configs/java-models.json", models)
+        self.write_json("codegen/configs/openapi-operations.json", operations)
+        self.write_json("codegen/configs/openapi-models.json", models)
+        self.write_json("codegen/configs/java-overrides.json", {
+            "version": 1,
+            "apis": {
+                "example": {
+                    "clientSource": "com/cregis/sdk/client/ExampleClient.java",
+                    "clientMethods": {"doThing": "doThing"},
+                    "modelPackage": "com.cregis.sdk.generated.example.model",
+                },
+            },
+        })
         self.write_json("codegen/manifests/java-models.lock.json", lock)
         (self.root / "codegen/scripts/generate-java-models.sh").write_text(
             'GENERATOR_IMAGE="openapitools/openapi-generator-cli:7.19.0@sha256:'

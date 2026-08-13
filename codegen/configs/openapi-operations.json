@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "apis": {
+    "payment": {
+      "specFile": "payment-engine-api.json",
+      "operations": [
+        {"operationId": "createOrder", "method": "post", "path": "/api/v2/checkout"},
+        {"operationId": "queryOrder", "method": "post", "path": "/api/v2/order/info"}
+      ]
+    },
+    "waas": {
+      "specFile": "waas-api.json",
+      "operations": [
+        {"operationId": "createAddress", "method": "post", "path": "/api/v1/address/create"},
+        {"operationId": "batchCreateAddress", "method": "post", "path": "/api/v1/batch/address/create"},
+        {"operationId": "updateAddress", "method": "post", "path": "/api/v1/address/update"},
+        {"operationId": "verifyAddress", "method": "post", "path": "/api/v1/address/inner"},
+        {"operationId": "validateAddressFormat", "method": "post", "path": "/api/v1/address/legal"},
+        {"operationId": "initiatePayout", "method": "post", "path": "/api/v1/payout"},
+        {"operationId": "initiatePayoutV2", "method": "post", "path": "/api/v2/payout"},
+        {"operationId": "subAddressWithdrawal", "method": "post", "path": "/api/v1/sub_address_withdrawal"},
+        {"operationId": "initiateCollection", "method": "post", "path": "/api/v1/collection"},
+        {"operationId": "getProjectCoins", "method": "post", "path": "/api/v1/coins"},
+        {"operationId": "tradePage", "method": "post", "path": "/api/v1/trade/page"},
+        {"operationId": "queryPayout", "method": "post", "path": "/api/v1/payout/query"},
+        {"operationId": "querySubAddressWithdrawal", "method": "post", "path": "/api/v1/sub_address_withdrawal/info"},
+        {"operationId": "subAddressBalancePage", "method": "post", "path": "/api/v1/sub_address_balance"},
+        {"operationId": "querySubAddressBalanceV2", "method": "post", "path": "/api/v2/sub_address_balance"}
+      ]
+    },
+    "team": {
+      "specFile": "team-api.json",
+      "operations": [
+        {"operationId": "listTeamWallets", "method": "post", "path": "/openapi/v1/wallets"},
+        {"operationId": "listTeamWalletAddresses", "method": "post", "path": "/openapi/v1/wallet_address"},
+        {"operationId": "queryTeamWalletBalance", "method": "post", "path": "/openapi/v1/wallet_balance"},
+        {"operationId": "queryTeamWalletAddressBalance", "method": "post", "path": "/openapi/v1/wallet_address_balance"},
+        {"operationId": "queryTeamWalletHistoryTransactions", "method": "post", "path": "/openapi/v1/wallet_history_transaction_info"},
+        {"operationId": "queryTeamWalletProcessingTransactions", "method": "post", "path": "/openapi/v1/wallet_processing_transaction_info"}
+      ]
+    }
+  }
+}

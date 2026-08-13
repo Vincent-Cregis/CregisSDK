@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare canonical Cregis OpenAPI documents for Java model generation."""
+"""Prepare canonical Cregis OpenAPI documents for SDK model generation."""
 
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def sha256_file(path: Path) -> str:
 def pascal_case(value: str) -> str:
     parts = re.findall(r"[A-Z]+(?=[A-Z][a-z]|\d|$)|[A-Z]?[a-z]+|\d+", value)
     if not parts:
-        raise PreparationError(f"Cannot derive a Java model name from: {value!r}")
+        raise PreparationError(f"Cannot derive an SDK model name from: {value!r}")
     return "".join(part[:1].upper() + part[1:] for part in parts)
 
 
@@ -174,7 +174,7 @@ class SchemaMaterializer:
 
     def _register(self, model_name: str, schema: Mapping[str, Any], context: str) -> None:
         if not re.fullmatch(r"[A-Z][A-Za-z0-9]*", model_name):
-            raise PreparationError(f"Invalid Java model name {model_name!r} for {context}")
+            raise PreparationError(f"Invalid SDK model name {model_name!r} for {context}")
         if model_name in self._building:
             return
 
@@ -214,6 +214,26 @@ class SchemaMaterializer:
                 for prop_name, prop_schema in properties.items()
                 if isinstance(prop_schema, dict)
             }
+        event_payload = processed.get("x-cregis-event-payload")
+        if isinstance(event_payload, dict) and isinstance(event_payload.get("mapping"), dict):
+            rewritten_mapping: Dict[str, str] = {}
+            for event, reference in event_payload["mapping"].items():
+                if not isinstance(event, str) or not isinstance(reference, str):
+                    raise PreparationError(f"Invalid event payload mapping: {context}")
+                prefix = "#/components/schemas/"
+                if not reference.startswith(prefix):
+                    raise PreparationError(f"Event payload mapping must use a local schema: {context}")
+                source_name = reference[len(prefix):]
+                target_name = self.component_names.get(source_name, pascal_case(source_name))
+                rewritten_mapping[event] = prefix + target_name
+            event_payload["mapping"] = rewritten_mapping
+        # OpenAPI Generator's typescript-fetch templates can reference an enum
+        # without emitting it when an object schema also has a top-level anyOf.
+        # Keep the cross-field rule as SDK runtime metadata, while presenting a
+        # plain object schema to the source generator.
+        alternatives = processed.pop("anyOf", None)
+        if isinstance(alternatives, list):
+            processed["x-cregis-runtime-anyOf"] = alternatives
         return processed
 
     def _process_property(
@@ -223,6 +243,26 @@ class SchemaMaterializer:
         property_name: str,
         context: str,
     ) -> Dict[str, Any]:
+        for keyword in ("oneOf", "anyOf"):
+            alternatives = schema.get(keyword)
+            if isinstance(alternatives, list):
+                result = copy.deepcopy(dict(schema))
+                processed_alternatives = []
+                for index, alternative in enumerate(alternatives):
+                    if not isinstance(alternative, dict):
+                        raise PreparationError(f"Invalid {keyword} alternative: {context}.{index}")
+                    alternative_context = f"{context}.{keyword}.{index}"
+                    child_name = self.schema_names.get(
+                        alternative_context,
+                        parent_model + pascal_case(property_name) + str(index + 1),
+                    )
+                    self._register(child_name, alternative, alternative_context)
+                    processed_alternatives.append(
+                        {"$ref": f"#/components/schemas/{child_name}"}
+                    )
+                result[keyword] = processed_alternatives
+                return result
+
         ref_name = local_ref_name(schema)
         if ref_name is not None:
             target = self.source_components.get(ref_name)
@@ -314,6 +354,15 @@ def operation_at(spec: Mapping[str, Any], method: str, path: str, operation_id: 
     return operation
 
 
+def webhook_operation(spec: Mapping[str, Any], webhook_name: str) -> Dict[str, Any]:
+    webhooks = spec.get("webhooks")
+    webhook = webhooks.get(webhook_name) if isinstance(webhooks, dict) else None
+    operation = webhook.get("post") if isinstance(webhook, dict) else None
+    if not isinstance(operation, dict):
+        raise PreparationError(f"Missing POST webhook operation: {webhook_name}")
+    return operation
+
+
 def request_schema(operation: Mapping[str, Any]) -> Optional[Dict[str, Any]]:
     request_body = operation.get("requestBody")
     return json_schema(request_body.get("content", {})) if isinstance(request_body, dict) else None
@@ -352,10 +401,17 @@ def prepare_api(
     operation_api_config: Mapping[str, Any],
     model_api_config: Mapping[str, Any],
     managed_request_fields: Set[str],
+    language: str = "Java",
+    include_webhooks: bool = False,
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     configured_operations = model_api_config.get("operations")
+    configured_webhooks = model_api_config.get("webhooks", {})
     operation_entries = operation_api_config.get("operations")
-    if not isinstance(configured_operations, dict) or not isinstance(operation_entries, list):
+    if (
+        not isinstance(configured_operations, dict)
+        or not isinstance(configured_webhooks, dict)
+        or not isinstance(operation_entries, list)
+    ):
         raise PreparationError(f"Invalid operation configuration for API: {api_name}")
 
     inventory_ids = {entry.get("operationId") for entry in operation_entries if isinstance(entry, dict)}
@@ -364,7 +420,7 @@ def prepare_api(
         missing = sorted(inventory_ids - configured_ids)
         extra = sorted(configured_ids - inventory_ids)
         raise PreparationError(
-            f"Java model configuration mismatch for {api_name}; missing={missing}, extra={extra}"
+            f"SDK model configuration mismatch for {api_name}; missing={missing}, extra={extra}"
         )
 
     source_components = spec.get("components", {}).get("schemas", {})
@@ -376,6 +432,17 @@ def prepare_api(
         schema_names=model_api_config.get("schemaNames", {}),
         managed_request_fields=managed_request_fields,
     )
+
+    if include_webhooks:
+        source_webhooks = spec.get("webhooks", {})
+        if not isinstance(source_webhooks, dict):
+            raise PreparationError(f"OpenAPI webhooks must be an object: {spec_path}")
+        if set(source_webhooks) != set(configured_webhooks):
+            raise PreparationError(
+                f"SDK webhook configuration mismatch for {api_name}; "
+                f"missing={sorted(set(source_webhooks) - set(configured_webhooks))}, "
+                f"extra={sorted(set(configured_webhooks) - set(source_webhooks))}"
+            )
 
     prepared_operations: List[Dict[str, Any]] = []
     for entry in operation_entries:
@@ -442,11 +509,35 @@ def prepare_api(
             }
         )
 
+    prepared_webhooks: List[Dict[str, Any]] = []
+    for webhook_name in sorted(configured_webhooks) if include_webhooks else []:
+        webhook_config = configured_webhooks[webhook_name]
+        if not isinstance(webhook_config, dict):
+            raise PreparationError(f"Invalid webhook configuration: {api_name}.{webhook_name}")
+        model_name = webhook_config.get("model")
+        if not isinstance(model_name, str):
+            raise PreparationError(f"Webhook model is required: {api_name}.{webhook_name}")
+        operation = webhook_operation(spec, webhook_name)
+        raw_webhook = request_schema(operation)
+        if not isinstance(raw_webhook, dict):
+            raise PreparationError(f"Webhook must define a JSON request body: {webhook_name}")
+        materializer.materialize_root(
+            raw_webhook,
+            model_name,
+            webhook_name + ".webhook",
+            strip_managed_fields=False,
+        )
+        prepared_webhooks.append({
+            "name": webhook_name,
+            "operationId": operation.get("operationId", webhook_name),
+            "model": model_name,
+        })
+
     original_info = spec.get("info") if isinstance(spec.get("info"), dict) else {}
     prepared = {
         "openapi": spec.get("openapi", "3.1.0"),
         "info": {
-            "title": f"Cregis {api_name} Java models",
+            "title": f"Cregis {api_name} {language} models",
             "version": original_info.get("version", "0.0.0"),
         },
         "paths": {},
@@ -457,29 +548,37 @@ def prepare_api(
     }
     lock = {
         "inputSha256": sha256_file(spec_path),
-        "modelPackage": model_api_config["modelPackage"],
         "models": sorted(materializer.components),
         "operations": prepared_operations,
         "specFile": spec_path.name,
     }
+    if include_webhooks:
+        prepared["x-cregis-webhooks"] = prepared_webhooks
+        lock["webhooks"] = prepared_webhooks
     return prepared, lock
 
 
-def prepare(spec_dir: Path, output_dir: Path, repo_root: Path) -> Dict[str, Any]:
+def prepare(
+    spec_dir: Path,
+    output_dir: Path,
+    repo_root: Path,
+    language: str = "Java",
+    include_webhooks: bool = False,
+) -> Dict[str, Any]:
     if output_dir.exists() and any(output_dir.iterdir()):
         raise PreparationError(f"Output directory must be empty: {output_dir}")
 
-    operations_config = read_json(repo_root / "codegen/configs/java-operations.json")
-    models_config = read_json(repo_root / "codegen/configs/java-models.json")
+    operations_config = read_json(repo_root / "codegen/configs/openapi-operations.json")
+    models_config = read_json(repo_root / "codegen/configs/openapi-models.json")
     if models_config.get("version") != 1:
-        raise PreparationError("Unsupported java-models.json version")
+        raise PreparationError("Unsupported openapi-models.json version")
 
     operation_apis = operations_config.get("apis")
     model_apis = models_config.get("apis")
     if not isinstance(operation_apis, dict) or not isinstance(model_apis, dict):
-        raise PreparationError("Both Java configuration files must define APIs")
+        raise PreparationError("Both operation and model configuration files must define APIs")
     if set(operation_apis) != set(model_apis):
-        raise PreparationError("Java operation and model configurations define different APIs")
+        raise PreparationError("Operation and model configurations define different APIs")
 
     managed_fields = models_config.get("sdkManagedRequestFields")
     if not isinstance(managed_fields, list) or not all(isinstance(item, str) for item in managed_fields):
@@ -503,6 +602,8 @@ def prepare(spec_dir: Path, output_dir: Path, repo_root: Path) -> Dict[str, Any]
             operation_api_config,
             model_api_config,
             set(managed_fields),
+            language,
+            include_webhooks,
         )
         write_json(output_dir / f"{api_name}.json", prepared)
         lock_apis[api_name] = lock
@@ -524,6 +625,8 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument("--spec-dir", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--repo-root", type=Path)
+    parser.add_argument("--language", default="Java")
+    parser.add_argument("--include-webhooks", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -533,15 +636,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     if repo_root is None:
         repo_root = Path(__file__).resolve().parents[2]
     try:
-        manifest = prepare(args.spec_dir.resolve(), args.output_dir.resolve(), repo_root.resolve())
+        manifest = prepare(
+            args.spec_dir.resolve(),
+            args.output_dir.resolve(),
+            repo_root.resolve(),
+            args.language,
+            args.include_webhooks,
+        )
     except PreparationError as exc:
-        print(f"Java OpenAPI preparation failed: {exc}", file=sys.stderr)
+        print(f"{args.language} OpenAPI preparation failed: {exc}", file=sys.stderr)
         return 1
 
     total_models = sum(len(api["models"]) for api in manifest["apis"].values())
     total_operations = sum(len(api["operations"]) for api in manifest["apis"].values())
     print(
-        f"Prepared Java model specs: {total_operations} operations, "
+        f"Prepared {args.language} model specs: {total_operations} operations, "
         f"{total_models} models -> {args.output_dir.resolve()}"
     )
     return 0

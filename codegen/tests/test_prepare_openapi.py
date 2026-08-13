@@ -5,21 +5,21 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "prepare-java-openapi.py"
-MODULE_SPEC = importlib.util.spec_from_file_location("prepare_java_openapi", SCRIPT_PATH)
-prepare_java_openapi = importlib.util.module_from_spec(MODULE_SPEC)
+SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "prepare-openapi.py"
+MODULE_SPEC = importlib.util.spec_from_file_location("prepare_openapi", SCRIPT_PATH)
+prepare_openapi = importlib.util.module_from_spec(MODULE_SPEC)
 assert MODULE_SPEC.loader is not None
-MODULE_SPEC.loader.exec_module(prepare_java_openapi)
+MODULE_SPEC.loader.exec_module(prepare_openapi)
 
 
-class PrepareJavaOpenApiTest(unittest.TestCase):
+class PrepareOpenApiTest(unittest.TestCase):
 
     def test_strips_auth_unwraps_data_and_names_nested_models(self):
         spec = self.sample_spec()
         with tempfile.TemporaryDirectory() as temp_dir:
             spec_path = Path(temp_dir) / "sample.json"
             spec_path.write_text(json.dumps(spec), encoding="utf-8")
-            prepared, lock = prepare_java_openapi.prepare_api(
+            prepared, lock = prepare_openapi.prepare_api(
                 "waas",
                 spec_path,
                 spec,
@@ -51,6 +51,11 @@ class PrepareJavaOpenApiTest(unittest.TestCase):
         self.assertEqual({"query", "filter"}, set(request["properties"]))
         self.assertNotIn("pid", request["properties"])
         self.assertNotIn("sign", request["properties"])
+        self.assertNotIn("anyOf", request)
+        self.assertEqual(
+            [{"required": ["query"]}, {"required": ["filter"]}],
+            request["x-cregis-runtime-anyOf"],
+        )
         self.assertEqual(
             "#/components/schemas/ListThingsRequestFilter",
             request["properties"]["filter"]["$ref"],
@@ -72,10 +77,10 @@ class PrepareJavaOpenApiTest(unittest.TestCase):
             spec_path = Path(temp_dir) / "sample.json"
             spec_path.write_text(json.dumps(spec), encoding="utf-8")
             with self.assertRaisesRegex(
-                prepare_java_openapi.PreparationError,
+                prepare_openapi.PreparationError,
                 "model configuration mismatch",
             ):
-                prepare_java_openapi.prepare_api(
+                prepare_openapi.prepare_api(
                     "waas",
                     spec_path,
                     spec,
@@ -98,10 +103,10 @@ class PrepareJavaOpenApiTest(unittest.TestCase):
             spec_path = Path(temp_dir) / "sample.json"
             spec_path.write_text(json.dumps(spec), encoding="utf-8")
             with self.assertRaisesRegex(
-                prepare_java_openapi.PreparationError,
+                prepare_openapi.PreparationError,
                 "Operation ID mismatch",
             ):
-                prepare_java_openapi.prepare_api(
+                prepare_openapi.prepare_api(
                     "waas",
                     spec_path,
                     spec,
@@ -134,10 +139,10 @@ class PrepareJavaOpenApiTest(unittest.TestCase):
             (output / "keep.txt").write_text("keep", encoding="utf-8")
 
             with self.assertRaisesRegex(
-                prepare_java_openapi.PreparationError,
+                prepare_openapi.PreparationError,
                 "Output directory must be empty",
             ):
-                prepare_java_openapi.prepare(root / "specs", output, root)
+                prepare_openapi.prepare(root / "specs", output, root)
 
     @staticmethod
     def sample_spec():
@@ -165,6 +170,10 @@ class PrepareJavaOpenApiTest(unittest.TestCase):
                                                         "properties": {"active": {"type": "boolean"}},
                                                     },
                                                 },
+                                                "anyOf": [
+                                                    {"required": ["query"]},
+                                                    {"required": ["filter"]},
+                                                ],
                                             },
                                         ]
                                     }
