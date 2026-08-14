@@ -1,0 +1,7 @@
+{
+  "enumPropertyNaming": "PascalCase",
+  "hideGenerationTimestamp": true,
+  "importFileExtension": ".js",
+  "modelPropertyNaming": "original",
+  "supportsES6": true
+}
