@@ -1,0 +1,49 @@
+{
+  "name": "@cregis/sdk",
+  "version": "0.1.0",
+  "description": "Official Cregis SDK for Payment Engine, WaaS, and Team APIs",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "clean": "node ./scripts/clean.mjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && node ./scripts/write-cjs-package.mjs",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:test": "tsc -p tsconfig.test.json",
+    "typecheck": "tsc -p tsconfig.esm.json --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "test": "npm run clean:test && npm run build:test && node --test .test-dist/test/*.test.js",
+    "test:sandbox": "npm run clean:test && npm run build:test && node --env-file-if-exists=.env ./scripts/run-sandbox-tests.mjs",
+    "clean:test": "node ./scripts/clean-test.mjs",
+    "test:package": "npm run build && node ./scripts/package-smoke.mjs && tsc -p smoke-tests/tsconfig.json",
+    "pack:check": "npm pack --dry-run",
+    "verify": "npm run typecheck && npm test && npm run test:package"
+  },
+  "dependencies": {
+    "canonicalize": "2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
