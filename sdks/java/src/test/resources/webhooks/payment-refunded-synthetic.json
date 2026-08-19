@@ -7,8 +7,17 @@
   "data": {
     "cregis_id": "po-test",
     "order_id": "merchant-test",
+    "status": "canceled",
+    "payment_address": "T-payment",
+    "receive_amount": "10",
+    "receive_currency": "USD",
+    "pay_amount": "10",
+    "pay_currency": "USDT-TRC20",
+    "exchange_rate": "1",
+    "tx_id": "tx-test",
+    "transact_time": 1719994383015,
     "refund_id": "rf-test",
     "refund_status": 1
   },
-  "sign": "9e2b39ae45341e1d912dda3e31a3dddf"
+  "sign": "79ecbe54381b0bd9b580fdca0fa536ac"
 }
