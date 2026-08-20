@@ -49,7 +49,7 @@ import com.cregis.sdk.generated.ApiClient;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class TeamWalletTransaction {
   public static final String JSON_PROPERTY_AMOUNT = "amount";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String amount;
 
   public static final String JSON_PROPERTY_BLOCK_HEIGHT = "block_height";
@@ -61,7 +61,7 @@ public class TeamWalletTransaction {
   private Long blockTime;
 
   public static final String JSON_PROPERTY_CHAIN_ID = "chain_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String chainId;
 
   public static final String JSON_PROPERTY_FEE = "fee";
@@ -77,7 +77,7 @@ public class TeamWalletTransaction {
   private String toAddress;
 
   public static final String JSON_PROPERTY_TOKEN_ID = "token_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String tokenId;
 
   /**
@@ -118,7 +118,7 @@ public class TeamWalletTransaction {
   }
 
   public static final String JSON_PROPERTY_TRANSACTION_STATUS = "transaction_status";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private TransactionStatusEnum transactionStatus;
 
   /**
@@ -159,7 +159,7 @@ public class TeamWalletTransaction {
   }
 
   public static final String JSON_PROPERTY_TRANSACTION_TYPE = "transaction_type";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private TransactionTypeEnum transactionType;
 
   public static final String JSON_PROPERTY_TXID = "txid";
@@ -167,13 +167,13 @@ public class TeamWalletTransaction {
   private String txid;
 
   public static final String JSON_PROPERTY_WALLET_ID = "wallet_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private Long walletId;
 
   public TeamWalletTransaction() {
   }
 
-  public TeamWalletTransaction amount(@javax.annotation.Nullable String amount) {
+  public TeamWalletTransaction amount(@javax.annotation.Nonnull String amount) {
     this.amount = amount;
     return this;
   }
@@ -182,17 +182,17 @@ public class TeamWalletTransaction {
    * 交易金额
    * @return amount
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getAmount() {
     return amount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAmount(@javax.annotation.Nullable String amount) {
+  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAmount(@javax.annotation.Nonnull String amount) {
     this.amount = amount;
   }
 
@@ -245,7 +245,7 @@ public class TeamWalletTransaction {
   }
 
 
-  public TeamWalletTransaction chainId(@javax.annotation.Nullable String chainId) {
+  public TeamWalletTransaction chainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
     return this;
   }
@@ -254,17 +254,17 @@ public class TeamWalletTransaction {
    * 区块链 ID
    * @return chainId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getChainId() {
     return chainId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChainId(@javax.annotation.Nullable String chainId) {
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setChainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
   }
 
@@ -341,7 +341,7 @@ public class TeamWalletTransaction {
   }
 
 
-  public TeamWalletTransaction tokenId(@javax.annotation.Nullable String tokenId) {
+  public TeamWalletTransaction tokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
     return this;
   }
@@ -350,22 +350,22 @@ public class TeamWalletTransaction {
    * 代币编号
    * @return tokenId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTokenId() {
     return tokenId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTokenId(@javax.annotation.Nullable String tokenId) {
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
   }
 
 
-  public TeamWalletTransaction transactionStatus(@javax.annotation.Nullable TransactionStatusEnum transactionStatus) {
+  public TeamWalletTransaction transactionStatus(@javax.annotation.Nonnull TransactionStatusEnum transactionStatus) {
     this.transactionStatus = transactionStatus;
     return this;
   }
@@ -374,22 +374,22 @@ public class TeamWalletTransaction {
    * 交易状态  - &#x60;1&#x60;：成功 - &#x60;2&#x60;：失败
    * @return transactionStatus
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_STATUS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TransactionStatusEnum getTransactionStatus() {
     return transactionStatus;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransactionStatus(@javax.annotation.Nullable TransactionStatusEnum transactionStatus) {
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_STATUS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTransactionStatus(@javax.annotation.Nonnull TransactionStatusEnum transactionStatus) {
     this.transactionStatus = transactionStatus;
   }
 
 
-  public TeamWalletTransaction transactionType(@javax.annotation.Nullable TransactionTypeEnum transactionType) {
+  public TeamWalletTransaction transactionType(@javax.annotation.Nonnull TransactionTypeEnum transactionType) {
     this.transactionType = transactionType;
     return this;
   }
@@ -398,17 +398,17 @@ public class TeamWalletTransaction {
    * 交易类型  - &#x60;1&#x60;：接收 - &#x60;2&#x60;：发送
    * @return transactionType
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_TYPE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TransactionTypeEnum getTransactionType() {
     return transactionType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransactionType(@javax.annotation.Nullable TransactionTypeEnum transactionType) {
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_TYPE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTransactionType(@javax.annotation.Nonnull TransactionTypeEnum transactionType) {
     this.transactionType = transactionType;
   }
 
@@ -437,7 +437,7 @@ public class TeamWalletTransaction {
   }
 
 
-  public TeamWalletTransaction walletId(@javax.annotation.Nullable Long walletId) {
+  public TeamWalletTransaction walletId(@javax.annotation.Nonnull Long walletId) {
     this.walletId = walletId;
     return this;
   }
@@ -446,17 +446,17 @@ public class TeamWalletTransaction {
    * 钱包 ID
    * @return walletId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getWalletId() {
     return walletId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWalletId(@javax.annotation.Nullable Long walletId) {
+  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWalletId(@javax.annotation.Nonnull Long walletId) {
     this.walletId = walletId;
   }
 

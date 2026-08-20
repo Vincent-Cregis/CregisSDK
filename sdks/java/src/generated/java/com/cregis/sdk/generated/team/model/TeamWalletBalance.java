@@ -42,29 +42,29 @@ import com.cregis.sdk.generated.ApiClient;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class TeamWalletBalance {
   public static final String JSON_PROPERTY_AVAILABLE = "available";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String available;
 
   public static final String JSON_PROPERTY_CHAIN_ID = "chain_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String chainId;
 
   public static final String JSON_PROPERTY_PROCESSING = "processing";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String processing;
 
   public static final String JSON_PROPERTY_TOKEN_ID = "token_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String tokenId;
 
   public static final String JSON_PROPERTY_TOTAL = "total";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String total;
 
   public TeamWalletBalance() {
   }
 
-  public TeamWalletBalance available(@javax.annotation.Nullable String available) {
+  public TeamWalletBalance available(@javax.annotation.Nonnull String available) {
     this.available = available;
     return this;
   }
@@ -73,22 +73,22 @@ public class TeamWalletBalance {
    * 可用余额
    * @return available
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getAvailable() {
     return available;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAvailable(@javax.annotation.Nullable String available) {
+  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAvailable(@javax.annotation.Nonnull String available) {
     this.available = available;
   }
 
 
-  public TeamWalletBalance chainId(@javax.annotation.Nullable String chainId) {
+  public TeamWalletBalance chainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
     return this;
   }
@@ -97,22 +97,22 @@ public class TeamWalletBalance {
    * 区块链 ID
    * @return chainId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getChainId() {
     return chainId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChainId(@javax.annotation.Nullable String chainId) {
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setChainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
   }
 
 
-  public TeamWalletBalance processing(@javax.annotation.Nullable String processing) {
+  public TeamWalletBalance processing(@javax.annotation.Nonnull String processing) {
     this.processing = processing;
     return this;
   }
@@ -121,22 +121,22 @@ public class TeamWalletBalance {
    * 处理中余额
    * @return processing
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROCESSING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_PROCESSING, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getProcessing() {
     return processing;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROCESSING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setProcessing(@javax.annotation.Nullable String processing) {
+  @JsonProperty(value = JSON_PROPERTY_PROCESSING, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setProcessing(@javax.annotation.Nonnull String processing) {
     this.processing = processing;
   }
 
 
-  public TeamWalletBalance tokenId(@javax.annotation.Nullable String tokenId) {
+  public TeamWalletBalance tokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
     return this;
   }
@@ -145,22 +145,22 @@ public class TeamWalletBalance {
    * 代币编号
    * @return tokenId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTokenId() {
     return tokenId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTokenId(@javax.annotation.Nullable String tokenId) {
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
   }
 
 
-  public TeamWalletBalance total(@javax.annotation.Nullable String total) {
+  public TeamWalletBalance total(@javax.annotation.Nonnull String total) {
     this.total = total;
     return this;
   }
@@ -169,17 +169,17 @@ public class TeamWalletBalance {
    * 总余额（可用 + 处理中）
    * @return total
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTotal() {
     return total;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotal(@javax.annotation.Nullable String total) {
+  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTotal(@javax.annotation.Nonnull String total) {
     this.total = total;
   }
 

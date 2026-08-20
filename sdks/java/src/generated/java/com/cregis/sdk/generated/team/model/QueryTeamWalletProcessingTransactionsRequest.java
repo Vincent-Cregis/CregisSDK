@@ -100,6 +100,7 @@ public class QueryTeamWalletProcessingTransactionsRequest {
 
   /**
    * 分页页数，如果不填，默认为 1
+   * minimum: 1
    * @return pageNum
    */
   @javax.annotation.Nullable
@@ -124,6 +125,8 @@ public class QueryTeamWalletProcessingTransactionsRequest {
 
   /**
    * 分页每页数量，如果不填默认为 10，限制最大值为 100
+   * minimum: 1
+   * maximum: 100
    * @return pageSize
    */
   @javax.annotation.Nullable

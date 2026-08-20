@@ -1,7 +1,7 @@
 {
   "apis": {
     "payment": {
-      "inputSha256": "6a04c4c67b086a84d36d74953dc2c0550cfdd5f86789c24c30dc0bfe0292cc10",
+      "inputSha256": "0e1a3b9ff47e05b21a8b2c45fa253ce49068c6e8e3110f35d758a4c9b8d53686",
       "modelPackage": "com.cregis.sdk.generated.payment.model",
       "models": [
         "CreateOrderRequest",
@@ -42,7 +42,7 @@
       "specFile": "payment-engine-api.json"
     },
     "team": {
-      "inputSha256": "e8e4a94f0447df48dd953cb2b1b72de38c8991a15e002bad09fbcd5a62b8b6fd",
+      "inputSha256": "fffd7cd35721b60fdfe333ed1de698338fc5b015386fac5e3d6ed87ed347ba9f",
       "modelPackage": "com.cregis.sdk.generated.team.model",
       "models": [
         "ListTeamWalletAddressesRequest",
@@ -118,7 +118,7 @@
       "specFile": "team-api.json"
     },
     "waas": {
-      "inputSha256": "b67415006c26b3f57c29eece940e25571502910d302664dc3704a8033282486b",
+      "inputSha256": "912b9e185c3ba8fdbe6c5aac31db939ff1ddb3d8a1655b676eaf6d2c716f7764",
       "modelPackage": "com.cregis.sdk.generated.waas.model",
       "models": [
         "AddressBalance",

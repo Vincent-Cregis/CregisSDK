@@ -41,7 +41,7 @@ import com.cregis.sdk.generated.ApiClient;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class TeamWalletToken {
   public static final String JSON_PROPERTY_CHAIN_ID = "chain_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String chainId;
 
   public static final String JSON_PROPERTY_CHAIN_NAME = "chain_name";
@@ -49,7 +49,7 @@ public class TeamWalletToken {
   private String chainName;
 
   public static final String JSON_PROPERTY_TOKEN_ID = "token_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String tokenId;
 
   public static final String JSON_PROPERTY_TOKEN_NAME = "token_name";
@@ -59,7 +59,7 @@ public class TeamWalletToken {
   public TeamWalletToken() {
   }
 
-  public TeamWalletToken chainId(@javax.annotation.Nullable String chainId) {
+  public TeamWalletToken chainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
     return this;
   }
@@ -68,17 +68,17 @@ public class TeamWalletToken {
    * 区块链 ID
    * @return chainId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getChainId() {
     return chainId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChainId(@javax.annotation.Nullable String chainId) {
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setChainId(@javax.annotation.Nonnull String chainId) {
     this.chainId = chainId;
   }
 
@@ -107,7 +107,7 @@ public class TeamWalletToken {
   }
 
 
-  public TeamWalletToken tokenId(@javax.annotation.Nullable String tokenId) {
+  public TeamWalletToken tokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
     return this;
   }
@@ -116,17 +116,17 @@ public class TeamWalletToken {
    * 代币编号
    * @return tokenId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTokenId() {
     return tokenId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTokenId(@javax.annotation.Nullable String tokenId) {
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
   }
 

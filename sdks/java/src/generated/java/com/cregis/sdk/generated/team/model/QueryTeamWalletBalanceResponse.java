@@ -44,25 +44,25 @@ import com.cregis.sdk.generated.ApiClient;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class QueryTeamWalletBalanceResponse {
   public static final String JSON_PROPERTY_PAGE_NUM = "pageNum";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private Integer pageNum;
 
   public static final String JSON_PROPERTY_PAGE_SIZE = "pageSize";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private Integer pageSize;
 
   public static final String JSON_PROPERTY_ROWS = "rows";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private List<TeamWalletBalance> rows = new ArrayList<>();
 
   public static final String JSON_PROPERTY_TOTAL = "total";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private Long total;
 
   public QueryTeamWalletBalanceResponse() {
   }
 
-  public QueryTeamWalletBalanceResponse pageNum(@javax.annotation.Nullable Integer pageNum) {
+  public QueryTeamWalletBalanceResponse pageNum(@javax.annotation.Nonnull Integer pageNum) {
     this.pageNum = pageNum;
     return this;
   }
@@ -71,22 +71,22 @@ public class QueryTeamWalletBalanceResponse {
    * 当前页码
    * @return pageNum
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PAGE_NUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_PAGE_NUM, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getPageNum() {
     return pageNum;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PAGE_NUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPageNum(@javax.annotation.Nullable Integer pageNum) {
+  @JsonProperty(value = JSON_PROPERTY_PAGE_NUM, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPageNum(@javax.annotation.Nonnull Integer pageNum) {
     this.pageNum = pageNum;
   }
 
 
-  public QueryTeamWalletBalanceResponse pageSize(@javax.annotation.Nullable Integer pageSize) {
+  public QueryTeamWalletBalanceResponse pageSize(@javax.annotation.Nonnull Integer pageSize) {
     this.pageSize = pageSize;
     return this;
   }
@@ -95,22 +95,22 @@ public class QueryTeamWalletBalanceResponse {
    * 每页条数
    * @return pageSize
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PAGE_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_PAGE_SIZE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getPageSize() {
     return pageSize;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PAGE_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPageSize(@javax.annotation.Nullable Integer pageSize) {
+  @JsonProperty(value = JSON_PROPERTY_PAGE_SIZE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPageSize(@javax.annotation.Nonnull Integer pageSize) {
     this.pageSize = pageSize;
   }
 
 
-  public QueryTeamWalletBalanceResponse rows(@javax.annotation.Nullable List<TeamWalletBalance> rows) {
+  public QueryTeamWalletBalanceResponse rows(@javax.annotation.Nonnull List<TeamWalletBalance> rows) {
     this.rows = rows;
     return this;
   }
@@ -127,22 +127,22 @@ public class QueryTeamWalletBalanceResponse {
    * 钱包余额列表
    * @return rows
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ROWS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_ROWS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<TeamWalletBalance> getRows() {
     return rows;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ROWS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRows(@javax.annotation.Nullable List<TeamWalletBalance> rows) {
+  @JsonProperty(value = JSON_PROPERTY_ROWS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setRows(@javax.annotation.Nonnull List<TeamWalletBalance> rows) {
     this.rows = rows;
   }
 
 
-  public QueryTeamWalletBalanceResponse total(@javax.annotation.Nullable Long total) {
+  public QueryTeamWalletBalanceResponse total(@javax.annotation.Nonnull Long total) {
     this.total = total;
     return this;
   }
@@ -151,17 +151,17 @@ public class QueryTeamWalletBalanceResponse {
    * 总记录数
    * @return total
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getTotal() {
     return total;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotal(@javax.annotation.Nullable Long total) {
+  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTotal(@javax.annotation.Nonnull Long total) {
     this.total = total;
   }
 

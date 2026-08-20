@@ -41,7 +41,7 @@ import com.cregis.sdk.generated.ApiClient;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.19.0")
 public class TeamWalletAddress {
   public static final String JSON_PROPERTY_ADDRESS = "address";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private String address;
 
   /**
@@ -96,7 +96,7 @@ public class TeamWalletAddress {
   public TeamWalletAddress() {
   }
 
-  public TeamWalletAddress address(@javax.annotation.Nullable String address) {
+  public TeamWalletAddress address(@javax.annotation.Nonnull String address) {
     this.address = address;
     return this;
   }
@@ -105,17 +105,17 @@ public class TeamWalletAddress {
    * 地址
    * @return address
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getAddress() {
     return address;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAddress(@javax.annotation.Nullable String address) {
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAddress(@javax.annotation.Nonnull String address) {
     this.address = address;
   }
 

@@ -95,11 +95,11 @@ public class TeamWallet {
   }
 
   public static final String JSON_PROPERTY_WALLET_TYPE = "walletType";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private WalletTypeEnum walletType;
 
   public static final String JSON_PROPERTY_WALLET_ID = "wallet_id";
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
   private Long walletId;
 
   /**
@@ -224,7 +224,7 @@ public class TeamWallet {
   }
 
 
-  public TeamWallet walletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
+  public TeamWallet walletType(@javax.annotation.Nonnull WalletTypeEnum walletType) {
     this.walletType = walletType;
     return this;
   }
@@ -233,22 +233,22 @@ public class TeamWallet {
    * 钱包类型  - &#x60;single_sign&#x60;：单签钱包 - &#x60;multi_sign&#x60;：多签钱包
    * @return walletType
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public WalletTypeEnum getWalletType() {
     return walletType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWalletType(@javax.annotation.Nullable WalletTypeEnum walletType) {
+  @JsonProperty(value = JSON_PROPERTY_WALLET_TYPE, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWalletType(@javax.annotation.Nonnull WalletTypeEnum walletType) {
     this.walletType = walletType;
   }
 
 
-  public TeamWallet walletId(@javax.annotation.Nullable Long walletId) {
+  public TeamWallet walletId(@javax.annotation.Nonnull Long walletId) {
     this.walletId = walletId;
     return this;
   }
@@ -257,17 +257,17 @@ public class TeamWallet {
    * 钱包编号
    * @return walletId
    */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getWalletId() {
     return walletId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWalletId(@javax.annotation.Nullable Long walletId) {
+  @JsonProperty(value = JSON_PROPERTY_WALLET_ID, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWalletId(@javax.annotation.Nonnull Long walletId) {
     this.walletId = walletId;
   }
 
