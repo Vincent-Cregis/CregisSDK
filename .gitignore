@@ -13,6 +13,7 @@
 # JavaScript / TypeScript
 **/node_modules/
 **/dist/
+**/.test-dist/
 
 # Python
 **/__pycache__/
@@ -27,5 +28,6 @@
 **/vendor/
 
 # SDK generation working files
+.openapi-source/
 .codegen-work/
 .tmp/

@@ -36,13 +36,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Run drift-tool tests
+      - name: Check out canonical OpenAPI specifications
+        uses: actions/checkout@v7
+        with:
+          repository: 0xcregis/cregis-developer-docs
+          token: ${{ secrets.CREGIS_DOCS_READ_TOKEN }}
+          path: .openapi-source
+          persist-credentials: false
+
+      - name: Run drift-tool and reproducibility tests
         run: |
           python3 -m unittest discover -s codegen/tests -v
-          ./codegen/scripts/check-java-generated-models.py
-          python3 -m json.tool codegen/configs/java-operations.json >/dev/null
+          ./codegen/scripts/generate-java-models.sh \
+            --spec-dir .openapi-source/api-sources/specs \
+            --check
+          python3 -m json.tool codegen/configs/openapi-operations.json >/dev/null
           python3 -m json.tool codegen/configs/java-generator.json >/dev/null
-          python3 -m json.tool codegen/configs/java-models.json >/dev/null
+          python3 -m json.tool codegen/configs/openapi-models.json >/dev/null
+          python3 -m json.tool codegen/configs/java-overrides.json >/dev/null
           python3 -m json.tool codegen/manifests/java-models.lock.json >/dev/null
           bash -n codegen/scripts/generate-java-models.sh
 
