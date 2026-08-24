@@ -31,6 +31,7 @@
     "typecheck": "tsc -p tsconfig.esm.json --noEmit && tsc -p tsconfig.test.json --noEmit",
     "test": "npm run clean:test && npm run build:test && node --test .test-dist/test/*.test.js",
     "test:sandbox": "npm run clean:test && npm run build:test && node --env-file-if-exists=.env ./scripts/run-sandbox-tests.mjs",
+    "test:sandbox:all": "npm run clean:test && npm run build:test && node --env-file-if-exists=.env ./scripts/run-sandbox-tests.mjs --all",
     "clean:test": "node ./scripts/clean-test.mjs",
     "test:package": "npm run build && node ./scripts/package-smoke.mjs && tsc -p smoke-tests/tsconfig.json",
     "pack:check": "npm pack --dry-run",

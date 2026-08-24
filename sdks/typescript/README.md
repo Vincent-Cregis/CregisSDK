@@ -94,6 +94,22 @@ they cannot be reported as skipped tests. The current safe integration suite
 covers 9 read-only operations (Payment Engine 1, WaaS 2, Team API 6). Mutating
 operations require dedicated disposable fixtures and are never run implicitly.
 
+Run every callable Sandbox operation, including state-changing Payment and
+WaaS requests, only with an explicit mutation opt-in:
+
+```bash
+CREGIS_ALLOW_MUTATING_TESTS=true npm run test:sandbox:all
+```
+
+The full suite covers all 23 OpenAPI operations. It creates a Payment order and
+WaaS addresses and submits two payouts, one sub-address withdrawal, and one
+collection. `WITHDRAW_ADDRESS` is required. `WAAS_TEST_AMOUNT` defaults to
+`0.001`; optional destination and chain overrides use the same environment
+variables documented for the Java integration suite. Never point this command
+at production endpoints. The runner also refuses full-suite endpoints unless
+they use HTTPS and match the Cregis Sandbox hostname pattern
+`t-*.cregis.dev`.
+
 OpenAPI request and successful-response data are validated at runtime. JSON
 `int64` values must fit JavaScript's safe-integer range; the SDK throws a
 `CregisClientError` instead of silently rounding a larger value.
