@@ -13,9 +13,17 @@ This repository contains the official Cregis SDKs and the tooling used to genera
 
 The OpenAPI specifications are not copied into this repository. Generation jobs fetch an exact commit from the documentation repository and record that source commit with the generated change.
 
+When canonical specifications change, the documentation repository dispatches
+their exact commit to `openapi-sdk-update.yml`. The workflow regenerates Java
+and TypeScript, runs both SDK test suites, and opens a reviewable pull request.
+See the [OpenAPI automation runbook](docs/releasing/openapi-automation.md) for
+the two cross-repository secrets and recovery steps.
+
 ## Current status
 
-The Java SDK is preparing its `1.0.0-rc.1` release candidate. Its 23 API operations are aligned with the canonical Payment Engine, WaaS, and Team API contracts, with local contract tests and Sandbox coverage in place. Automated generation will be introduced after this Java release baseline is stable.
+The Java SDK covers all 23 Payment Engine, WaaS, and Team API operations with
+local contract tests and Sandbox coverage. The TypeScript/Node.js SDK now uses
+the same API surface and a reproducible OpenAPI model-generation pipeline.
 
 ## License
 

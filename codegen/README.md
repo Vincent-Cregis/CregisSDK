@@ -17,7 +17,9 @@ checkout of the canonical specifications:
 The command performs these steps:
 
 1. Verifies that all OpenAPI operations are mapped in
-   `codegen/configs/java-operations.json` and `codegen/configs/java-models.json`.
+   `codegen/configs/openapi-operations.json` and `codegen/configs/openapi-models.json`.
+   Language-specific public method names live in `java-overrides.json` and
+   `typescript-overrides.json`, so later SDKs can follow their own conventions.
 2. Builds disposable prepared specifications in a temporary directory.
 3. Removes SDK-managed `pid`, `nonce`, `timestamp`, and `sign` fields from
    Payment/WaaS request models.
@@ -48,8 +50,32 @@ Use `--check` when the committed output must not be changed:
 This regenerates into a temporary directory and fails if either the Java files
 or the lock manifest differ from the committed result.
 
-The following faster check does not require the OpenAPI files or Docker. CI
-runs it to validate the committed generated/handwritten boundary:
+## TypeScript model pipeline
+
+The TypeScript SDK uses the same operation and stable-model mappings as Java,
+but generates pure TypeScript interfaces, enum values, operation metadata,
+compact runtime schemas, and webhook wire contracts. HTTP transport,
+authentication, public clients, and webhook signature verification remain
+handwritten. Generation first checks the complete canonical operation inventory,
+so a newly added or removed OpenAPI operation cannot pass unnoticed.
+
+```bash
+./codegen/scripts/generate-typescript-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs
+```
+
+Use `--check` for a byte-for-byte reproducibility check. The committed output
+is under `sdks/typescript/src/generated`, and its source hashes and generator
+identity are recorded in `codegen/manifests/typescript-models.lock.json`.
+
+The fast local checks do not require Docker or a specification checkout:
+
+```bash
+./codegen/scripts/check-typescript-generated-models.py
+./codegen/scripts/check-typescript-client-surface.py
+```
+
+The following faster Java check does not require the OpenAPI files or Docker:
 
 ```bash
 ./codegen/scripts/check-java-generated-models.py
@@ -74,6 +100,7 @@ python3 -m unittest discover -s codegen/tests -v
 
 ## Handwritten boundary
 
-Only operation request/response models are generated. HTTP transport, signing,
-exceptions, the public Clients, Payment/WaaS webhook models, and webhook
-handlers remain handwritten. Generated code must never overwrite those files.
+Operation request/response models, runtime schemas, operation metadata, and
+Payment/WaaS webhook wire models are generated. HTTP transport, signing,
+exceptions, public clients, and webhook verification handlers remain
+handwritten. Generated code must never overwrite those files.
