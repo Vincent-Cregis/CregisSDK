@@ -1,0 +1,9 @@
+{
+  "disallowAdditionalPropertiesIfNotPresent": true,
+  "generateSourceCodeOnly": true,
+  "hideGenerationTimestamp": true,
+  "lazyImports": false,
+  "mapNumberTo": "Union[StrictFloat, StrictInt]",
+  "packageVersion": "0.1.0",
+  "projectName": "cregis-sdk"
+}

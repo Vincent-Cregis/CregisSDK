@@ -1,0 +1,658 @@
+{
+  "apis": {
+    "payment": {
+      "generatedDirectory": "sdks/python/src/cregis/generated/payment",
+      "inputSha256": "f37da4294e7f3255c7e7798cf243421583739bf21c33d333654a4e81e6bba75e",
+      "modelPolicy": {
+        "CreateOrderRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "CreateOrderResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "OrderDetails": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "OrderItem": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "OrderSettlementDetail": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentCallbackEnvelope": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentCallbackEnvelopeData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentCompletedCallbackData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentDetail": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentExpiredCallbackData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentInfo": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentInfoConsolidatedQrcodesItem": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentRefundedCallbackData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PaymentRemainingCallbackData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryOrderDetails": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryOrderItem": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryOrderRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryOrderResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QuerySubMerchant": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "RefundData": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "SettlementDetails": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "SubMerchant": {
+          "direction": "request",
+          "extra": "forbid"
+        }
+      },
+      "models": [
+        "CreateOrderRequest",
+        "CreateOrderResponse",
+        "OrderDetails",
+        "OrderItem",
+        "OrderSettlementDetail",
+        "PaymentCallbackEnvelope",
+        "PaymentCallbackEnvelopeData",
+        "PaymentCompletedCallbackData",
+        "PaymentDetail",
+        "PaymentExpiredCallbackData",
+        "PaymentInfo",
+        "PaymentInfoConsolidatedQrcodesItem",
+        "PaymentRefundedCallbackData",
+        "PaymentRemainingCallbackData",
+        "QueryOrderDetails",
+        "QueryOrderItem",
+        "QueryOrderRequest",
+        "QueryOrderResponse",
+        "QuerySubMerchant",
+        "RefundData",
+        "SettlementDetails",
+        "SubMerchant"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "createOrder",
+          "path": "/api/v2/checkout",
+          "requestModel": "CreateOrderRequest",
+          "responseContainer": null,
+          "responseModel": "CreateOrderResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryOrder",
+          "path": "/api/v2/order/info",
+          "requestModel": "QueryOrderRequest",
+          "responseContainer": null,
+          "responseModel": "QueryOrderResponse"
+        }
+      ],
+      "runtimeAnyOf": {},
+      "specFile": "payment-engine-api.json",
+      "webhooks": [
+        {
+          "model": "PaymentCallbackEnvelope",
+          "name": "orderCallback",
+          "operationId": "orderCallback"
+        }
+      ]
+    },
+    "team": {
+      "generatedDirectory": "sdks/python/src/cregis/generated/team",
+      "inputSha256": "fffd7cd35721b60fdfe333ed1de698338fc5b015386fac5e3d6ed87ed347ba9f",
+      "modelPolicy": {
+        "ListTeamWalletAddressesRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "ListTeamWalletAddressesResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "ListTeamWalletsRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "ListTeamWalletsResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryTeamWalletAddressBalanceRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryTeamWalletAddressBalanceResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryTeamWalletBalanceRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryTeamWalletBalanceResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryTeamWalletHistoryTransactionsRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryTeamWalletHistoryTransactionsResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryTeamWalletProcessingTransactionsRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryTeamWalletProcessingTransactionsResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWallet": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletAddress": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletAddressBalance": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletBalance": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletProcessingTransaction": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletToken": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TeamWalletTransaction": {
+          "direction": "output",
+          "extra": "ignore"
+        }
+      },
+      "models": [
+        "ListTeamWalletAddressesRequest",
+        "ListTeamWalletAddressesResponse",
+        "ListTeamWalletsRequest",
+        "ListTeamWalletsResponse",
+        "QueryTeamWalletAddressBalanceRequest",
+        "QueryTeamWalletAddressBalanceResponse",
+        "QueryTeamWalletBalanceRequest",
+        "QueryTeamWalletBalanceResponse",
+        "QueryTeamWalletHistoryTransactionsRequest",
+        "QueryTeamWalletHistoryTransactionsResponse",
+        "QueryTeamWalletProcessingTransactionsRequest",
+        "QueryTeamWalletProcessingTransactionsResponse",
+        "TeamWallet",
+        "TeamWalletAddress",
+        "TeamWalletAddressBalance",
+        "TeamWalletBalance",
+        "TeamWalletProcessingTransaction",
+        "TeamWalletToken",
+        "TeamWalletTransaction"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "listTeamWallets",
+          "path": "/openapi/v1/wallets",
+          "requestModel": "ListTeamWalletsRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletsResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "listTeamWalletAddresses",
+          "path": "/openapi/v1/wallet_address",
+          "requestModel": "ListTeamWalletAddressesRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletAddressesResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletBalance",
+          "path": "/openapi/v1/wallet_balance",
+          "requestModel": "QueryTeamWalletBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletAddressBalance",
+          "path": "/openapi/v1/wallet_address_balance",
+          "requestModel": "QueryTeamWalletAddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletAddressBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletHistoryTransactions",
+          "path": "/openapi/v1/wallet_history_transaction_info",
+          "requestModel": "QueryTeamWalletHistoryTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletHistoryTransactionsResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryTeamWalletProcessingTransactions",
+          "path": "/openapi/v1/wallet_processing_transaction_info",
+          "requestModel": "QueryTeamWalletProcessingTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletProcessingTransactionsResponse"
+        }
+      ],
+      "runtimeAnyOf": {},
+      "specFile": "team-api.json",
+      "webhooks": []
+    },
+    "waas": {
+      "generatedDirectory": "sdks/python/src/cregis/generated/waas",
+      "inputSha256": "912b9e185c3ba8fdbe6c5aac31db939ff1ddb3d8a1655b676eaf6d2c716f7764",
+      "modelPolicy": {
+        "AddressBalance": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "AddressBalanceRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "AddressBalanceResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "AddressBalanceV2": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "AddressBalanceV2Request": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "AddressBalanceV2Response": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "AddressDepositCallbackNotification": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "AddressUpdateRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "BalanceCollectRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "BalanceCollectResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "BatchGenerateAddressRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "CheckAddressLegalityRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "CheckAddressLegalityResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "GenerateAddressRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "GenerateAddressResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "GeneratedAddress": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PayoutCallbackNotification": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PayoutExternalVerificationCallbackNotification": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PayoutRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "PayoutResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "PayoutV1Request": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "ProjectCoin": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "ProjectCoinQueryResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "ProjectCoinQueryResponseOrderCoinsItem": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryPayoutRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryPayoutResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "QueryWithdrawalRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "QueryWithdrawalResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TradeRecord": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "TradeRecordQueryRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "TradeRecordQueryResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "ValidateAddressRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "ValidateAddressResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "WithdrawalCallbackNotification": {
+          "direction": "output",
+          "extra": "ignore"
+        },
+        "WithdrawalRequest": {
+          "direction": "request",
+          "extra": "forbid"
+        },
+        "WithdrawalResponse": {
+          "direction": "output",
+          "extra": "ignore"
+        }
+      },
+      "models": [
+        "AddressBalance",
+        "AddressBalanceRequest",
+        "AddressBalanceResponse",
+        "AddressBalanceV2",
+        "AddressBalanceV2Request",
+        "AddressBalanceV2Response",
+        "AddressDepositCallbackNotification",
+        "AddressUpdateRequest",
+        "BalanceCollectRequest",
+        "BalanceCollectResponse",
+        "BatchGenerateAddressRequest",
+        "CheckAddressLegalityRequest",
+        "CheckAddressLegalityResponse",
+        "GenerateAddressRequest",
+        "GenerateAddressResponse",
+        "GeneratedAddress",
+        "PayoutCallbackNotification",
+        "PayoutExternalVerificationCallbackNotification",
+        "PayoutRequest",
+        "PayoutResponse",
+        "PayoutV1Request",
+        "ProjectCoin",
+        "ProjectCoinQueryResponse",
+        "ProjectCoinQueryResponseOrderCoinsItem",
+        "QueryPayoutRequest",
+        "QueryPayoutResponse",
+        "QueryWithdrawalRequest",
+        "QueryWithdrawalResponse",
+        "TradeRecord",
+        "TradeRecordQueryRequest",
+        "TradeRecordQueryResponse",
+        "ValidateAddressRequest",
+        "ValidateAddressResponse",
+        "WithdrawalCallbackNotification",
+        "WithdrawalRequest",
+        "WithdrawalResponse"
+      ],
+      "operations": [
+        {
+          "method": "post",
+          "operationId": "createAddress",
+          "path": "/api/v1/address/create",
+          "requestModel": "GenerateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "GenerateAddressResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "batchCreateAddress",
+          "path": "/api/v1/batch/address/create",
+          "requestModel": "BatchGenerateAddressRequest",
+          "responseContainer": "array",
+          "responseModel": "GeneratedAddress"
+        },
+        {
+          "method": "post",
+          "operationId": "updateAddress",
+          "path": "/api/v1/address/update",
+          "requestModel": "AddressUpdateRequest",
+          "responseContainer": null,
+          "responseModel": null
+        },
+        {
+          "method": "post",
+          "operationId": "verifyAddress",
+          "path": "/api/v1/address/inner",
+          "requestModel": "ValidateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "ValidateAddressResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "validateAddressFormat",
+          "path": "/api/v1/address/legal",
+          "requestModel": "CheckAddressLegalityRequest",
+          "responseContainer": null,
+          "responseModel": "CheckAddressLegalityResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiatePayout",
+          "path": "/api/v1/payout",
+          "requestModel": "PayoutV1Request",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiatePayoutV2",
+          "path": "/api/v2/payout",
+          "requestModel": "PayoutRequest",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "subAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal",
+          "requestModel": "WithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "WithdrawalResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "initiateCollection",
+          "path": "/api/v1/collection",
+          "requestModel": "BalanceCollectRequest",
+          "responseContainer": null,
+          "responseModel": "BalanceCollectResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "getProjectCoins",
+          "path": "/api/v1/coins",
+          "requestModel": null,
+          "responseContainer": null,
+          "responseModel": "ProjectCoinQueryResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "tradePage",
+          "path": "/api/v1/trade/page",
+          "requestModel": "TradeRecordQueryRequest",
+          "responseContainer": null,
+          "responseModel": "TradeRecordQueryResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "queryPayout",
+          "path": "/api/v1/payout/query",
+          "requestModel": "QueryPayoutRequest",
+          "responseContainer": null,
+          "responseModel": "QueryPayoutResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "querySubAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal/info",
+          "requestModel": "QueryWithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "QueryWithdrawalResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "subAddressBalancePage",
+          "path": "/api/v1/sub_address_balance",
+          "requestModel": "AddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceResponse"
+        },
+        {
+          "method": "post",
+          "operationId": "querySubAddressBalanceV2",
+          "path": "/api/v2/sub_address_balance",
+          "requestModel": "AddressBalanceV2Request",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceV2Response"
+        }
+      ],
+      "runtimeAnyOf": {
+        "AddressUpdateRequest": [
+          [
+            "alias"
+          ],
+          [
+            "callback_url"
+          ],
+          [
+            "status"
+          ]
+        ]
+      },
+      "specFile": "waas-api.json",
+      "webhooks": [
+        {
+          "model": "AddressDepositCallbackNotification",
+          "name": "depositCallback",
+          "operationId": "depositCallback"
+        },
+        {
+          "model": "PayoutCallbackNotification",
+          "name": "payoutCallback",
+          "operationId": "payoutCallback"
+        },
+        {
+          "model": "PayoutExternalVerificationCallbackNotification",
+          "name": "payoutExternalVerificationCallback",
+          "operationId": "payoutExternalVerificationCallback"
+        },
+        {
+          "model": "WithdrawalCallbackNotification",
+          "name": "withdrawalCallback",
+          "operationId": "withdrawalCallback"
+        }
+      ]
+    }
+  },
+  "generator": {
+    "digest": "sha256:b9e7ad71a9f9406bd810378a939755fad114747a767e29bbf83ef9364d5f9dc0",
+    "image": "openapitools/openapi-generator-cli",
+    "name": "python",
+    "version": "7.19.0"
+  },
+  "version": 1
+}
