@@ -18,8 +18,9 @@ The command performs these steps:
 
 1. Verifies that all OpenAPI operations are mapped in
    `codegen/configs/openapi-operations.json` and `codegen/configs/openapi-models.json`.
-   Language-specific public method names live in `java-overrides.json` and
-   `typescript-overrides.json`, so later SDKs can follow their own conventions.
+   Language-specific public method names live in `java-overrides.json`,
+   `typescript-overrides.json`, and `python-overrides.json`, so each SDK can
+   follow its own conventions.
 2. Builds disposable prepared specifications in a temporary directory.
 3. Removes SDK-managed `pid`, `nonce`, `timestamp`, and `sign` fields from
    Payment/WaaS request models.
@@ -79,6 +80,30 @@ The following faster Java check does not require the OpenAPI files or Docker:
 
 ```bash
 ./codegen/scripts/check-java-generated-models.py
+```
+
+## Python model pipeline
+
+The synchronous Python SDK generates strict Pydantic v2 request, response, and
+webhook models plus operation metadata. Request models reject undocumented
+fields; response and webhook models ignore new fields while continuing to
+validate every declared field and type. OpenAPI `int64` values receive signed
+64-bit bounds before generation. HTTP transport, authentication, public
+clients, exceptions, and webhook verification remain handwritten.
+
+```bash
+./codegen/scripts/generate-python-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs
+```
+
+The committed output is under `sdks/python/src/cregis/generated`; source hashes
+and the digest-pinned generator identity are recorded in
+`codegen/manifests/python-models.lock.json`, together with each model's request
+or output policy. Use `--check` for byte-for-byte reproducibility. The fast
+local boundary check is:
+
+```bash
+./codegen/scripts/check-python-generated-models.py
 ```
 
 ## Check operation drift

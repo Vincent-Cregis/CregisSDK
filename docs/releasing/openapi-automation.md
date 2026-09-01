@@ -20,8 +20,8 @@ files.
    repository.
 2. The documentation workflow sends the exact source commit to the SDK
    repository.
-3. The SDK workflow regenerates Java and TypeScript using the pinned generator.
-4. It runs generator tests, Java `clean verify`, and TypeScript `verify`.
+3. The SDK workflow regenerates Java, TypeScript, and Python using the pinned generator.
+4. It runs generator tests plus the Java, TypeScript, and Python verification suites.
 5. If generated output changed, it updates a branch named
    `automation/openapi-<source-sha>` and opens a pull request.
 
@@ -36,5 +36,5 @@ same pull-request branch. If there is no generated diff, the workflow exits
 without creating an empty pull request.
 
 Before merging, review model and runtime-schema changes, confirm the source
-commit, and require the Java and TypeScript CI checks. Package publication is a
-separate, explicitly approved workflow.
+commit, and require the Java, TypeScript, and Python CI checks. Package
+publication is a separate, explicitly approved workflow.

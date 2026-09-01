@@ -14,8 +14,8 @@ This repository contains the official Cregis SDKs and the tooling used to genera
 The OpenAPI specifications are not copied into this repository. Generation jobs fetch an exact commit from the documentation repository and record that source commit with the generated change.
 
 When canonical specifications change, the documentation repository dispatches
-their exact commit to `openapi-sdk-update.yml`. The workflow regenerates Java
-and TypeScript, runs both SDK test suites, and opens a reviewable pull request.
+their exact commit to `openapi-sdk-update.yml`. The workflow regenerates Java,
+TypeScript, and Python, runs all three SDK test suites, and opens a reviewable pull request.
 See the [OpenAPI automation runbook](docs/releasing/openapi-automation.md) for
 the two cross-repository secrets and recovery steps.
 
@@ -23,7 +23,9 @@ the two cross-repository secrets and recovery steps.
 
 The Java SDK covers all 23 Payment Engine, WaaS, and Team API operations with
 local contract tests and Sandbox coverage. The TypeScript/Node.js SDK now uses
-the same API surface and a reproducible OpenAPI model-generation pipeline.
+the same API surface and a reproducible OpenAPI model-generation pipeline. The
+synchronous Python SDK covers the same 23 operations with strict Pydantic v2
+contracts and supports Python 3.9 through 3.14.
 
 ## License
 
