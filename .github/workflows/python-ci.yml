@@ -1,0 +1,94 @@
+name: Python SDK CI
+
+on:
+  pull_request:
+    paths:
+      - "sdks/python/**"
+      - "codegen/**"
+      - ".github/workflows/python-ci.yml"
+      - "README.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "sdks/python/**"
+      - "codegen/**"
+      - ".github/workflows/python-ci.yml"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codegen-checks:
+    name: Check generated boundary
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Check out canonical OpenAPI specifications
+        uses: actions/checkout@v7
+        with:
+          repository: 0xcregis/cregis-developer-docs
+          token: ${{ secrets.CREGIS_DOCS_READ_TOKEN }}
+          path: .openapi-source
+          persist-credentials: false
+
+      - name: Regenerate and compare committed files
+        run: |
+          ./codegen/scripts/generate-python-models.sh \
+            --spec-dir .openapi-source/api-sources/specs \
+            --check
+          ./codegen/scripts/check-python-generated-models.py
+          python3 -m json.tool codegen/configs/python-generator.json >/dev/null
+          python3 -m json.tool codegen/configs/python-overrides.json >/dev/null
+          python3 -m json.tool codegen/manifests/python-models.lock.json >/dev/null
+          bash -n codegen/scripts/generate-python-models.sh
+          python3 -m py_compile codegen/scripts/prepare-python-openapi.py
+
+  test:
+    name: Test on Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    defaults:
+      run:
+        working-directory: sdks/python
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: sdks/python/pyproject.toml
+
+      - name: Install development dependencies
+        run: python -m pip install -e '.[dev]'
+
+      - name: Verify behavior, lint, and typing
+        run: |
+          python -m pytest
+          python -m ruff check src tests scripts
+          python -m mypy src/cregis
+
+      - name: Build distributions
+        run: |
+          python -m build
+          python scripts/check_wheel.py dist/*.whl
+
+      - name: Verify wheel installation
+        run: |
+          python -m pip install --force-reinstall dist/*.whl
+          cd /tmp
+          python -c "import importlib.metadata; import cregis; from cregis import CregisWaasClient; assert importlib.metadata.version('cregis-sdk') == cregis.__version__; print(CregisWaasClient.__name__)"
