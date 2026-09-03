@@ -1,0 +1,436 @@
+{
+  "apis": {
+    "payment": {
+      "generatedDirectory": "sdks/go/generated/payment",
+      "inputSha256": "f37da4294e7f3255c7e7798cf243421583739bf21c33d333654a4e81e6bba75e",
+      "modelPolicy": {
+        "CreateOrderRequest": "request",
+        "CreateOrderResponse": "output",
+        "OrderDetails": "request",
+        "OrderItem": "request",
+        "OrderSettlementDetail": "output",
+        "PaymentCallbackEnvelope": "output",
+        "PaymentCompletedCallbackData": "output",
+        "PaymentDetail": "output",
+        "PaymentExpiredCallbackData": "output",
+        "PaymentInfo": "output",
+        "PaymentInfoConsolidatedQrcodesItem": "output",
+        "PaymentRefundedCallbackData": "output",
+        "PaymentRemainingCallbackData": "output",
+        "QueryOrderDetails": "output",
+        "QueryOrderItem": "output",
+        "QueryOrderRequest": "request",
+        "QueryOrderResponse": "output",
+        "QuerySubMerchant": "output",
+        "RefundData": "output",
+        "SettlementDetails": "output",
+        "SubMerchant": "request"
+      },
+      "models": [
+        "CreateOrderRequest",
+        "CreateOrderResponse",
+        "OrderDetails",
+        "OrderItem",
+        "OrderSettlementDetail",
+        "PaymentCallbackEnvelope",
+        "PaymentCompletedCallbackData",
+        "PaymentDetail",
+        "PaymentExpiredCallbackData",
+        "PaymentInfo",
+        "PaymentInfoConsolidatedQrcodesItem",
+        "PaymentRefundedCallbackData",
+        "PaymentRemainingCallbackData",
+        "QueryOrderDetails",
+        "QueryOrderItem",
+        "QueryOrderRequest",
+        "QueryOrderResponse",
+        "QuerySubMerchant",
+        "RefundData",
+        "SettlementDetails",
+        "SubMerchant"
+      ],
+      "operations": [
+        {
+          "clientMethod": "CreateOrder",
+          "method": "post",
+          "operationId": "createOrder",
+          "path": "/api/v2/checkout",
+          "requestModel": "CreateOrderRequest",
+          "responseContainer": null,
+          "responseModel": "CreateOrderResponse"
+        },
+        {
+          "clientMethod": "QueryOrder",
+          "method": "post",
+          "operationId": "queryOrder",
+          "path": "/api/v2/order/info",
+          "requestModel": "QueryOrderRequest",
+          "responseContainer": null,
+          "responseModel": "QueryOrderResponse"
+        }
+      ],
+      "specFile": "payment-engine-api.json",
+      "webhooks": [
+        {
+          "model": "PaymentCallbackEnvelope",
+          "name": "orderCallback",
+          "operationId": "orderCallback"
+        }
+      ]
+    },
+    "team": {
+      "generatedDirectory": "sdks/go/generated/team",
+      "inputSha256": "c9ea1216519cc2abe1d2187d3f7f6628199ebd8a2509949bf2063b8e40476dd6",
+      "modelPolicy": {
+        "ListTeamWalletAddressesRequest": "request",
+        "ListTeamWalletAddressesResponse": "output",
+        "ListTeamWalletsRequest": "request",
+        "ListTeamWalletsResponse": "output",
+        "QueryTeamWalletAddressBalanceRequest": "request",
+        "QueryTeamWalletAddressBalanceResponse": "output",
+        "QueryTeamWalletBalanceRequest": "request",
+        "QueryTeamWalletBalanceResponse": "output",
+        "QueryTeamWalletHistoryTransactionsRequest": "request",
+        "QueryTeamWalletHistoryTransactionsResponse": "output",
+        "QueryTeamWalletProcessingTransactionsRequest": "request",
+        "QueryTeamWalletProcessingTransactionsResponse": "output",
+        "TeamWallet": "output",
+        "TeamWalletAddress": "output",
+        "TeamWalletAddressBalance": "output",
+        "TeamWalletBalance": "output",
+        "TeamWalletProcessingTransaction": "output",
+        "TeamWalletToken": "output",
+        "TeamWalletTransaction": "output"
+      },
+      "models": [
+        "ListTeamWalletAddressesRequest",
+        "ListTeamWalletAddressesResponse",
+        "ListTeamWalletsRequest",
+        "ListTeamWalletsResponse",
+        "QueryTeamWalletAddressBalanceRequest",
+        "QueryTeamWalletAddressBalanceResponse",
+        "QueryTeamWalletBalanceRequest",
+        "QueryTeamWalletBalanceResponse",
+        "QueryTeamWalletHistoryTransactionsRequest",
+        "QueryTeamWalletHistoryTransactionsResponse",
+        "QueryTeamWalletProcessingTransactionsRequest",
+        "QueryTeamWalletProcessingTransactionsResponse",
+        "TeamWallet",
+        "TeamWalletAddress",
+        "TeamWalletAddressBalance",
+        "TeamWalletBalance",
+        "TeamWalletProcessingTransaction",
+        "TeamWalletToken",
+        "TeamWalletTransaction"
+      ],
+      "operations": [
+        {
+          "clientMethod": "ListTeamWallets",
+          "method": "post",
+          "operationId": "listTeamWallets",
+          "path": "/openapi/v1/wallets",
+          "requestModel": "ListTeamWalletsRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletsResponse"
+        },
+        {
+          "clientMethod": "ListTeamWalletAddresses",
+          "method": "post",
+          "operationId": "listTeamWalletAddresses",
+          "path": "/openapi/v1/wallet_address",
+          "requestModel": "ListTeamWalletAddressesRequest",
+          "responseContainer": null,
+          "responseModel": "ListTeamWalletAddressesResponse"
+        },
+        {
+          "clientMethod": "QueryTeamWalletBalance",
+          "method": "post",
+          "operationId": "queryTeamWalletBalance",
+          "path": "/openapi/v1/wallet_balance",
+          "requestModel": "QueryTeamWalletBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletBalanceResponse"
+        },
+        {
+          "clientMethod": "QueryTeamWalletAddressBalance",
+          "method": "post",
+          "operationId": "queryTeamWalletAddressBalance",
+          "path": "/openapi/v1/wallet_address_balance",
+          "requestModel": "QueryTeamWalletAddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletAddressBalanceResponse"
+        },
+        {
+          "clientMethod": "QueryTeamWalletHistoryTransactions",
+          "method": "post",
+          "operationId": "queryTeamWalletHistoryTransactions",
+          "path": "/openapi/v1/wallet_history_transaction_info",
+          "requestModel": "QueryTeamWalletHistoryTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletHistoryTransactionsResponse"
+        },
+        {
+          "clientMethod": "QueryTeamWalletProcessingTransactions",
+          "method": "post",
+          "operationId": "queryTeamWalletProcessingTransactions",
+          "path": "/openapi/v1/wallet_processing_transaction_info",
+          "requestModel": "QueryTeamWalletProcessingTransactionsRequest",
+          "responseContainer": null,
+          "responseModel": "QueryTeamWalletProcessingTransactionsResponse"
+        }
+      ],
+      "specFile": "team-api.json",
+      "webhooks": []
+    },
+    "waas": {
+      "generatedDirectory": "sdks/go/generated/waas",
+      "inputSha256": "912b9e185c3ba8fdbe6c5aac31db939ff1ddb3d8a1655b676eaf6d2c716f7764",
+      "modelPolicy": {
+        "AddressBalance": "output",
+        "AddressBalanceRequest": "request",
+        "AddressBalanceResponse": "output",
+        "AddressBalanceV2": "output",
+        "AddressBalanceV2Request": "request",
+        "AddressBalanceV2Response": "output",
+        "AddressDepositCallbackNotification": "output",
+        "AddressUpdateRequest": "request",
+        "BalanceCollectRequest": "request",
+        "BalanceCollectResponse": "output",
+        "BatchGenerateAddressRequest": "request",
+        "CheckAddressLegalityRequest": "request",
+        "CheckAddressLegalityResponse": "output",
+        "GenerateAddressRequest": "request",
+        "GenerateAddressResponse": "output",
+        "GeneratedAddress": "output",
+        "PayoutCallbackNotification": "output",
+        "PayoutExternalVerificationCallbackNotification": "output",
+        "PayoutRequest": "request",
+        "PayoutResponse": "output",
+        "PayoutV1Request": "request",
+        "ProjectCoin": "output",
+        "ProjectCoinQueryResponse": "output",
+        "ProjectCoinQueryResponseOrderCoinsItem": "output",
+        "QueryPayoutRequest": "request",
+        "QueryPayoutResponse": "output",
+        "QueryWithdrawalRequest": "request",
+        "QueryWithdrawalResponse": "output",
+        "TradeRecord": "output",
+        "TradeRecordQueryRequest": "request",
+        "TradeRecordQueryResponse": "output",
+        "ValidateAddressRequest": "request",
+        "ValidateAddressResponse": "output",
+        "WithdrawalCallbackNotification": "output",
+        "WithdrawalRequest": "request",
+        "WithdrawalResponse": "output"
+      },
+      "models": [
+        "AddressBalance",
+        "AddressBalanceRequest",
+        "AddressBalanceResponse",
+        "AddressBalanceV2",
+        "AddressBalanceV2Request",
+        "AddressBalanceV2Response",
+        "AddressDepositCallbackNotification",
+        "AddressUpdateRequest",
+        "BalanceCollectRequest",
+        "BalanceCollectResponse",
+        "BatchGenerateAddressRequest",
+        "CheckAddressLegalityRequest",
+        "CheckAddressLegalityResponse",
+        "GenerateAddressRequest",
+        "GenerateAddressResponse",
+        "GeneratedAddress",
+        "PayoutCallbackNotification",
+        "PayoutExternalVerificationCallbackNotification",
+        "PayoutRequest",
+        "PayoutResponse",
+        "PayoutV1Request",
+        "ProjectCoin",
+        "ProjectCoinQueryResponse",
+        "ProjectCoinQueryResponseOrderCoinsItem",
+        "QueryPayoutRequest",
+        "QueryPayoutResponse",
+        "QueryWithdrawalRequest",
+        "QueryWithdrawalResponse",
+        "TradeRecord",
+        "TradeRecordQueryRequest",
+        "TradeRecordQueryResponse",
+        "ValidateAddressRequest",
+        "ValidateAddressResponse",
+        "WithdrawalCallbackNotification",
+        "WithdrawalRequest",
+        "WithdrawalResponse"
+      ],
+      "operations": [
+        {
+          "clientMethod": "GenerateAddress",
+          "method": "post",
+          "operationId": "createAddress",
+          "path": "/api/v1/address/create",
+          "requestModel": "GenerateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "GenerateAddressResponse"
+        },
+        {
+          "clientMethod": "BatchGenerateAddress",
+          "method": "post",
+          "operationId": "batchCreateAddress",
+          "path": "/api/v1/batch/address/create",
+          "requestModel": "BatchGenerateAddressRequest",
+          "responseContainer": "array",
+          "responseModel": "GeneratedAddress"
+        },
+        {
+          "clientMethod": "UpdateAddress",
+          "method": "post",
+          "operationId": "updateAddress",
+          "path": "/api/v1/address/update",
+          "requestModel": "AddressUpdateRequest",
+          "responseContainer": null,
+          "responseModel": null
+        },
+        {
+          "clientMethod": "ValidateAddress",
+          "method": "post",
+          "operationId": "verifyAddress",
+          "path": "/api/v1/address/inner",
+          "requestModel": "ValidateAddressRequest",
+          "responseContainer": null,
+          "responseModel": "ValidateAddressResponse"
+        },
+        {
+          "clientMethod": "CheckAddressLegality",
+          "method": "post",
+          "operationId": "validateAddressFormat",
+          "path": "/api/v1/address/legal",
+          "requestModel": "CheckAddressLegalityRequest",
+          "responseContainer": null,
+          "responseModel": "CheckAddressLegalityResponse"
+        },
+        {
+          "clientMethod": "PayoutV1",
+          "method": "post",
+          "operationId": "initiatePayout",
+          "path": "/api/v1/payout",
+          "requestModel": "PayoutV1Request",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "clientMethod": "PayoutV2",
+          "method": "post",
+          "operationId": "initiatePayoutV2",
+          "path": "/api/v2/payout",
+          "requestModel": "PayoutRequest",
+          "responseContainer": null,
+          "responseModel": "PayoutResponse"
+        },
+        {
+          "clientMethod": "Withdrawal",
+          "method": "post",
+          "operationId": "subAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal",
+          "requestModel": "WithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "WithdrawalResponse"
+        },
+        {
+          "clientMethod": "BalanceCollect",
+          "method": "post",
+          "operationId": "initiateCollection",
+          "path": "/api/v1/collection",
+          "requestModel": "BalanceCollectRequest",
+          "responseContainer": null,
+          "responseModel": "BalanceCollectResponse"
+        },
+        {
+          "clientMethod": "QueryProjectCoins",
+          "method": "post",
+          "operationId": "getProjectCoins",
+          "path": "/api/v1/coins",
+          "requestModel": null,
+          "responseContainer": null,
+          "responseModel": "ProjectCoinQueryResponse"
+        },
+        {
+          "clientMethod": "QueryTradeRecords",
+          "method": "post",
+          "operationId": "tradePage",
+          "path": "/api/v1/trade/page",
+          "requestModel": "TradeRecordQueryRequest",
+          "responseContainer": null,
+          "responseModel": "TradeRecordQueryResponse"
+        },
+        {
+          "clientMethod": "QueryPayout",
+          "method": "post",
+          "operationId": "queryPayout",
+          "path": "/api/v1/payout/query",
+          "requestModel": "QueryPayoutRequest",
+          "responseContainer": null,
+          "responseModel": "QueryPayoutResponse"
+        },
+        {
+          "clientMethod": "QueryWithdrawal",
+          "method": "post",
+          "operationId": "querySubAddressWithdrawal",
+          "path": "/api/v1/sub_address_withdrawal/info",
+          "requestModel": "QueryWithdrawalRequest",
+          "responseContainer": null,
+          "responseModel": "QueryWithdrawalResponse"
+        },
+        {
+          "clientMethod": "QueryAddressBalance",
+          "method": "post",
+          "operationId": "subAddressBalancePage",
+          "path": "/api/v1/sub_address_balance",
+          "requestModel": "AddressBalanceRequest",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceResponse"
+        },
+        {
+          "clientMethod": "QueryAddressBalanceV2",
+          "method": "post",
+          "operationId": "querySubAddressBalanceV2",
+          "path": "/api/v2/sub_address_balance",
+          "requestModel": "AddressBalanceV2Request",
+          "responseContainer": null,
+          "responseModel": "AddressBalanceV2Response"
+        }
+      ],
+      "specFile": "waas-api.json",
+      "webhooks": [
+        {
+          "model": "AddressDepositCallbackNotification",
+          "name": "depositCallback",
+          "operationId": "depositCallback"
+        },
+        {
+          "model": "PayoutCallbackNotification",
+          "name": "payoutCallback",
+          "operationId": "payoutCallback"
+        },
+        {
+          "model": "PayoutExternalVerificationCallbackNotification",
+          "name": "payoutExternalVerificationCallback",
+          "operationId": "payoutExternalVerificationCallback"
+        },
+        {
+          "model": "WithdrawalCallbackNotification",
+          "name": "withdrawalCallback",
+          "operationId": "withdrawalCallback"
+        }
+      ]
+    }
+  },
+  "generator": {
+    "configSha256": "52c4f30009299c6fdadb36c639748950c27aa2163ac5a120c67b8e7e4d1cfb7a",
+    "minimumGoVersion": "1.21",
+    "module": "github.com/Vincent-Cregis/CregisSDK/sdks/go",
+    "name": "cregis-go-model-generator",
+    "overridesSha256": "6f503f77b0faa7ed28d5253c16170091f43b35ef2906d33dd3abd0ab579235ac",
+    "rendererSha256": "38fe9cf4e7848f0b581c0101df32067034a4f566e7ca39f5a349fd56fb2c3de1",
+    "version": 1
+  },
+  "version": 1
+}

@@ -1,0 +1,7 @@
+{
+  "generatorVersion": 1,
+  "minimumGoVersion": "1.21",
+  "module": "github.com/Vincent-Cregis/CregisSDK/sdks/go",
+  "version": 1
+}
+

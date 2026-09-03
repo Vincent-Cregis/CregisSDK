@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "apis": {
+    "payment": {
+      "clientMethods": {
+        "createOrder": "CreateOrder",
+        "queryOrder": "QueryOrder"
+      }
+    },
+    "waas": {
+      "clientMethods": {
+        "createAddress": "GenerateAddress",
+        "batchCreateAddress": "BatchGenerateAddress",
+        "updateAddress": "UpdateAddress",
+        "verifyAddress": "ValidateAddress",
+        "validateAddressFormat": "CheckAddressLegality",
+        "initiatePayout": "PayoutV1",
+        "initiatePayoutV2": "PayoutV2",
+        "subAddressWithdrawal": "Withdrawal",
+        "initiateCollection": "BalanceCollect",
+        "getProjectCoins": "QueryProjectCoins",
+        "tradePage": "QueryTradeRecords",
+        "queryPayout": "QueryPayout",
+        "querySubAddressWithdrawal": "QueryWithdrawal",
+        "subAddressBalancePage": "QueryAddressBalance",
+        "querySubAddressBalanceV2": "QueryAddressBalanceV2"
+      }
+    },
+    "team": {
+      "clientMethods": {
+        "listTeamWallets": "ListTeamWallets",
+        "listTeamWalletAddresses": "ListTeamWalletAddresses",
+        "queryTeamWalletBalance": "QueryTeamWalletBalance",
+        "queryTeamWalletAddressBalance": "QueryTeamWalletAddressBalance",
+        "queryTeamWalletHistoryTransactions": "QueryTeamWalletHistoryTransactions",
+        "queryTeamWalletProcessingTransactions": "QueryTeamWalletProcessingTransactions"
+      }
+    }
+  }
+}
+
