@@ -1,0 +1,90 @@
+name: Go SDK CI
+
+on:
+  pull_request:
+    paths:
+      - "sdks/go/**"
+      - "codegen/**"
+      - ".github/workflows/go-ci.yml"
+      - "README.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "sdks/go/**"
+      - "codegen/**"
+      - ".github/workflows/go-ci.yml"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codegen-checks:
+    name: Check generated boundary
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Check out canonical OpenAPI specifications
+        uses: actions/checkout@v7
+        with:
+          repository: 0xcregis/cregis-developer-docs
+          token: ${{ secrets.CREGIS_DOCS_READ_TOKEN }}
+          path: .openapi-source
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: sdks/go/go.mod
+          cache-dependency-path: sdks/go/go.sum
+
+      - name: Regenerate and compare committed files
+        run: |
+          python3 -m unittest discover -s codegen/tests -v
+          ./codegen/scripts/generate-go-models.sh \
+            --spec-dir .openapi-source/api-sources/specs \
+            --check
+          ./codegen/scripts/check-go-generated-models.py
+          python3 -m json.tool codegen/configs/go-generator.json >/dev/null
+          python3 -m json.tool codegen/configs/go-overrides.json >/dev/null
+          python3 -m json.tool codegen/manifests/go-models.lock.json >/dev/null
+          bash -n codegen/scripts/generate-go-models.sh
+          python3 -m py_compile \
+            codegen/scripts/render-go-models.py \
+            codegen/scripts/check-go-generated-models.py
+
+  test:
+    name: Test on Go ${{ matrix.go }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.21.x", "stable"]
+    defaults:
+      run:
+        working-directory: sdks/go
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: sdks/go/go.sum
+
+      - name: Verify module, behavior, and race safety
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+          go vet ./...
+          go test -race ./...
+          go build ./...

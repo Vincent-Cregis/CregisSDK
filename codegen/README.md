@@ -19,7 +19,7 @@ The command performs these steps:
 1. Verifies that all OpenAPI operations are mapped in
    `codegen/configs/openapi-operations.json` and `codegen/configs/openapi-models.json`.
    Language-specific public method names live in `java-overrides.json`,
-   `typescript-overrides.json`, and `python-overrides.json`, so each SDK can
+   `typescript-overrides.json`, `python-overrides.json`, and `go-overrides.json`, so each SDK can
    follow its own conventions.
 2. Builds disposable prepared specifications in a temporary directory.
 3. Removes SDK-managed `pid`, `nonce`, `timestamp`, and `sign` fields from
@@ -116,6 +116,30 @@ Compare the canonical operations and Java Client paths:
 ```
 
 It currently expects 2 Payment, 15 WaaS, and 6 Team operations.
+
+## Go model pipeline
+
+The Go SDK generates standard-library struct models, named enum types and
+constants, recursive request/response/webhook validation, strict request JSON
+decoders, public model and enum aliases, and all 23 typed client methods.
+Responses validate required fields, declared JSON types, and documented
+constraints while ignoring future response fields.
+HTTP transport, both signing schemes, errors, and webhook verification remain
+handwritten.
+
+```bash
+./codegen/scripts/generate-go-models.sh \
+  --spec-dir ../cregis-developer-docs/api-sources/specs
+```
+
+The committed output is under `sdks/go/generated`, plus
+`sdks/go/models_aliases.gen.go` and `sdks/go/clients.gen.go`. Source hashes and
+the renderer identity are recorded in `codegen/manifests/go-models.lock.json`.
+Use `--check` for byte-for-byte reproducibility. The fast boundary check is:
+
+```bash
+./codegen/scripts/check-go-generated-models.py
+```
 
 Run all code-generation tool tests with:
 
